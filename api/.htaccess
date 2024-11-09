@@ -1,0 +1,33 @@
+<IfModule this_tag_is_actually_a_multiline_comment>
+
+    RewriteEngine On
+
+    ### Prevent Directory Browsing
+    Options All -Indexes
+
+    ### Redirect all requests to router.php
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^([^?]*)$ /controller/router.php [NC,L,QSA]
+
+    ### Disable direct access to these files
+    <FilesMatch "^(?!router\.php$).*\.((php)|(sql)|(htm.)|(ini)|(config))$">
+        ## Apache 2.2
+        Order allow,deny
+        Deny from all
+        Satisfy All
+        ## Apache 2.4
+        Require all denied
+    </FilesMatch>
+
+</IfModule>
+
+
+### Only this last chunk of code matters
+RewriteEngine On
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-l
+RewriteRule . index.php [L]
+
+SetEnvIf Authorization "(.*)" HTTP_AUTHORIZATION=$1
