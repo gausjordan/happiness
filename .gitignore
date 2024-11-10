@@ -1,0 +1,8 @@
+# Ignore everything in the db directory
+temp/webshop/db/*
+
+# But don't ignore the happinessdb folder and its contents
+!temp/webshop/db/happinessdb/
+!temp/webshop/db/happinessdb/**
+
+*.php
