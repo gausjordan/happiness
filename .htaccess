@@ -1,0 +1,55 @@
+<IfModule this_tag_is_actually_a_multiline_comment>
+
+    RewriteEngine On
+
+    ### Prevent Directory Browsing
+    Options All -Indexes
+
+    ### Redirect all requests to router.php
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^([^?]*)$ /controller/router.php [NC,L,QSA]
+
+    ### Disable direct access to these files
+    <FilesMatch "^(?!router\.php$).*\.((php)|(sql)|(htm.)|(ini)|(config))$">
+        ## Apache 2.2
+        Order allow,deny
+        Deny from all
+        Satisfy All
+        ## Apache 2.4
+        Require all denied
+    </FilesMatch>
+
+</IfModule>
+
+
+### Only those lines below this one - matter
+
+RewriteEngine On
+
+# Map root URL to /frontend/index.html
+RewriteRule ^$ "frontend/index.html" [L]
+
+# Prevent accessing everything that's not a file, directory, or symlink
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-l
+
+# Map all other requests to /frontend/index.html
+RewriteRule . "frontend/index.html" [L]
+
+SetEnvIf Authorization "(.*)" HTTP_AUTHORIZATION=$1
+
+### Allow Cross-Origin Resource Sharing (CORS)
+### Here be dragons - delete before deploying
+<IfModule mod_headers.c>
+  Header set Access-Control-Allow-Origin "*"
+</IfModule>
+
+### Disable caching
+<IfModule mod_headers.c>
+Header unset ETag
+Header set Cache-Control "max-age=0, no-cache, no-store, must-revalidate"
+Header set Pragma "no-cache"
+Header set Expires "Wed, 12 Jan 1980 05:00:00 GMT"
+</IfModule>

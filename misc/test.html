@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Menu Animation</title>
+<style>
+  /* Basic menu styles */
+  .menu {
+    width: 200px;
+    height: 0;
+    background: lightblue;
+    overflow: hidden;
+    transition: height 0.3s ease;
+  }
+
+  /* Open state */
+  .menu.open {
+    height: 100px; /* Example expanded height */
+  }
+
+  /* Prevent transition on page load */
+  .menu:not(.initial) {
+    transition: height 0.3s ease;
+  }
+
+  /* Optional: Hide the "initial" state after load */
+  .menu.initial {
+    height: 0;
+  }
+</style>
+</head>
+<body>
+
+  
+
+
+
+
+  <main id="app">
+    <nav class="shop-filter-menu">
+        <h1 class="shop-title">Proizvodi</h1>
+        <div class="shop-option-buttons">
+            <div class="filtering">
+                <img src="/frontend/graphics/filter.svg" id="shop-filtering-icon">
+                <ul id="shop-filtering-menu" loaded="">
+                    <!-- li items get appended here -->
+                <li>
+                  <input type="checkbox" id="catId1" value="1">
+                    <label class="container" for="catId1">Naušnice
+                    </label>
+                    <svg viewBox="-15 -15 234 252" id="tick" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
+                      <path style="opacity:1;fill:none;stroke-width:43;stroke-opacity:1;stroke-linecap:round" d="M 7,70 C 47,110 75.83894,174.75863 75.83894,174.75863 110,100 153,40 194,7">
+                      </path>
+                    </svg>
+                  </li>
+  
+  
+  
+  <li class=""><input type="checkbox" id="catId2" value="2"><label class="container" for="catId2">Narukvice</label><svg viewBox="-15 -15 234 252" id="tick" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
+        <path style="opacity:1;fill:none;stroke-width:43;stroke-opacity:1;stroke-linecap:round" d="M 7,70 C 47,110 75.83894,174.75863 75.83894,174.75863 110,100 153,40 194,7"></path>
+    </svg></li><li><input type="checkbox" id="catId3" value="3"><label class="container" for="catId3">Ogrlice</label><svg viewBox="-15 -15 234 252" id="tick" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
+        <path style="opacity:1;fill:none;stroke-width:43;stroke-opacity:1;stroke-linecap:round" d="M 7,70 C 47,110 75.83894,174.75863 75.83894,174.75863 110,100 153,40 194,7"></path>
+    </svg></li><li><input type="checkbox" id="catId4" value="4"><label class="container" for="catId4">Prsteni</label><svg viewBox="-15 -15 234 252" id="tick" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
+        <path style="opacity:1;fill:none;stroke-width:43;stroke-opacity:1;stroke-linecap:round" d="M 7,70 C 47,110 75.83894,174.75863 75.83894,174.75863 110,100 153,40 194,7"></path>
+    </svg></li><li><input type="checkbox" id="catId5" value="5"><label class="container" for="catId5">Nanogice</label><svg viewBox="-15 -15 234 252" id="tick" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
+        <path style="opacity:1;fill:none;stroke-width:43;stroke-opacity:1;stroke-linecap:round" d="M 7,70 C 47,110 75.83894,174.75863 75.83894,174.75863 110,100 153,40 194,7"></path>
+    </svg></li><div class="separator"></div><li><input type="checkbox" id="tagId1" value="1"><label class="container" for="tagId1">Čelik</label><svg viewBox="-15 -15 234 252" id="tick" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
+        <path style="opacity:1;fill:none;stroke-width:43;stroke-opacity:1;stroke-linecap:round" d="M 7,70 C 47,110 75.83894,174.75863 75.83894,174.75863 110,100 153,40 194,7"></path>
+    </svg></li><li><input type="checkbox" id="tagId2" value="2"><label class="container" for="tagId2">Poludragi kamen</label><svg viewBox="-15 -15 234 252" id="tick" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
+        <path style="opacity:1;fill:none;stroke-width:43;stroke-opacity:1;stroke-linecap:round" d="M 7,70 C 47,110 75.83894,174.75863 75.83894,174.75863 110,100 153,40 194,7"></path>
+    </svg></li><li><input type="checkbox" id="tagId3" value="3"><label class="container" for="tagId3">Staklo</label><svg viewBox="-15 -15 234 252" id="tick" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
+        <path style="opacity:1;fill:none;stroke-width:43;stroke-opacity:1;stroke-linecap:round" d="M 7,70 C 47,110 75.83894,174.75863 75.83894,174.75863 110,100 153,40 194,7"></path>
+    </svg></li><li><input type="checkbox" id="tagId4" value="4"><label class="container" for="tagId4">Koža</label><svg viewBox="-15 -15 234 252" id="tick" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
+        <path style="opacity:1;fill:none;stroke-width:43;stroke-opacity:1;stroke-linecap:round" d="M 7,70 C 47,110 75.83894,174.75863 75.83894,174.75863 110,100 153,40 194,7"></path>
+    </svg><input type="checkbox"></li><div class="separator"></div><li><label class="container shop-filter-reset">Poništi odabir</label><svg viewBox="-15 -15 234 252" id="tick" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
+        <path style="opacity:1;fill:none;stroke-width:43;stroke-opacity:1;stroke-linecap:round" d="M 7,70 C 47,110 75.83894,174.75863 75.83894,174.75863 110,100 153,40 194,7"></path>
+    </svg></li><button>debug: manual fetch trigger</button></ul>
+            </div>
+        </div>
+        <p class="filters">Filtriranje</p>
+    </nav>
+    <p class="shop-text"></p>
+
+
+<template class="shop">
+    <svg viewBox="-15 -15 234 252" id="tick" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
+        <path style="opacity:1;fill:none;stroke-width:43;stroke-opacity:1;stroke-linecap:round" d="M 7,70 C 47,110 75.83894,174.75863 75.83894,174.75863 110,100 153,40 194,7"></path>
+    </svg>
+</template>
+
+<div class="shop" id="main-grid"><div class="item"><a href="/product/1" onclick="{ event.preventDefault(); navigateTo(&quot;/product/1&quot;); }"><img src="/../img/nanogica1.jpg"><h3>Femme debileé</h3><p>41 €</p></a></div><div class="item"><a href="/product/2" onclick="{ event.preventDefault(); navigateTo(&quot;/product/2&quot;); }"><img src="/../img/nanogica-koza-staklo-1.jpg"><h3>Tropical bonanza</h3><p>55.41 €</p></a></div><div class="item"><a href="/product/3" onclick="{ event.preventDefault(); navigateTo(&quot;/product/3&quot;); }"><img src="/../img/narukvica-celik-1.jpg"><h3>Blitzschmerz</h3><p>62 €</p></a></div><div class="item"><a href="/product/4" onclick="{ event.preventDefault(); navigateTo(&quot;/product/4&quot;); }"><img src="/../img/narukvica-kamen-1.jpg"><h3>Hopsica &amp; Co.</h3><p>49.99 €</p></a></div><div class="item"><a href="/product/5" onclick="{ event.preventDefault(); navigateTo(&quot;/product/5&quot;); }"><img src="/../img/nausnica-b-1.jpg"><h3>Tajna prijateljica</h3><p>20 €</p></a></div><div class="item"><a href="/product/6" onclick="{ event.preventDefault(); navigateTo(&quot;/product/6&quot;); }"><img src="/../img/nausnica1.jpg"><h3>Piko naušnice</h3><p>70 €</p></a></div><div class="item"><a href="/product/7" onclick="{ event.preventDefault(); navigateTo(&quot;/product/7&quot;); }"><img src="/../img/nausnica-poludragi-kamen-1.jpg"><h3>Gasi Internet, dosta je</h3><p>83 €</p></a></div><div class="item"><a href="/product/8" onclick="{ event.preventDefault(); navigateTo(&quot;/product/8&quot;); }"><img src="/../img/ogrlica1.jpg"><h3>Tarapana</h3><p>89 €</p></a></div><div class="item"><a href="/product/9" onclick="{ event.preventDefault(); navigateTo(&quot;/product/9&quot;); }"><img src="/../img/ogrlica-kozna-1.jpg"><h3>Porsché &amp; porcolli</h3><p>107 €</p></a></div><div class="item"><a href="/product/10" onclick="{ event.preventDefault(); navigateTo(&quot;/product/10&quot;); }"><img src="/../img/ogrlica-staklo-celik-1.jpg"><h3>Slatke strasti</h3><p>64.11 €</p></a></div><div class="item"><a href="/product/11" onclick="{ event.preventDefault(); navigateTo(&quot;/product/11&quot;); }"><img src="/../img/prsten1.jpg"><h3>Zavari me!</h3><p>97 €</p></a></div><div class="item"><a href="/product/12" onclick="{ event.preventDefault(); navigateTo(&quot;/product/12&quot;); }"><img src="/../img/prsten-staklo-1.jpg"><h3>Pepeljuga</h3><p>38.5 €</p></a></div></div></main>
+
+
+
+
+
+
+
+</body>
+</html>

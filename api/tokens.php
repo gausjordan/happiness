@@ -2,8 +2,10 @@
 
 $payload = [
     "sub" => $user["id"],
-    "name" => $user["username"],
-    "exp" => time() + 600
+    // "name" => $user["username"],
+    "name" => $user["firstName"],
+    "role" => $user["description"],
+    "exp" => time() + 90000000000000 // TODO: Change this
 ];
 
 $access_token = $codec->encode($payload);
@@ -17,6 +19,5 @@ $refresh_token = $codec->encode([
 
 echo json_encode([
     "access_token" => $access_token,
-    
     "refresh_token" => $refresh_token
 ]);

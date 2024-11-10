@@ -1,0 +1,219 @@
+* {
+    box-sizing: content-box;
+}
+body.menu-active {
+    pointer-events: none;
+}
+
+body.menu-active .menu, body.menu-active .menu * {
+    pointer-events: auto;
+}
+
+/* Title and filtering options invisible placeholder */
+nav.shop-filter-menu {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    flex: 1 1;
+    margin-top: 1em; 
+    margin-bottom: 2em;
+}
+
+/* Filtering buttons placement */
+nav.shop-filter-menu .shop-option-buttons {
+    display: flex;
+    width: 100%;
+    justify-content: flex-end;
+    gap: 0.5em;
+}
+
+/* Filtering buttons images */
+nav.shop-filter-menu .shop-option-buttons img {
+    box-sizing: content-box;
+    height: 1.6em;
+    padding: 0.3em;
+    border-radius: 0.4em;
+    border: none;
+    background-color: rgb(243, 243, 243);
+    box-shadow: 0px 0px 1em #d4c4c3;
+}
+nav.shop-filter-menu .shop-option-buttons img:hover {
+    background-color: rgb(223, 223, 223);
+    box-shadow: 0px 0px 1em #d4c4c3;
+    cursor: pointer;
+    user-select: none;
+}
+nav.shop-filter-menu .shop-option-buttons img:active {
+    background-color: rgb(240, 240, 240);
+    box-shadow: 0px 0px 1em #d4c4c3;
+}
+
+/* Includes all the buttons (currently just one) */
+.shop-option-buttons li {
+    display: flex;
+    background-color: none;
+}
+
+/* Filter item label element */
+.shop-option-buttons label {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    font-size: 1em;
+}
+
+
+/* Filtering menu - options when hidden */
+.shop-option-buttons ul {
+    display: none;
+    transform: translate(-100%) translate(1.8em, -1em) scale(1, 1);
+    border-radius: 0.5em;
+    padding: 0.2em 0 0.75em 0;
+    list-style: none;
+    user-select: none;
+    position: absolute;
+    background-color: #eeeeee;
+    overflow: hidden;
+    border-width: 0.1em;
+    border-style: solid;
+    border-color: white rgb(196, 196, 196) rgb(196, 196, 196) white;
+    box-shadow: 2px 2px 9px rgba(160, 160, 160, 0.5);
+    opacity: 0%;
+}
+
+/* Prevent window closing animation on page load by targeting a classname provided after onload event */
+.shop-option-buttons ul[loaded] {
+    display: flex;
+    flex-direction: column;
+    animation: filter-menu-popdown 0.1s linear;
+    transform-origin: top right;
+    animation-fill-mode: forwards;
+}
+
+/* Filtering menu options when active */
+.shop-option-buttons ul[active][loaded] {
+    animation: filter-menu-popup 0.1s linear;
+    animation-fill-mode: forwards;
+}
+
+@keyframes filter-menu-popup {
+    0% { opacity: 0%; transform: translate(-100%) translate(1.8em, -1em) scale(0.1, 0.1); }
+    100% { opacity: 100%; transform: translate(-100%) translate(1.8em, -1em) scale(1, 1);  }
+}
+@keyframes filter-menu-popdown {
+    0% { opacity: 100%; transform: translate(-100%) translate(1.8em, -1em) scale(1, 1); }
+    100% { opacity: 0%; transform: translate(-100%) translate(1.8em, -1em) scale(0.1, 0.1); }
+}
+
+/* Always hidden checkbice */
+.shop-option-buttons input[type='checkbox'] {
+    order: 2;
+    display: none;
+ }
+
+/* Single menu list item' label nested p text */
+.shop-option-buttons #shop-filtering-menu li label p {
+    white-space: nowrap;
+    align-self: center;
+    order: 3;
+    padding: 0.7em 1.2em 0.7em 0.5em;
+}
+
+ /* Filter menu - All menu children elements */
+.shop-option-buttons #shop-filtering-menu li * {
+    padding: 0;
+    margin: 0;
+}
+
+ /* Filter menu - Single master menu item */
+ .shop-option-buttons #shop-filtering-menu li {
+    -padding: 0.5em;
+}
+.shop-option-buttons #shop-filtering-menu li.hovered {
+    background-color: silver;
+}
+
+/* Graphical checkbox tick while unchecked */
+#shop-filtering-menu label input[type="checkbox"] + svg {
+    display: inline-block;
+    height: 1.4em;
+    order: 1;
+    align-self: center;
+    padding: 0em 0 0 0.75em;
+}
+
+/* Graphical checkbox tick while checked */
+#shop-filtering-menu label input[type="checkbox"]:checked + svg {
+    stroke: purple;
+}
+
+
+/* Mid-menu separator */
+.shop-option-buttons .separator {
+    width: 100%;
+    height: 1px;
+    margin: 0.5em 0;
+    background-color: rgb(196, 196, 196);
+}
+
+/* Plain text caption of a 'filter' button (unused/always hidden) */
+nav.shop-filter-menu p.filters {
+    margin: 0 0.6em;
+    display: none;
+}
+
+/* Main shop title */
+h1.shop-title {
+    font-size: 2em;
+    padding: 0;
+    margin: 0;
+}
+
+/* (unused) */
+p.shop-text {
+    color: red;
+    padding: 0;
+    margin: 0;
+}
+
+/* Items grid */
+div.shop#main-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5em;
+}
+
+/* Single grid item */
+div.shop#main-grid div.item {
+    text-align: center;
+    margin-bottom: 1em;
+}
+
+/* Single grid item's image */
+div#main-grid .item img {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+}
+
+/* Single grid item's title */
+div#main-grid .item h3 {
+    font-size: 1em;
+    margin: 0.2em;
+}
+
+/* Single grid item's price */
+div#main-grid .item p {
+    margin: 0;
+    font-size: 0.85em;
+}
+
+/* Single grid item's clickable area */
+div#main-grid .item a {
+    color: black;
+    text-decoration: none;
+}
+div#main-grid .item a:visited {
+    color: black;
+    text-decoration: none;
+}

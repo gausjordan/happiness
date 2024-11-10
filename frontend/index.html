@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content">
+    <link rel="stylesheet" rel="preload" href="/frontend/index.css" as="style" onerror="setTimeout( () => document.querySelectorAll('svg, img').forEach(i => i.style.height = '1.25em'), 100)">
+    <link rel="stylesheet" rel="preload" href="/frontend/splashstyle.css" as="style">
+    <base href="/" />
+  </head>
+
+  <body>
+    <script>0</script><!-- Firefox "Layout was forced before the page was fully loaded" fix -->
+    <aside id="splashscreen" hidden>
+      <div class="loader-grid-container">
+        <div class="loader-grid-item"></div>
+        <div class="loader-grid-item"></div>
+        <div class="loader-grid-item"></div>
+        <div class="loader-grid-item"></div>
+        <div class="loader-grid-item middle">
+          <svg viewBox="0 0 504 356" xmlns="http://www.w3.org/2000/svg" id="icon" alt="Happiness company icon"></svg>
+          <svg viewBox="0 0 1888 261" xmlns="http://www.w3.org/2000/svg" alt="Happiness Logo and subtitle" id="logo1"></svg>
+        </div>
+        <div class="loader-grid-item"></div>
+        <div class="loader-grid-item"></div>
+        <div class="loader-grid-item"></div>
+        <div class="loader-grid-item"></div>
+      </div>
+    </aside>
+
+    <header class="top-menu">
+      <div class="block left">
+        <a href="/search" data-link><img src="/frontend/graphics/magnifier.svg" alt="Search button"></img></a>
+      </div>
+      <div class="block middle">
+          <a href="/home" data-link><img src="/frontend/graphics/icon-static.svg" alt="Happiness Logo"></img></a>
+      </div>
+      <div class="block right">
+        <a href="/account" data-link><img src="/frontend/graphics/user.svg" alt="Current user"></img></a>
+        <a href="/cart" data-link><img src="/frontend/graphics/cart.svg" alt="Shopping cart" id="view-cart-link"></img></a>
+      </div>
+    </header>
+
+    <nav class="mainmenu">
+      <input type="checkbox" class="animate" id="menu-toggle">
+      <label for="menu-toggle">
+        <div class="menu-icon" id="menu-icon">&#9776;</div>
+      </label>
+      <img src="/frontend/graphics/flag-uk.svg" class="lang-flag" id="en"></img>
+      <img src="/frontend/graphics/flag-hr.svg" class="lang-flag" id="hr"></img>
+      <ul class="nav-links" id="nav-links">
+        <a href="/home" data-link>
+          <li>
+            <span class="hr">Naslovna stranica</span>
+            <span class="en">Home page</span>
+          </li>
+        </a>
+        <a href="/shop" data-link>
+          <li>
+            <span class="hr">Proizvodi</span>
+            <span class="en">Products</span>
+          </li>
+        </a>
+        <a href="/about" data-link>
+          <li>
+            <span class="hr">O nama</span>
+            <span class="en">About us</span>
+          </li>
+        </a>
+        <a href="/products-admin" data-link employee hidden>
+          <li>
+            <span class="hr">Ponuda</span>
+            <span class="en">Inventory</span>
+          </li>
+        </a>
+        <a href="/orders" data-link employee hidden>
+          <li>
+            <span class="hr">Narudžbe</span>
+            <span class="en">Orders</span>
+          </li>
+        </a>
+        <a href="/users" data-link admin hidden>
+          <li>
+            <span class="hr">Korisnici</span>
+            <span class="en">Users</span>
+          </li>
+        </a>
+      </ul>
+    </nav>
+    <main id="app">
+    </main>
+    <footer>
+      © Pretentious software solutions™ by Checkbox G® 2025
+    </footer>
+  </body>
+
+
+  <script src="/frontend/index.js" defer></script>
+
+</html>

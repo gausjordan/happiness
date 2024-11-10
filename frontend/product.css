@@ -1,0 +1,35 @@
+/* main#app {
+    box-sizing: border-box;
+    margin: 0.75em 0.75em 0em 0.75em;
+} */
+
+
+#image-big {
+    max-width: 100%;
+}
+
+div#thumbnails {
+    display: grid;
+    width: 100%;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+    gap: 0.5em;
+}
+
+div#thumbnails div {
+    width: 100%;
+}
+
+div#thumbnails img {
+    width: 100%;
+    object-fit: cover;
+    aspect-ratio: 1;
+}
+
+div#commerce button#atc-button{
+    font-size: 1em;
+    padding: 0.3em;
+}
+
+#app p#description {
+    line-height: 1.5;
+}

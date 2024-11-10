@@ -1,22 +1,19 @@
 <?php
 
 /**
- * This file initializes this API
- *
- * It will:
- *
- *   - dump config.php content to a single variable
- *   - initialize a simple auto-loader
+ * Initialize the API. Tasks:
+ * 
+ *   - dump config.php content into an object
+ *   - set up a simple auto-loader
  *   - set the default content type to JSON
  *   - set charset to utf-8
  *   - set-up custom error and exception handlers
- * 
  */
 
-$config = require(dirname(__DIR__, 1) . DIRECTORY_SEPARATOR . "config.php");
+$config = require(dirname(__DIR__, 1) . DIRECTORY_SEPARATOR . "private" . DIRECTORY_SEPARATOR . "config.php");
 
 spl_autoload_register(function ($class) {
-    require dirname(__DIR__, 1) . DIRECTORY_SEPARATOR . "src" . DIRECTORY_SEPARATOR . $class . ".php";
+    require dirname(__DIR__, 1) . DIRECTORY_SEPARATOR . "api-src" . DIRECTORY_SEPARATOR . $class . ".php";
 });
 
 set_error_handler("CustomErrorHandler::handleError");

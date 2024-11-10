@@ -1,0 +1,30 @@
+<script>
+    if (localStorage.getItem("lang") === 'en') {
+        //document.title = "Product details";
+        document.getElementById('atc-button').innerHTML = "Add to cart";
+    } else {
+        //document.title = "Detalji o proizvodu";
+        document.getElementById('atc-button').innerHTML = "Dodaj u košaricu";
+    }
+</script>
+
+<head>
+    <link rel="stylesheet" href="product.css" rel="preload" as="style"></link>
+    <script src="/frontend/product.js"></script>
+</head>
+
+<body>
+    
+    <h1></h1>
+    <p></p>
+    <h2></h2>
+    <div id="gallery">
+        <img id="image-big"></img>
+        <div id="thumbnails"></div>
+    </div>
+    <div id="commerce" style="display: none">
+        <p id="price"></p>
+        <button id="atc-button"></button>
+    </div>
+    <p id="description"></p>
+</body>

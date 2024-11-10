@@ -1,0 +1,47 @@
+<script>
+    if (localStorage.getItem("lang") == 'en') {
+
+    }
+</script>
+
+<head>
+    <link rel="stylesheet" href="/frontend/account.css" rel="preload" as="style"></link>
+    <script src="/frontend/account.js"></script>
+    <title>Korisnički račun</title>
+</head>
+
+<body>
+    <div id="login-form" style="display: none">
+        <form>
+            <h1 id="title">Prijava</h1>
+            <div id="username-div">
+                <label for="username">Korisničko ime</label>
+                <input type="text" id="username" name="username">
+            </div>
+            <div id="password-div">
+                <label for="password">Zaporka</label>
+                <input type="password" id="password" name="password">
+            </div>
+            <input type="submit" value="Prijava" onclick="login(event)">
+        </form>
+        <div id="brza-prijava">
+            <button id="user" onclick="document.getElementById('username').value = 'user'; document.getElementById('password').value = 'user'">User</button>
+            <button id="employee" onclick="document.getElementById('username').value = 'employee'; document.getElementById('password').value = 'employee'">Employee</button>
+            <button id="admin" onclick="document.getElementById('username').value = 'admin'; document.getElementById('password').value = 'admin'">Admin</button>
+        </div>
+        <div id="novi-korisnik">
+            <p>Ukoliko još nemate korisnički račun, izradite ga <a href="#">ovdje</a>.</p>
+        </div>
+    </div>
+
+    <div id="user-details" style="display: none">
+        <h1>Korisničke postavke</h1>
+        <button type="button" onclick="logout()">Logout</button>
+    </div>
+
+    <div id="register-form" style="display: none">
+        <h1>Registracija</h1>
+    </div>
+
+
+

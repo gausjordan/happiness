@@ -1,0 +1,18 @@
+<script>
+    if (localStorage.getItem("lang") === 'en') {
+        document.title = "Shopping cart";
+        document.getElementById('shopping-cart-title').innerHTML = "Shopping cart";
+    } else {
+        document.title = "Vaša košarica";
+        document.getElementById('shopping-cart-title').innerHTML = "Vaša košarica";
+    }
+</script>
+
+<head>
+    <link rel="stylesheet" href="cart.css" rel="preload" as="style"></link>
+    <script src="/frontend/cart.js"></script>
+</head>
+
+<body>
+    <h1 id="shopping-cart-title"></h1>
+</body>

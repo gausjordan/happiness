@@ -1,0 +1,200 @@
+EXECUTE COMMAND
+docker run --name="happiness" -d -i -t -p "80:80" -v d/temp/webshop:/app -v d/temp/webshop-db:/var/lib/mysql mattrayner/lamp:latest-1804
+
+
+< PHP Sanitation >
+
+$text = htmlspecialchars($_POST['title']);
+$float = filter_var($_POST['price'], FILTER_VALIDATE_FLOAT);
+
+
+
+< Select svega >
+
+SELECT
+    product.id,
+    product.naslov,
+    product.title,
+    COALESCE(product.description, "No description.") as description,
+    COALESCE(product.opis, "Nema opisa proizvoda.") as opis,
+    COALESCE(GROUP_CONCAT(DISTINCT product_categories.category ORDER BY product_categories.category SEPARATOR ', '), "None") as category,
+    COALESCE(GROUP_CONCAT(DISTINCT product_tags.tag ORDER BY product_tags.tag SEPARATOR ', '), "None") as tag,
+    GROUP_CONCAT(product_images.url SEPARATOR ', ') as url,
+    product.price,
+    product.is_available,
+    product.is_visible
+FROM `product`
+LEFT JOIN `products_and_categories`
+ON `product`.`id` = `products_and_categories`.`product_id`
+LEFT JOIN `product_categories`
+ON `products_and_categories`.`category_id` = `product_categories`.`id`
+LEFT JOIN `products_and_tags`
+ON `product`.`id` = `products_and_tags`.`product_id`
+LEFT JOIN `product_tags`
+ON `products_and_tags`.`tag_id` = `product_tags`.`id`
+LEFT JOIN `product_images`
+ON `product`.`id` = `product_images`.`product_id`
+GROUP BY product.id, product.title;
+
+
+<Meh>
+
+INSERT INTO products_and_tags (product_id, tag_id)
+SELECT 96, tag_id
+FROM products_and_tags
+INNER JOIN product_tags
+ON products_and_tags.tag_id = product_tags.id
+WHERE tag = "Koža" LIMIT 1;
+
+
+
+
+
+
+< Bolje >
+
+INSERT INTO products_and_tags (product_id, tag_id)
+VALUES(96, (
+            SELECT tag_id t
+            FROM products_and_tags pat
+            INNER JOIN product_tags pt
+            ON pat.tag_id = pt.id
+            WHERE tag = "Čelik" LIMIT 1));
+
+
+    < GPT Example >
+
+    1. Database Setup
+
+First, create a simple table for storing products in MySQL.
+
+CREATE TABLE products (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    price DECIMAL(10, 2) NOT NULL,
+    image_path VARCHAR(255) NOT NULL
+);
+
+2. API Endpoint (store_product.php)
+
+<?php
+
+// Database connection
+$dsn = 'mysql:host=localhost;dbname=testdb;charset=utf8mb4';
+$username = 'root';
+$password = '';
+$options = [
+    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+];
+$pdo = new PDO($dsn, $username, $password, $options);
+
+// Helper function for JSON response
+function send_response($status, $message) {
+    http_response_code($status);
+    echo json_encode(["message" => $message]);
+    exit;
+}
+
+// Check if it's a POST request
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    send_response(405, "Method Not Allowed");
+}
+
+// Check if all required fields are present
+if (!isset($_POST['title']) || !isset($_POST['price']) || !isset($_FILES['image'])) {
+    send_response(400, "Missing required fields: title, price, or image");
+}
+
+// Sanitize input
+$title = htmlspecialchars($_POST['title']);
+$price = filter_var($_POST['price'], FILTER_VALIDATE_FLOAT);
+
+if ($price === false) {
+    send_response(400, "Invalid price format");
+}
+
+// Validate file upload
+$image = $_FILES['image'];
+if ($image['error'] !== UPLOAD_ERR_OK) {
+    send_response(400, "File upload error: " . $image['error']);
+}
+
+// Restrict file type (e.g., only allow JPEG and PNG)
+$allowed_types = ['image/jpeg', 'image/png'];
+if (!in_array($image['type'], $allowed_types)) {
+    send_response(400, "Invalid file type. Only JPEG and PNG are allowed.");
+}
+
+// Move uploaded file to a directory
+$upload_dir = 'uploads/';
+if (!is_dir($upload_dir)) {
+    mkdir($upload_dir, 0755, true); // Create the directory if it doesn't exist
+}
+
+$image_name = uniqid('img_', true) . '.' . pathinfo($image['name'], PATHINFO_EXTENSION);
+$image_path = $upload_dir . $image_name;
+
+if (!move_uploaded_file($image['tmp_name'], $image_path)) {
+    send_response(500, "Failed to save the uploaded file.");
+}
+
+// Insert product into the database
+try {
+    $stmt = $pdo->prepare("INSERT INTO products (title, price, image_path) VALUES (:title, :price, :image_path)");
+    $stmt->execute([
+        ':title' => $title,
+        ':price' => $price,
+        ':image_path' => $image_path,
+    ]);
+    send_response(201, "Product created successfully.");
+} catch (Exception $e) {
+    send_response(500, "Database error: " . $e->getMessage());
+}
+
+3. Example API Request
+Request URL:
+
+POST http://localhost/store_product.php
+
+Headers:
+
+Content-Type: multipart/form-data
+
+Request Body (via curl or a tool like Postman):
+
+curl -X POST http://localhost/store_product.php \
+  -F "title=Example Product" \
+  -F "price=19.99" \
+  -F "image=@/path/to/your/image.jpg"
+
+4. Explanation
+
+    File Upload Handling:
+        The image is validated for file type and moved to the uploads/ directory with a unique filename to avoid conflicts.
+
+    Database Insertion:
+        The product title, price, and image path are securely stored in the products table using prepared statements to prevent SQL injection.
+
+    Error Handling:
+        Proper error messages are sent for invalid data, file upload issues, or database errors.
+
+5. Directory Structure
+
+/your-project
+|-- store_product.php
+|-- uploads/
+    |-- img_64f3a41f74.jpg
+
+6. Response Example
+On Success:
+
+{
+  "message": "Product created successfully."
+}
+
+On Failure (e.g., missing field):
+
+{
+  "message": "Missing required fields: title, price, or image"
+}

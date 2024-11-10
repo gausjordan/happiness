@@ -1,0 +1,30 @@
+<script>
+    function decodeUsersName() {
+        let token = localStorage.getItem("access_token");
+        if (token) {
+            const payload = JSON.parse(atob(token.split('.')[1])); // Decode JWT payload
+            return `, ${payload.name}`;
+        }
+        else {
+            return "";
+        }
+    }
+    
+    if (localStorage.getItem("lang") === 'en') {
+        document.title = "Home page";
+        document.querySelector("h1").textContent = "Welcome" + decodeUsersName();
+        document.querySelector("p").textContent = "Welcome text and images go here.";
+    } else {
+        document.title = "Početna stranica";
+        document.querySelector("h1").textContent = "Dobrodošli" + decodeUsersName();
+        document.querySelector("p").textContent = "Poruka dobrodošlice.";
+    }
+</script>
+
+<head>
+    <title></title>
+</head>
+</body>
+    <h1></h1>
+    <p></p>
+</body>

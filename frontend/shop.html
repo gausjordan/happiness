@@ -1,0 +1,43 @@
+<script>
+
+    if (localStorage.getItem("lang") === 'en') {
+        document.title = "Products";
+        document.querySelector("nav.shop-filter-menu h1.shop-title").textContent = "Products";
+        // document.querySelector("p.shop-text").textContent = "We do the browsing here.";
+        document.querySelector("nav.shop-filter-menu p.filters").textContent = "Filters";
+    } else {
+        document.title = "Proizvodi";
+        document.querySelector("nav.shop-filter-menu h1.shop-title").textContent = "Proizvodi";
+        // document.querySelector("p.shop-text").textContent = "Ovdje prikazujemo proizvode.";
+        document.querySelector("nav.shop-filter-menu p.filters").textContent = "Filtriranje";
+    }
+</script>
+
+<head>
+    <link rel="stylesheet" href="/frontend/shop.css" rel="preload" as="style"></link>
+    <script src="/frontend/shop.js"></script>
+</head>
+
+<body>
+    <nav class="shop-filter-menu hidden">
+        <h1 class="shop-title"></h1>
+        <div class="shop-option-buttons">
+            <div class="filtering">
+                <img src='/frontend/graphics/filter.svg' id="shop-filtering-icon">
+                <ul id="shop-filtering-menu" class="menu">
+                    <!-- li items get appended here -->
+                </ul>
+            </div>
+        </div>
+        <p class="filters"></p>
+    </nav>
+    <p class="shop-text"></p>
+
+
+<template class="shop">
+    <svg viewBox="-15 -15 234 252" id="tick" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
+        <path style="opacity:1;fill:none;stroke-width:43;stroke-opacity:1;stroke-linecap:round" d="M 7,70 C 47,110 75.83894,174.75863 75.83894,174.75863 110,100 153,40 194,7" />
+    </svg>
+</template>
+
+</body>
