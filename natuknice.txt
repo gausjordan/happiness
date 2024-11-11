@@ -1,0 +1,17 @@
+Izbaci sve:
+
+
+SELECT *
+FROM `product`
+
+INNER JOIN `products_and_categories`
+ON `product`.`id` = `products_and_categories`.`product_id`
+
+INNER JOIN `product_categories`
+ON `products_and_categories`.`category_id` = `product_categories`.`id`
+
+INNER JOIN `products_and_tags`
+ON `product`.`id` = `products_and_tags`.`product_id`
+
+INNER JOIN `product_tags`
+ON `products_and_tags`.`tag_id` = `product_tags`.`id`;
