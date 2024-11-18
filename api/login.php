@@ -27,7 +27,7 @@ $user_gateway = new UserGateway($database);
 
 $user = $user_gateway->getByUsername($data["username"]);
 
-if ( ($user === false) || !password_verify($data["password"], $user["password_hash"]) ) {
+if ( ($user === false) || !password_verify( $data["password"], $user["password_hash"]) ) {
     http_response_code(401);
     echo json_encode(["message" => "Invalid authentication"]);
     exit;

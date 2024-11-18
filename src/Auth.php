@@ -6,11 +6,17 @@
 class Auth {
 
     private int $user_id;
+
+    private string $user_role;
  
     public function __construct (private UserGateway $user_gateway, private JWTCodec $codec) {}
  
     public function getUserId(): int {
         return $this->user_id;
+    }
+
+    public function getUserRole(): string {
+        return $this->user_role;
     }
 
     /**
@@ -46,6 +52,8 @@ class Auth {
         }
 
         $this->user_id = $data["sub"];
+        
+        $this->user_role = $data["role"];
 
         return true;
     }

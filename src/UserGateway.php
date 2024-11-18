@@ -11,15 +11,17 @@ class UserGateway {
     }
 
     public function getByUsername(string $username): array | false {
-        $sql = "SELECT * FROM user WHERE username = :username";
+        $sql = "SELECT * FROM `user` INNER JOIN `user_roles` ON user.role = user_roles.id WHERE username = :username";
         $stmt = $this->conn->prepare($sql);
         $stmt->bindValue(":username", $username, PDO::PARAM_STR);
         $stmt->execute();
-        return $stmt->fetch(PDO::FETCH_ASSOC);
+        $output = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $output;
     }
 
     public function getByUserId(int $id): array | false {
-        $sql = "SELECT * FROM user WHERE id = :id";
+        // $sql = "SELECT * FROM user WHERE id = :id";
+        $sql = "SELECT * FROM `user` INNER JOIN `user_roles` ON user.role = user_roles.id WHERE id = :id";
         $stmt = $this->conn->prepare($sql);
         $stmt->bindValue(":id", $id, PDO::PARAM_INT);
         $stmt->execute();

@@ -27,6 +27,10 @@ if (! $auth->authenticateAccessToken()) {
 
 $user_id = $auth->getUserId();
 
+$user_role = $auth->getUserRole();
+
+echo $user_role;
+
 $id = $uri[3] ?? null;
 
 $product_gateway = new ProductGateway($database);                   // Product-related DB queries

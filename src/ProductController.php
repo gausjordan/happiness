@@ -7,8 +7,6 @@ class ProductController {
     
     public function __construct(private ProductGateway $gateway, private int $user_id) {}
     
-    // If there was any 'id' provided in the URL, then it was a resource request
-    // Otherwise it's considered a collection request
     public function processRequest(string $method, ?string $id): void {
         
         if ($id) {
@@ -68,7 +66,7 @@ class ProductController {
         switch ($method) {
 
             case "GET": 
-                echo json_encode($this->gateway->getAllForUser($this->user_id));
+                echo json_encode($this->gateway->getAll($this->user_id));
                 break;
 
             case "POST":

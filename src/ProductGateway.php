@@ -4,19 +4,19 @@
  * Provides methods for product-related DB queries
  */
 class ProductGateway {
-
     private PDO $conn;
     public function __construct(Database $database) {
         $this->conn = $database->getConnection();
     }
 
-    public function getAllForUser(int $user_id): array {
-        $sql = "SELECT * FROM product WHERE user_id = :user_id ORDER BY name";
+    public function getAll(int $is_visible): array {
+        $sql = "SELECT * FROM product WHERE is_visible = :is_visible";
         $statement = $this->conn->prepare($sql);
-        $statement->bindValue(":user_id", $user_id, PDO::PARAM_INT);
+        $statement->bindValue(":is_visible", $is_visible, PDO::PARAM_INT);
         $statement->execute();
         $data = [];
         while ($row = $statement->fetch(PDO::FETCH_ASSOC)) {
+            $row["is_visible"] = (bool) $row["is_visible"];
             $row["is_available"] = (bool) $row["is_available"];
             $data[] = $row;
         }

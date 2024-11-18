@@ -1,5 +1,7 @@
-Izbaci sve:
+DODAJ U PAYLOAD rolu, to je najsuvislije na koncu.
 
+
+Izbaci sve:
 
 SELECT *
 FROM `product`
