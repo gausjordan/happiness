@@ -5,16 +5,11 @@
  */
 class ProductController {
     
-    public function __construct(private ProductGateway $gateway, private int $user_id) {}
+    public function __construct(private ProductGateway $gateway, private int $user_id, private string $user_role) {}
     
     public function processRequest(string $method, ?string $id): void {
-        
-        if ($id) {
-            $this->processResourceRequest($method, $id);
-        }
-        else {
-            $this->processCollectionRequest($method);
-        }
+        if ($id) { $this->processResourceRequest($method, $id);  }
+        else { $this->processCollectionRequest($method); }
     }
 
     private function processResourceRequest(string $method, string $id): void {
@@ -66,7 +61,7 @@ class ProductController {
         switch ($method) {
 
             case "GET": 
-                echo json_encode($this->gateway->getAll($this->user_id));
+                echo json_encode($this->gateway->getAll($this->user_id, $this->user_role));
                 break;
 
             case "POST":
@@ -79,7 +74,9 @@ class ProductController {
                     break;
                 }
 
-                $id = $this->gateway->createForUser($this->user_id, $data);
+                // var_dump($data);
+
+                $id = $this->gateway->create($data);
                 
                 $this->respondCreated($id);
                 break;
@@ -93,13 +90,19 @@ class ProductController {
 
         $errors = [];
 
-        if ($is_new && empty($data["name"])) {
-            $errors[] = "name is required";
+        if ($is_new && (empty($data["title"]) || empty($data["naslov"]) ) ) {
+            $errors[] = "Title / naslov is required.";
         }
 
-        if (array_key_exists("size", $data)) {
-            if (filter_var($data["size"], FILTER_VALIDATE_INT) === false) {
-                $errors[] = "size must be an integer";
+        if (empty($data["price"])) {
+            if (!isset($data["price"])) {
+                $errors[] = "Price is required.";
+            }
+        }
+
+        if (array_key_exists("price", $data)) {
+            if (filter_var($data["price"], FILTER_VALIDATE_FLOAT) === false) {
+                $errors[] = "Price must be a number.";
             }
         }
 

@@ -9,10 +9,96 @@ class ProductGateway {
         $this->conn = $database->getConnection();
     }
 
-    public function getAll(int $is_visible): array {
-        $sql = "SELECT * FROM product WHERE is_visible = :is_visible";
-        $statement = $this->conn->prepare($sql);
-        $statement->bindValue(":is_visible", $is_visible, PDO::PARAM_INT);
+    public function getAll(int $user_id, string $role): array {
+
+        if ($role === "admin" || $role === "employee") {
+            //$sql = "SELECT * FROM product";
+
+            $sql = "
+
+                SELECT
+                    product.id,
+                    product.naslov,
+                    product.title,
+                    COALESCE(product.description, \"No description.\") as description,
+                    COALESCE(product.opis, \"Nema opisa proizvoda.\") as opis,
+                    COALESCE(GROUP_CONCAT(DISTINCT product_categories.category ORDER BY product_categories.category SEPARATOR ', '), \"None\") as category,
+                    COALESCE(GROUP_CONCAT(DISTINCT product_tags.tag ORDER BY product_tags.tag SEPARATOR ', '), \"None\") as tag,
+                    GROUP_CONCAT(product_images.url SEPARATOR ', ') as url,
+                    product.price,
+                    product.is_available,
+                    product.is_visible
+
+                FROM `product`
+
+                LEFT JOIN `products_and_categories`
+                ON `product`.`id` = `products_and_categories`.`product_id`
+
+                LEFT JOIN `product_categories`
+                ON `products_and_categories`.`category_id` = `product_categories`.`id`
+
+                LEFT JOIN `products_and_tags`
+                ON `product`.`id` = `products_and_tags`.`product_id`
+
+                LEFT JOIN `product_tags`
+                ON `products_and_tags`.`tag_id` = `product_tags`.`id`
+
+                LEFT JOIN `product_images`
+                ON `product`.`id` = `product_images`.`product_id`
+
+                GROUP BY product.id, product.title;
+
+            ";
+
+            $statement = $this->conn->prepare($sql);
+        }
+
+        else {
+            // $sql = "SELECT * FROM product WHERE is_visible = :is_visible";
+
+            $sql = "
+
+                SELECT
+                    product.id,
+                    product.naslov,
+                    product.title,
+                    COALESCE(product.description, \"No description.\") as description,
+                    COALESCE(product.opis, \"Nema opisa proizvoda.\") as opis,
+                    COALESCE(GROUP_CONCAT(DISTINCT product_categories.category ORDER BY product_categories.category SEPARATOR ', '), \"None\") as category,
+                    COALESCE(GROUP_CONCAT(DISTINCT product_tags.tag ORDER BY product_tags.tag SEPARATOR ', '), \"None\") as tag,
+                    GROUP_CONCAT(product_images.url SEPARATOR ', ') as url,
+                    product.price,
+                    product.is_available,
+                    product.is_visible
+
+                FROM `product`
+
+                LEFT JOIN `products_and_categories`
+                ON `product`.`id` = `products_and_categories`.`product_id`
+
+                LEFT JOIN `product_categories`
+                ON `products_and_categories`.`category_id` = `product_categories`.`id`
+
+                LEFT JOIN `products_and_tags`
+                ON `product`.`id` = `products_and_tags`.`product_id`
+
+                LEFT JOIN `product_tags`
+                ON `products_and_tags`.`tag_id` = `product_tags`.`id`
+
+                LEFT JOIN `product_images`
+                ON `product`.`id` = `product_images`.`product_id`
+
+                WHERE `is_visible` = 1
+                GROUP BY product.id, product.title
+            ";
+
+            $statement = $this->conn->prepare($sql);
+            //$statement->bindValue(":is_visible", $is_visible, PDO::PARAM_INT);
+            
+        }
+        
+        // $sql = "SELECT * FROM product WHERE is_visible = :is_visible";
+
         $statement->execute();
         $data = [];
         while ($row = $statement->fetch(PDO::FETCH_ASSOC)) {
@@ -23,16 +109,48 @@ class ProductGateway {
         return $data;
     }
 
-    public function createForUser(int $user_id, array $data) : string {
-        $sql = "INSERT INTO product (name, size, is_available, user_id)
-                VALUES (:name, :size, :is_available, :user_id)";
+    public function create(array $data) : string {
+        
+        $this->conn->beginTransaction();
+
+        $sql = "
+            INSERT INTO product (title, naslov, description, opis, price, is_available, is_visible)
+            VALUES (:title, :naslov, :description, :opis, :price, :is_available, :is_visible);
+        ";
+
         $statement = $this->conn->prepare($sql);
-        $statement->bindValue(":name", $data["name"], PDO::PARAM_STR);
-        $statement->bindValue(":size", $data["size"] ?? 0, PDO::PARAM_INT);
+        $statement->bindValue(":title", $data["title"], PDO::PARAM_STR);
+        $statement->bindValue(":naslov", $data["naslov"], PDO::PARAM_STR);
+        $statement->bindValue(":description", ($data["description"] ?? null), PDO::PARAM_STR);
+        $statement->bindValue(":opis", ($data["opis"] ?? null), PDO::PARAM_STR);
+        $statement->bindValue(":price", $data["price"] ?? 0, PDO::PARAM_STR);
         $statement->bindValue(":is_available", (bool) ($data["is_available"] ?? false), PDO::PARAM_BOOL);
-        $statement->bindValue(":user_id", $user_id, PDO::PARAM_INT);
+        $statement->bindValue(":is_visible", (bool) ($data["is_visible"] ?? false), PDO::PARAM_BOOL);
         $statement->execute();
-        return $this->conn->lastInsertId();
+
+        $createdId = $this->conn->lastInsertId();
+        
+        $sql = "INSERT INTO product_images (product_id, url) VALUES";
+        $urlsLength = count($data["url"]) - 1;
+        if (!empty($data["url"])) {
+            foreach($data["url"] as $i=>$u) {
+                if ($urlsLength !== $i) {
+                    $sql = $sql . " (" . $createdId . ", " . "\"" . $u . "\"),";
+                } else {
+                    $sql = $sql . " (" . $createdId . ", " . "\"" . $u . "\");";
+                }
+            }
+        }
+
+        $statement = $this->conn->prepare($sql);
+        $statement->execute();
+
+        // echo "█";
+        // echo "---> " . $sql;
+
+        $this->conn->commit();
+        
+        return $createdId;
     }
 
     public function getForUser(int $user_id, string $id) : array | false {

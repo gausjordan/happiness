@@ -4,7 +4,7 @@ $payload = [
     "sub" => $user["id"],
     "name" => $user["username"],
     "role" => $user["description"],
-    "exp" => time() + 6000
+    "exp" => time() + 60000000 // TODO: Change this, too long for production
 ];
 
 $access_token = $codec->encode($payload);
