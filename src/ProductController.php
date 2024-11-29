@@ -61,8 +61,14 @@ class ProductController {
         switch ($method) {
 
             case "GET": 
-                echo json_encode($this->gateway->getAll($this->user_id, $this->user_role));
-                break;
+                if ($this->user_role === "admin" || $this->user_role === "employee") {
+                    echo json_encode($this->gateway->getAll($this->user_id));
+                    break;
+                } else {
+                    echo json_encode($this->gateway->getAll($this->user_id, true));
+                    break;
+                }                    
+               
 
             case "POST":
                 $data = (array) json_decode(file_get_contents("php://input"), true);
@@ -74,7 +80,11 @@ class ProductController {
                     break;
                 }
 
-                // var_dump($data);
+                if ($this->user_role !== "admin" && $this->user_role !== "employee") {
+                    http_response_code(403);
+                    echo json_encode(["Message: " => "Administrative account required."]);
+                    break;
+                }
 
                 $id = $this->gateway->create($data);
                 

@@ -9,11 +9,10 @@ class ProductGateway {
         $this->conn = $database->getConnection();
     }
 
-    public function getAll(int $user_id, string $role): array {
+    public function getAll(int $user_id, ?bool $showHiddenProducts = false): array {
 
-        if ($role === "admin" || $role === "employee") {
-            //$sql = "SELECT * FROM product";
-
+        if ($showHiddenProducts) {
+            
             $sql = "
 
                 SELECT
@@ -54,7 +53,6 @@ class ProductGateway {
         }
 
         else {
-            // $sql = "SELECT * FROM product WHERE is_visible = :is_visible";
 
             $sql = "
 
@@ -93,12 +91,9 @@ class ProductGateway {
             ";
 
             $statement = $this->conn->prepare($sql);
-            //$statement->bindValue(":is_visible", $is_visible, PDO::PARAM_INT);
             
         }
         
-        // $sql = "SELECT * FROM product WHERE is_visible = :is_visible";
-
         $statement->execute();
         $data = [];
         while ($row = $statement->fetch(PDO::FETCH_ASSOC)) {
@@ -144,9 +139,6 @@ class ProductGateway {
 
         $statement = $this->conn->prepare($sql);
         $statement->execute();
-
-        // echo "█";
-        // echo "---> " . $sql;
 
         $this->conn->commit();
         
