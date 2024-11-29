@@ -11,89 +11,43 @@ class ProductGateway {
 
     public function getAll(int $user_id, ?bool $showHiddenProducts = false): array {
 
-        if ($showHiddenProducts) {
-            
-            $sql = "
+        $sql = "
 
-                SELECT
-                    product.id,
-                    product.naslov,
-                    product.title,
-                    COALESCE(product.description, \"No description.\") as description,
-                    COALESCE(product.opis, \"Nema opisa proizvoda.\") as opis,
-                    COALESCE(GROUP_CONCAT(DISTINCT product_categories.category ORDER BY product_categories.category SEPARATOR ', '), \"None\") as category,
-                    COALESCE(GROUP_CONCAT(DISTINCT product_tags.tag ORDER BY product_tags.tag SEPARATOR ', '), \"None\") as tag,
-                    GROUP_CONCAT(product_images.url SEPARATOR ', ') as url,
-                    product.price,
-                    product.is_available,
-                    product.is_visible
+            SELECT
+                product.id,
+                product.naslov,
+                product.title,
+                COALESCE(product.description, \"No description.\") as description,
+                COALESCE(product.opis, \"Nema opisa proizvoda.\") as opis,
+                COALESCE(GROUP_CONCAT(DISTINCT product_categories.category ORDER BY product_categories.category SEPARATOR ', '), \"None\") as category,
+                COALESCE(GROUP_CONCAT(DISTINCT product_tags.tag ORDER BY product_tags.tag SEPARATOR ', '), \"None\") as tag,
+                GROUP_CONCAT(product_images.url SEPARATOR ', ') as url,
+                product.price,
+                product.is_available,
+                product.is_visible
 
-                FROM `product`
+            FROM `product`
 
-                LEFT JOIN `products_and_categories`
-                ON `product`.`id` = `products_and_categories`.`product_id`
+            LEFT JOIN `products_and_categories`
+            ON `product`.`id` = `products_and_categories`.`product_id`
 
-                LEFT JOIN `product_categories`
-                ON `products_and_categories`.`category_id` = `product_categories`.`id`
+            LEFT JOIN `product_categories`
+            ON `products_and_categories`.`category_id` = `product_categories`.`id`
 
-                LEFT JOIN `products_and_tags`
-                ON `product`.`id` = `products_and_tags`.`product_id`
+            LEFT JOIN `products_and_tags`
+            ON `product`.`id` = `products_and_tags`.`product_id`
 
-                LEFT JOIN `product_tags`
-                ON `products_and_tags`.`tag_id` = `product_tags`.`id`
+            LEFT JOIN `product_tags`
+            ON `products_and_tags`.`tag_id` = `product_tags`.`id`
 
-                LEFT JOIN `product_images`
-                ON `product`.`id` = `product_images`.`product_id`
+            LEFT JOIN `product_images`
+            ON `product`.`id` = `product_images`.`product_id`
 
-                GROUP BY product.id, product.title;
+            GROUP BY product.id, product.title;
 
-            ";
+        ";
 
-            $statement = $this->conn->prepare($sql);
-        }
-
-        else {
-
-            $sql = "
-
-                SELECT
-                    product.id,
-                    product.naslov,
-                    product.title,
-                    COALESCE(product.description, \"No description.\") as description,
-                    COALESCE(product.opis, \"Nema opisa proizvoda.\") as opis,
-                    COALESCE(GROUP_CONCAT(DISTINCT product_categories.category ORDER BY product_categories.category SEPARATOR ', '), \"None\") as category,
-                    COALESCE(GROUP_CONCAT(DISTINCT product_tags.tag ORDER BY product_tags.tag SEPARATOR ', '), \"None\") as tag,
-                    GROUP_CONCAT(product_images.url SEPARATOR ', ') as url,
-                    product.price,
-                    product.is_available,
-                    product.is_visible
-
-                FROM `product`
-
-                LEFT JOIN `products_and_categories`
-                ON `product`.`id` = `products_and_categories`.`product_id`
-
-                LEFT JOIN `product_categories`
-                ON `products_and_categories`.`category_id` = `product_categories`.`id`
-
-                LEFT JOIN `products_and_tags`
-                ON `product`.`id` = `products_and_tags`.`product_id`
-
-                LEFT JOIN `product_tags`
-                ON `products_and_tags`.`tag_id` = `product_tags`.`id`
-
-                LEFT JOIN `product_images`
-                ON `product`.`id` = `product_images`.`product_id`
-
-                WHERE `is_visible` = 1
-                GROUP BY product.id, product.title
-            ";
-
-            $statement = $this->conn->prepare($sql);
-            
-        }
-        
+        $statement = $this->conn->prepare($sql);
         $statement->execute();
         $data = [];
         while ($row = $statement->fetch(PDO::FETCH_ASSOC)) {
