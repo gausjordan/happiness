@@ -1,19 +1,47 @@
-DODAJ U PAYLOAD rolu, to je najsuvislije na koncu.
+< Select svega >
 
-
-Izbaci sve:
-
-SELECT *
+SELECT
+    product.id,
+    product.naslov,
+    product.title,
+    COALESCE(product.description, "No description.") as description,
+    COALESCE(product.opis, "Nema opisa proizvoda.") as opis,
+    COALESCE(GROUP_CONCAT(DISTINCT product_categories.category ORDER BY product_categories.category SEPARATOR ', '), "None") as category,
+    COALESCE(GROUP_CONCAT(DISTINCT product_tags.tag ORDER BY product_tags.tag SEPARATOR ', '), "None") as tag,
+    GROUP_CONCAT(product_images.url SEPARATOR ', ') as url,
+    product.price,
+    product.is_available,
+    product.is_visible
 FROM `product`
-
-INNER JOIN `products_and_categories`
+LEFT JOIN `products_and_categories`
 ON `product`.`id` = `products_and_categories`.`product_id`
-
-INNER JOIN `product_categories`
+LEFT JOIN `product_categories`
 ON `products_and_categories`.`category_id` = `product_categories`.`id`
-
-INNER JOIN `products_and_tags`
+LEFT JOIN `products_and_tags`
 ON `product`.`id` = `products_and_tags`.`product_id`
+LEFT JOIN `product_tags`
+ON `products_and_tags`.`tag_id` = `product_tags`.`id`
+LEFT JOIN `product_images`
+ON `product`.`id` = `product_images`.`product_id`
+GROUP BY product.id, product.title;
 
-INNER JOIN `product_tags`
-ON `products_and_tags`.`tag_id` = `product_tags`.`id`;
+
+<Meh>
+
+INSERT INTO products_and_tags (product_id, tag_id)
+SELECT 96, tag_id
+FROM products_and_tags
+INNER JOIN product_tags
+ON products_and_tags.tag_id = product_tags.id
+WHERE tag = "Koža" LIMIT 1;
+
+
+< Bolje >
+
+INSERT INTO products_and_tags (product_id, tag_id)
+VALUES(96, (
+            SELECT tag_id t
+            FROM products_and_tags pat
+            INNER JOIN product_tags pt
+            ON pat.tag_id = pt.id
+            WHERE tag = "Čelik" LIMIT 1));

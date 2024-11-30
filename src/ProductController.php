@@ -8,13 +8,28 @@ class ProductController {
     public function __construct(private ProductGateway $gateway, private int $user_id, private string $user_role) {}
     
     public function processRequest(string $method, ?string $id): void {
-        if ($id) { $this->processResourceRequest($method, $id);  }
-        else { $this->processCollectionRequest($method); }
+        if ($id) {
+            if (!ctype_digit($id)) {
+                http_response_code(404);
+                echo json_encode(["message" => "Product id must be a number."]);
+                exit;
+            }
+            $this->processResourceRequest($method, $id);
+        }
+        else {
+            $this->processCollectionRequest($method);
+        }
     }
 
     private function processResourceRequest(string $method, string $id): void {
         
-        $product = $this->gateway->getForUser($this->user_id, $id);
+        if ($this->user_role !== "admin" && $this->user_role !== "employee") {
+            $product = $this->gateway->get($id, true);
+        } else {
+            $product = $this->gateway->get($id);
+        }
+        
+        
 
         if (! $product) {
             $this->respondNotFound($id);
@@ -37,7 +52,7 @@ class ProductController {
                     break;
                 }
 
-                $rows = $this->gateway->updateForUser($this->user_id, $product, $data);
+                $rows = $this->gateway->update($product, $data);
                 echo json_encode([
                     "message" => "Product $id updated",
                     "rows" => $rows
@@ -45,7 +60,7 @@ class ProductController {
                 break;
 
             case "DELETE":
-                $rows = $this->gateway->deleteForUser($this->user_id, $id);
+                $rows = $this->gateway->delete($this->user_id, $id);
                 echo json_encode([
                     "message" => "Product $id deleted",
                     "rows" => $rows
@@ -63,12 +78,12 @@ class ProductController {
             case "GET": 
                 if ($this->user_role === "admin" || $this->user_role === "employee") {
                     echo json_encode($this->gateway->getAll($this->user_id));
+                    // var_dump($this->gateway->getAll($this->user_id));
                     break;
                 } else {
                     echo json_encode($this->gateway->getAll($this->user_id, true));
                     break;
                 }                    
-               
 
             case "POST":
                 $data = (array) json_decode(file_get_contents("php://input"), true);
@@ -101,7 +116,7 @@ class ProductController {
         $errors = [];
 
         if ($is_new && (empty($data["title"]) || empty($data["naslov"]) ) ) {
-            $errors[] = "Title / naslov is required.";
+            $errors[] = "'title' and 'naslov' are required.";
         }
 
         if (empty($data["price"])) {
