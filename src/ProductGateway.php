@@ -19,9 +19,9 @@ class ProductGateway {
                 product.title,
                 COALESCE(product.description, \"No description.\") as description,
                 COALESCE(product.opis, \"Nema opisa proizvoda.\") as opis,
-                COALESCE(GROUP_CONCAT(DISTINCT product_categories.category ORDER BY product_categories.category SEPARATOR ', '), \"None\") as category,
-                COALESCE(GROUP_CONCAT(DISTINCT product_tags.tag ORDER BY product_tags.tag SEPARATOR ', '), \"None\") as tag,
-                GROUP_CONCAT(product_images.url SEPARATOR ', ') as url,
+                GROUP_CONCAT(DISTINCT product_categories.category ORDER BY product_categories.category SEPARATOR ', ') as category,
+                GROUP_CONCAT(DISTINCT product_tags.tag ORDER BY product_tags.tag SEPARATOR ', ') as tag,
+                GROUP_CONCAT(DISTINCT product_images.url SEPARATOR ', ') as url,
                 product.price,
                 product.is_available,
                 product.is_visible
@@ -46,6 +46,7 @@ class ProductGateway {
         while ($row = $statement->fetch(PDO::FETCH_ASSOC)) {
             $row["is_visible"] = (bool) $row["is_visible"];
             $row["is_available"] = (bool) $row["is_available"];
+            $row["price"] = (float) $row["price"];
             $row["tag"] = $row["tag"] == null ? [] : explode(", ", $row["tag"]);
             $row["url"] = $row["url"] == null ? [] : explode(", ", $row["url"]);
             $row["category"] = $row["category"] == null ? [] : explode(", ", $row["category"]);
@@ -153,7 +154,7 @@ class ProductGateway {
                 COALESCE(product.opis, \"Nema opisa proizvoda.\") as opis,
                 COALESCE(GROUP_CONCAT(DISTINCT product_categories.category ORDER BY product_categories.category SEPARATOR ', '), \"None\") as category,
                 COALESCE(GROUP_CONCAT(DISTINCT product_tags.tag ORDER BY product_tags.tag SEPARATOR ', '), \"None\") as tag,
-                GROUP_CONCAT(product_images.url SEPARATOR ', ') as url,
+                GROUP_CONCAT(DISTINCT product_images.url SEPARATOR ', ') as url,
                 product.price,
                 product.is_available,
                 product.is_visible
@@ -181,6 +182,7 @@ class ProductGateway {
         while ($row = $statement->fetch(PDO::FETCH_ASSOC)) {
             $row["is_visible"] = (bool) $row["is_visible"];
             $row["is_available"] = (bool) $row["is_available"];
+            $row["price"] = (float) $row["price"];
             $row["tag"] = $row["tag"] == null ? [] : explode(", ", $row["tag"]);
             $row["url"] = $row["url"] == null ? [] : explode(", ", $row["url"]);
             $row["category"] = $row["category"] == null ? [] : explode(", ", $row["category"]);
@@ -194,43 +196,35 @@ class ProductGateway {
         $this->conn->beginTransaction();
 
         $sql = "
-            UPDATE product (title, naslov, description, opis, price, is_available, is_visible)
-            VALUES (:title, :naslov, :description, :opis, :price, :is_available, :is_visible)
-            WHERE product.id = :id
+            UPDATE product
+                SET title = :title,
+                    naslov = :naslov,
+                    description = :description,
+                    opis = :opis,
+                    price = :price,
+                    is_available = :is_available,
+                    is_visible = :is_visible
+            WHERE product.id = :id;
         ";
 
-        // TODO - Sto ako su i new old vrijednosti bile null?
         $statement = $this->conn->prepare($sql);
-        $statement->bindValue(":title", $new["title"] ?? $old["title"], PDO::PARAM_STR);
-        $statement->bindValue(":naslov", $new["naslov"] ?? $old["naslov"], PDO::PARAM_STR);
-        $statement->bindValue(":description", $new["description"] ?? $old["description"], PDO::PARAM_STR);
-        $statement->bindValue(":opis", $new["opis"] ?? $old["opis"], PDO::PARAM_STR);
-        $statement->bindValue(":price", $new["price"] ?? $old["price"], PDO::PARAM_STR);
-        $statement->bindValue(":is_available", $new["is_available"] ?? $old["is_available"], PDO::PARAM_BOOL);
-        $statement->bindValue(":is_visible", $new["is_visible"] ?? $old["is_visible"], PDO::PARAM_BOOL);
-
+        $statement->bindValue(":id", $old[0]["id"], PDO::PARAM_INT);
+        $statement->bindValue(":title", $new["title"] ?? $old[0]["title"], PDO::PARAM_STR);
+        $statement->bindValue(":naslov", $new["naslov"] ?? $old[0]["naslov"], PDO::PARAM_STR);
+        $statement->bindValue(":description", $new["description"] ?? $old[0]["description"], PDO::PARAM_STR);
+        $statement->bindValue(":opis", $new["opis"] ?? $old[0]["opis"], PDO::PARAM_STR);
+        $statement->bindValue(":price", $new["price"] ?? $old[0]["price"], PDO::PARAM_STR);
+        $statement->bindValue(":is_available", $new["is_available"] ?? $old[0]["is_available"], PDO::PARAM_BOOL);
+        $statement->bindValue(":is_visible", $new["is_visible"] ?? $old[0]["is_visible"], PDO::PARAM_BOOL);
         $statement->execute();
         $productsRowCount = $statement->rowCount();
-        
-        /*
-        $sql = "INSERT INTO product_images (product_id, url) VALUES";
-        $urlsLength = count($data["url"]) - 1;
-        if (!empty($data["url"])) {
-            foreach($data["url"] as $i=>$u) {
-                if ($urlsLength !== $i) {
-                    $sql = $sql . " (" . $createdId . ", " . "\"" . $u . "\"),";
-                } else {
-                    $sql = $sql . " (" . $createdId . ", " . "\"" . $u . "\");";
-                }
-            }
-        }
-        */
 
-        $statement = $this->conn->prepare($sql);
-        $statement->execute();
+        // TODO - include: image, category, and tag updates
+        if (!empty($new["url"])) {
+            echo sizeof($new["url"]);
+        }
 
         $this->conn->commit();
-        
         return $productsRowCount;
     }
 

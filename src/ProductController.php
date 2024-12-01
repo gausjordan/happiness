@@ -5,7 +5,11 @@
  */
 class ProductController {
     
-    public function __construct(private ProductGateway $gateway, private int $user_id, private string $user_role) {}
+    public function __construct(private ProductGateway $gateway,
+                                private int $user_id,
+                                private string $user_role) {
+
+    }
     
     public function processRequest(string $method, ?string $id): void {
         if ($id) {
@@ -27,9 +31,7 @@ class ProductController {
             $product = $this->gateway->get($id, true);
         } else {
             $product = $this->gateway->get($id);
-        }
-        
-        
+        }     
 
         if (! $product) {
             $this->respondNotFound($id);
@@ -45,7 +47,7 @@ class ProductController {
             case "PATCH":
                 $data = (array) json_decode(file_get_contents("php://input"), true);
                 $errors = $this->getValidationErrors($data, false);
-                
+
                 if (! empty($errors)) {
                     http_response_code(422);
                     echo json_encode(["errors" => $errors]);
@@ -78,17 +80,21 @@ class ProductController {
             case "GET": 
                 if ($this->user_role === "admin" || $this->user_role === "employee") {
                     echo json_encode($this->gateway->getAll($this->user_id));
-                    // var_dump($this->gateway->getAll($this->user_id));
                     break;
                 } else {
                     echo json_encode($this->gateway->getAll($this->user_id, true));
                     break;
-                }                    
+                }
 
             case "POST":
-                $data = (array) json_decode(file_get_contents("php://input"), true);
+
+                // $data = (array) json_decode(file_get_contents("php://input"), true);
+                $data = json_decode($_POST["metadata"], true);
+
                 $errors = $this->getValidationErrors($data);
                 
+                // var_dump($_FILES);
+
                 if (! empty($errors)) {
                     http_response_code(422);
                     echo json_encode(["errors" => $errors]);
@@ -104,6 +110,7 @@ class ProductController {
                 $id = $this->gateway->create($data);
                 
                 $this->respondCreated($id);
+                
                 break;
             
             default:
@@ -111,15 +118,32 @@ class ProductController {
         }
     }
 
+    private function sanitizeFilename(string $filename) : string {
+        $filename = mb_ereg_replace("([^\w\s\d\-_~,\[\]\(\).])", '', $filename);
+        $filename = mb_ereg_replace("([\.]{2,})", '', $filename);
+        return $filename;
+    }
+
+    private function sanitizeString(string $string) : string {
+        return htmlspecialchars($string);
+    }
+
     private function getValidationErrors(array $data, bool $is_new = true): array {
 
         $errors = [];
+
+        foreach($data as $d) {
+
+            print_r($d);
+
+        }
+        
 
         if ($is_new && (empty($data["title"]) || empty($data["naslov"]) ) ) {
             $errors[] = "'title' and 'naslov' are required.";
         }
 
-        if (empty($data["price"])) {
+        if ($is_new == true && empty($data["price"])) {
             if (!isset($data["price"])) {
                 $errors[] = "Price is required.";
             }
