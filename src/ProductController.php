@@ -93,8 +93,6 @@ class ProductController {
 
                 $errors = $this->getValidationErrors($data);
                 
-                // var_dump($_FILES);
-
                 if (! empty($errors)) {
                     http_response_code(422);
                     echo json_encode(["errors" => $errors]);
@@ -132,10 +130,9 @@ class ProductController {
 
         $errors = [];
 
-        foreach($data as $d) {
+        var_dump($_FILES["files"]);
 
-            print_r($d);
-
+        foreach($_FILES as $file) {
         }
         
 

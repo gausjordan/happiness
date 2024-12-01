@@ -137,8 +137,8 @@ class ProductGateway {
             }
         }
 
-        // $this->conn->rollBack();
-        $this->conn->commit();
+        $this->conn->rollBack();
+        // $this->conn->commit();
         return $createdId;        
 
     }
