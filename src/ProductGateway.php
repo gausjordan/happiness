@@ -188,7 +188,7 @@ class ProductGateway {
             $row["category"] = $row["category"] == null ? [] : explode(", ", $row["category"]);
             $data[] = $row;
         }
-        return $data;
+        return $data[0];
     }
 
     public function update(array $old, array $new): int {

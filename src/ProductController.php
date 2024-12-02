@@ -88,8 +88,8 @@ class ProductController {
 
             case "POST":
 
-                // $data = (array) json_decode(file_get_contents("php://input"), true);
-                $data = json_decode($_POST["metadata"], true);
+                $data = (array) json_decode(file_get_contents("php://input"), true);
+                // $data = json_decode($_POST["metadata"], true);
 
                 $errors = $this->getValidationErrors($data);
                 
@@ -116,6 +116,61 @@ class ProductController {
         }
     }
 
+    public function processImageRequest(string $method, ?string $id) {
+
+        if ($this->user_role !== "employee" && $this->user_role !== "admin") {
+            http_response_code(403);
+            echo json_encode(["Message: " => "Administrative account required."]);
+            exit;
+        }
+
+        switch ($method) {
+            
+            case "POST":
+                
+                var_dump($_FILES);
+
+                define('ALLOWED_TYPES', ['image/jpeg']);
+
+                if (!isset($_FILES['file']) || $_FILES['file']['error'] !== UPLOAD_ERR_OK) {
+                    http_response_code(400);
+                    echo json_encode(["Message: " => "No file uploaded or upload error."]);
+                    exit;
+                }
+
+                $file = $_FILES['file'];
+
+                $fileInfo = finfo_open(FILEINFO_MIME_TYPE);
+                $mimeType = finfo_file($fileInfo, $file['tmp_name']);
+                finfo_close($fileInfo);
+            
+                if (!in_array($mimeType, ALLOWED_TYPES)) {
+                    http_response_code(400);
+                    echo json_encode(["Message: " => "Invalid file type. Only JPEG images are allowed."]);
+                    exit;
+                }
+
+                if ($file['size'] > 10 * 1024 * 1024) {
+                    http_response_code(400);
+                    echo json_encode(["error" => "File size exceeds the 10 MB limit."]);
+                    exit;
+                }
+
+                $rawFilename = $this->sanitizeFilename($file['name']);
+                $fileName = uniqid(substr($rawFilename, 0, strripos($rawFilename, '.')) . "_", false) . '.jpg';
+                echo "Posting image... " . $fileName;
+                break;
+            
+            case "DELETE":
+                echo "Deleting image...";
+                break;
+            
+            default:
+                $this->respondMethodNotAllowed("POST, DELETE");
+        }
+
+    }
+
     private function sanitizeFilename(string $filename) : string {
         $filename = mb_ereg_replace("([^\w\s\d\-_~,\[\]\(\).])", '', $filename);
         $filename = mb_ereg_replace("([\.]{2,})", '', $filename);
@@ -129,12 +184,6 @@ class ProductController {
     private function getValidationErrors(array $data, bool $is_new = true): array {
 
         $errors = [];
-
-        var_dump($_FILES["files"]);
-
-        foreach($_FILES as $file) {
-        }
-        
 
         if ($is_new && (empty($data["title"]) || empty($data["naslov"]) ) ) {
             $errors[] = "'title' and 'naslov' are required.";
