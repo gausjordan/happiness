@@ -1,6 +1,5 @@
 ## Ignore everything in the db directory new
-sqldata/bin/*
-sgiqldata/backup/*
+# sqldata/bin/
 
 ## But don't ignore the happinessdb folder and its contents
 #!db/happinessdb/
