@@ -7,9 +7,7 @@ class ProductController {
     
     public function __construct(private ProductGateway $gateway,
                                 private int $user_id,
-                                private string $user_role) {
-
-    }
+                                private string $user_role) { }
     
     public function processRequest(string $method, ?string $id): void {
         if ($id) {
@@ -31,7 +29,7 @@ class ProductController {
             $product = $this->gateway->get($id, true);
         } else {
             $product = $this->gateway->get($id);
-        }     
+        }
 
         if (! $product) {
             $this->respondNotFound($id);
@@ -45,8 +43,25 @@ class ProductController {
                 break;
 
             case "PATCH":
+
+                if ($this->user_role !== "admin" && $this->user_role !== "employee") {
+                    http_response_code(403);
+                    echo json_encode(["Message: " => "Administrative account required."]);
+                    break;
+                }
+
                 $data = (array) json_decode(file_get_contents("php://input"), true);
                 $errors = $this->getValidationErrors($data, false);
+
+                if (!empty($data["url"])) {
+                    foreach($data["url"] as $url) {
+                        $fileName = $this->sanitizeFilename($url);
+                        if (!file_exists(".." . DIRECTORY_SEPARATOR . "img" . DIRECTORY_SEPARATOR . $fileName)) {
+                            http_response_code(404);
+                            $errors[] = "Product update failed. Missing image file " . $fileName;
+                        }
+                    }
+                }
 
                 if (! empty($errors)) {
                     http_response_code(422);
@@ -54,21 +69,34 @@ class ProductController {
                     break;
                 }
 
-                $rows = $this->gateway->update($product, $data);
+                $tablesUpdated = $this->gateway->update($product, $data);
                 echo json_encode([
                     "message" => "Product $id updated",
-                    "rows" => $rows
+                    "tables updated" => $tablesUpdated
                 ]);
                 break;
 
             case "DELETE":
-                $rows = $this->gateway->delete($this->user_id, $id);
-                echo json_encode([
-                    "message" => "Product $id deleted",
-                    "rows" => $rows
-                ]);
-                break;
 
+                if ($this->user_role !== "admin" && $this->user_role !== "employee") {
+                    http_response_code(403);
+                    echo json_encode(["Message: " => "Administrative account required."]);
+                    break;
+                } else {
+                    $product = $this->gateway->get($id, true);
+                    if (!$product) {
+                        http_response_code(404);
+                        echo json_encode(["Message: " => "Product $id does not exist."]);
+                        break;
+                    }
+                    
+                    $rows = $this->gateway->delete($id);
+                    echo json_encode([
+                        "message" => "Product $id deleted",
+                        "rows" => $rows
+                    ]);
+                    break;
+                }
             default:
                 $this->respondMethodNotAllowed("GET, PATCH, DELETE");
         }
@@ -89,8 +117,7 @@ class ProductController {
             case "POST":
 
                 $data = (array) json_decode(file_get_contents("php://input"), true);
-                // $data = json_decode($_POST["metadata"], true);
-
+                
                 $errors = $this->getValidationErrors($data);
                 
                 if (! empty($errors)) {
@@ -105,12 +132,26 @@ class ProductController {
                     break;
                 }
 
-                $id = $this->gateway->create($data);
-                
-                $this->respondCreated($id);
-                
+                $failure = false;
+
+                foreach($data["url"] as $url) {
+                    $fileName = $this->sanitizeFilename($url);
+                    if (!file_exists(".." . DIRECTORY_SEPARATOR . "img" . DIRECTORY_SEPARATOR . $fileName)) {
+                        http_response_code(404);
+                        echo json_encode(["Message: " => "Product insertion failed. Missing image " . $fileName]);
+                        $failure = true;
+                        break;
+                        exit;
+                    }
+                }
+
+                if (!$failure) {
+                    $id = $this->gateway->create($data);
+                    $this->respondCreated($id);
+                }
+
                 break;
-            
+                            
             default:
                 $this->respondMethodNotAllowed("GET, POST");
         }
@@ -128,8 +169,6 @@ class ProductController {
             
             case "POST":
                 
-                var_dump($_FILES);
-
                 define('ALLOWED_TYPES', ['image/jpeg']);
 
                 if (!isset($_FILES['file']) || $_FILES['file']['error'] !== UPLOAD_ERR_OK) {
@@ -158,12 +197,49 @@ class ProductController {
 
                 $rawFilename = $this->sanitizeFilename($file['name']);
                 $fileName = uniqid(substr($rawFilename, 0, strripos($rawFilename, '.')) . "_", false) . '.jpg';
-                echo "Posting image... " . $fileName;
+
+                if (!move_uploaded_file($file['tmp_name'], ".." . DIRECTORY_SEPARATOR . "img" . DIRECTORY_SEPARATOR . $fileName)) {
+                    http_response_code(400);
+                    echo json_encode(["Message: " => "Unable to save uploaded file."]);
+                    exit;
+                } else {
+                    http_response_code(201);
+                    echo json_encode(["Message: " => "Image resource " . $fileName . " created."]);
+                    exit;
+                }
+
                 break;
             
             case "DELETE":
-                echo "Deleting image...";
+                
+                $fileName = $this->sanitizeFilename($id);
+                if (!file_exists(".." . DIRECTORY_SEPARATOR . "img" . DIRECTORY_SEPARATOR . $fileName)) {
+                    http_response_code(404);
+                    echo json_encode(["Message: " => "File not found."]);
+                    exit;
+                }
+                if (!unlink(".." . DIRECTORY_SEPARATOR . "img" . DIRECTORY_SEPARATOR . $fileName)) {
+                    http_response_code(500);
+                    echo json_encode(["Message: " => "An error occurred while attempting to delete the file."]);
+                    exit;
+                } else {
+                    http_response_code(200);
+                    echo json_encode(["Message: " => "Image resource " . $fileName . " deleted."]);
+                    exit;
+                }
                 break;
+            
+            case "GET":
+                $fileName = $this->sanitizeFilename($id);
+                if (!file_exists(".." . DIRECTORY_SEPARATOR . "img" . DIRECTORY_SEPARATOR . $fileName)) {
+                    http_response_code(404);
+                    echo json_encode(["Message: " => "File not found."]);
+                    exit;
+                } else {
+                    http_response_code(200);
+                    echo json_encode(["Message: " => "File exists."]);
+                    exit;
+                }
             
             default:
                 $this->respondMethodNotAllowed("POST, DELETE");
@@ -172,7 +248,7 @@ class ProductController {
     }
 
     private function sanitizeFilename(string $filename) : string {
-        $filename = mb_ereg_replace("([^\w\s\d\-_~,\[\]\(\).])", '', $filename);
+        $filename = mb_ereg_replace("([^(a-zA-Z0-9šđčćž\s\d\-_~,\[\]\(\).])", '', $filename, 'i');
         $filename = mb_ereg_replace("([\.]{2,})", '', $filename);
         return $filename;
     }

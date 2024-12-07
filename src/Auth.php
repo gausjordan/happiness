@@ -8,7 +8,7 @@ class Auth {
     private int $user_id;
     private string $user_role;
  
-    public function __construct (private UserGateway $user_gateway, private JWTCodec $codec) {}
+    public function __construct (private UserGateway $user_gateway, private JWTCodec $codec) { }
  
     public function getUserId(): int {
         return $this->user_id;

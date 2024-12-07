@@ -9,6 +9,7 @@ class ProductGateway {
         $this->conn = $database->getConnection();
     }
 
+
     public function getAll(int $user_id, ?bool $showHiddenProducts = false): array {
 
         $sql = "
@@ -19,9 +20,9 @@ class ProductGateway {
                 product.title,
                 COALESCE(product.description, \"No description.\") as description,
                 COALESCE(product.opis, \"Nema opisa proizvoda.\") as opis,
-                GROUP_CONCAT(DISTINCT product_categories.category ORDER BY product_categories.category SEPARATOR ', ') as category,
-                GROUP_CONCAT(DISTINCT product_tags.tag ORDER BY product_tags.tag SEPARATOR ', ') as tag,
-                GROUP_CONCAT(DISTINCT product_images.url SEPARATOR ', ') as url,
+                COALESCE(GROUP_CONCAT(DISTINCT product_categories.category ORDER BY products_and_categories.id SEPARATOR ', '), \"None\") as category,
+                COALESCE(GROUP_CONCAT(DISTINCT product_tags.tag ORDER BY products_and_tags.id SEPARATOR ', '), \"None\") as tag,
+                GROUP_CONCAT(DISTINCT product_images.url ORDER BY product_images.id SEPARATOR ', ') as url,
                 product.price,
                 product.is_available,
                 product.is_visible
@@ -56,7 +57,10 @@ class ProductGateway {
         return $data;
     }
 
+
     public function create(array $data) : string {
+
+        $failure = false;
         
         $this->conn->beginTransaction();
 
@@ -93,6 +97,7 @@ class ProductGateway {
 
         if (!empty($data["tag"])) {
             $tagCounter = sizeof($data["tag"]) - 1;
+            $tagsNumber = $tagCounter;
             while ($tagCounter >= 0) {
                 $sql = "
                     INSERT INTO products_and_tags (product_id, tag_id)
@@ -107,7 +112,7 @@ class ProductGateway {
                 ";
         
                 $statement = $this->conn->prepare($sql);
-                $statement->bindValue(":tag_name", ($data["tag"][$tagCounter] ?? null), PDO::PARAM_STR);
+                $statement->bindValue(":tag_name", ($data["tag"][$tagsNumber-$tagCounter] ?? null), PDO::PARAM_STR);
                 $statement->bindValue(":product_id", ($createdId ?? null), PDO::PARAM_INT);
                 $statement->execute();
                 $tagCounter--;
@@ -116,6 +121,7 @@ class ProductGateway {
 
         if (!empty($data["category"])) {
             $categoryCounter = sizeof($data["category"]) - 1;
+            $categoryNumber = $categoryCounter;
             while ($categoryCounter >= 0) {
                 $sql = "
                     INSERT INTO products_and_categories (product_id, category_id)
@@ -130,7 +136,7 @@ class ProductGateway {
                 ";
         
                 $statement = $this->conn->prepare($sql);
-                $statement->bindValue(":category_name", ($data["category"][$categoryCounter] ?? null), PDO::PARAM_STR);
+                $statement->bindValue(":category_name", ($data["category"][$categoryNumber-$categoryCounter] ?? null), PDO::PARAM_STR);
                 $statement->bindValue(":product_id", ($createdId ?? null), PDO::PARAM_INT);
                 $statement->execute();
                 $categoryCounter--;
@@ -143,6 +149,7 @@ class ProductGateway {
 
     }
 
+
     public function get(string $productId, ?bool $showHiddenProducts = false) : array | false {
         $sql = "
 
@@ -152,9 +159,9 @@ class ProductGateway {
                 product.title,
                 COALESCE(product.description, \"No description.\") as description,
                 COALESCE(product.opis, \"Nema opisa proizvoda.\") as opis,
-                COALESCE(GROUP_CONCAT(DISTINCT product_categories.category ORDER BY product_categories.category SEPARATOR ', '), \"None\") as category,
-                COALESCE(GROUP_CONCAT(DISTINCT product_tags.tag ORDER BY product_tags.tag SEPARATOR ', '), \"None\") as tag,
-                GROUP_CONCAT(DISTINCT product_images.url SEPARATOR ', ') as url,
+                COALESCE(GROUP_CONCAT(DISTINCT product_categories.category ORDER BY products_and_categories.id SEPARATOR ', '), \"None\") as category,
+                COALESCE(GROUP_CONCAT(DISTINCT product_tags.tag ORDER BY products_and_tags.id SEPARATOR ', '), \"None\") as tag,
+                GROUP_CONCAT(DISTINCT product_images.url ORDER BY product_images.id SEPARATOR ', ') as url,
                 product.price,
                 product.is_available,
                 product.is_visible
@@ -188,13 +195,12 @@ class ProductGateway {
             $row["category"] = $row["category"] == null ? [] : explode(", ", $row["category"]);
             $data[] = $row;
         }
-        return $data[0];
+        return $data ? $data[0] : false;
     }
 
+
     public function update(array $old, array $new): int {
-
         $this->conn->beginTransaction();
-
         $sql = "
             UPDATE product
                 SET title = :title,
@@ -206,33 +212,107 @@ class ProductGateway {
                     is_visible = :is_visible
             WHERE product.id = :id;
         ";
-
         $statement = $this->conn->prepare($sql);
-        $statement->bindValue(":id", $old[0]["id"], PDO::PARAM_INT);
-        $statement->bindValue(":title", $new["title"] ?? $old[0]["title"], PDO::PARAM_STR);
-        $statement->bindValue(":naslov", $new["naslov"] ?? $old[0]["naslov"], PDO::PARAM_STR);
-        $statement->bindValue(":description", $new["description"] ?? $old[0]["description"], PDO::PARAM_STR);
-        $statement->bindValue(":opis", $new["opis"] ?? $old[0]["opis"], PDO::PARAM_STR);
-        $statement->bindValue(":price", $new["price"] ?? $old[0]["price"], PDO::PARAM_STR);
-        $statement->bindValue(":is_available", $new["is_available"] ?? $old[0]["is_available"], PDO::PARAM_BOOL);
-        $statement->bindValue(":is_visible", $new["is_visible"] ?? $old[0]["is_visible"], PDO::PARAM_BOOL);
+        $statement->bindValue(":id", $old["id"], PDO::PARAM_INT);
+        $statement->bindValue(":title", $new["title"] ?? $old["title"], PDO::PARAM_STR);
+        $statement->bindValue(":naslov", $new["naslov"] ?? $old["naslov"], PDO::PARAM_STR);
+        $statement->bindValue(":description", $new["description"] ?? $old["description"], PDO::PARAM_STR);
+        $statement->bindValue(":opis", $new["opis"] ?? $old["opis"], PDO::PARAM_STR);
+        $statement->bindValue(":price", $new["price"] ?? $old["price"], PDO::PARAM_STR);
+        $statement->bindValue(":is_available", $new["is_available"] ?? $old["is_available"], PDO::PARAM_BOOL);
+        $statement->bindValue(":is_visible", $new["is_visible"] ?? $old["is_visible"], PDO::PARAM_BOOL);
         $statement->execute();
         $productsRowCount = $statement->rowCount();
+        
+        if (isset($new["tag"]) && ($old["tag"] !== $new["tag"])) {
+            $sql = "DELETE FROM products_and_tags WHERE products_and_tags.product_id = :product_id" ;
+            $statement = $this->conn->prepare($sql);
+            $statement->bindValue(":product_id", $old["id"], PDO::PARAM_INT);
+            $statement->execute();
+            $tagCounter = sizeof($new["tag"]) - 1;
+            $tagNumber = $tagCounter;
+            while ($tagCounter >= 0) {
+                $sql = "
+                    INSERT INTO products_and_tags (product_id, tag_id)
+                    VALUES(:product_id, (
+                                            SELECT tag_id t
+                                            FROM products_and_tags pat
+                                            INNER JOIN product_tags pt
+                                            ON pat.tag_id = pt.id
+                                            WHERE tag = :tag_name
+                                            LIMIT 1)
+                                        );
+                ";
+                $statement = $this->conn->prepare($sql);
+                $statement->bindValue(":tag_name", ($new["tag"][$tagNumber-$tagCounter] ?? null), PDO::PARAM_STR);
+                $statement->bindValue(":product_id", ($old["id"] ?? null), PDO::PARAM_INT);
+                $statement->execute();
+                $tagCounter--;
+            }
+            $productsRowCount++;
+        }
 
-        // TODO - include: image, category, and tag updates
-        if (!empty($new["url"])) {
-            echo sizeof($new["url"]);
+        if (isset($new["category"]) && $old["category"] !== $new["category"]) {
+            $sql = "DELETE FROM products_and_categories WHERE products_and_categories.product_id = :product_id" ;
+            $statement = $this->conn->prepare($sql);
+            $statement->bindValue(":product_id", $old["id"], PDO::PARAM_INT);
+            $statement->execute();
+            $categoryCounter = sizeof($new["category"]) - 1;
+            $categoryNumber = $categoryCounter;
+            while ($categoryCounter >= 0) {
+                $sql = "
+                    INSERT INTO products_and_categories (product_id, category_id)
+                    VALUES(:product_id, (
+                                            SELECT category_id
+                                            FROM products_and_categories pac
+                                            INNER JOIN product_categories pc
+                                            ON pac.category_id = pc.id
+                                            WHERE pc.category = :category_name
+                                            LIMIT 1)
+                                        );
+                ";
+                $statement = $this->conn->prepare($sql);
+                $statement->bindValue(":category_name", ($new["category"][$categoryNumber-$categoryCounter] ?? null), PDO::PARAM_STR);
+                $statement->bindValue(":product_id", ($old["id"] ?? null), PDO::PARAM_INT);
+                $statement->execute();
+                $categoryCounter--;
+            }
+            $productsRowCount++;
+        }
+
+        if (isset($new["url"]) && $old["url"] !== $new["url"]) {
+            $sql = "DELETE FROM product_images WHERE product_id = :product_id" ;
+            $statement = $this->conn->prepare($sql);
+            $statement->bindValue(":product_id", $old["id"], PDO::PARAM_INT);
+            $statement->execute();
+
+            if ($new["url"] !== []) {
+                $urlsLength = count($new["url"]) - 1;
+                $sql = "INSERT INTO product_images (product_id, url) VALUES";
+                foreach($new["url"] as $i=>$u) {
+                    if ($urlsLength !== $i) {
+                        $sql = $sql . " (" . $old["id"] . ", " . "\"" . $u . "\"),";
+                    } else {
+                        $sql = $sql . " (" . $old["id"] . ", " . "\"" . $u . "\");";
+                    }
+                }
+                // echo $sql;
+                $statement = $this->conn->prepare($sql);
+                $statement->execute();
+            }
+            $productsRowCount++;
         }
 
         $this->conn->commit();
         return $productsRowCount;
+
     }
 
-    public function delete(int $user_id, string $id) : int {
-        $sql = "DELETE FROM product WHERE id = :id AND user_id = :user_id";
+
+    public function delete(string $id) : int {
+        $sql = "DELETE FROM product WHERE id = :id";
         $statement = $this->conn->prepare($sql);
         $statement->bindValue(":id", $id, PDO::PARAM_INT);
-        $statement->bindValue(":user_id", $user_id, PDO::PARAM_INT);
         $statement->execute();
         return $statement->rowCount();
     }
