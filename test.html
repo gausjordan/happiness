@@ -52,6 +52,7 @@
 
         body, html {
             height: 100%;
+            background-image: linear-gradient(white, beige);
         }
 
         .grid-container {
@@ -62,34 +63,28 @@
         }
 
         .grid-item {
-            border: 1px solid black; /* For visibility */
+            -border: 1px solid black; /* For visibility */
         }
         
         .middle {
-            grid-column: 2; /* Center column */
-            grid-row: 2;    /* Center row */
+            grid-column: 2;
+            grid-row: 2;
             -background-color: pink;
-            aspect-ratio: 1 / 2; /* Maintain a 2:1 aspect ratio */
+            aspect-ratio: 1 / 2;
             height: min(160vw, 80vh);
-            -height: 160vw;
         }
-
-        @media screen and (orientation: landscape) and (max-height: 400px) {
-            .middle {
-                height: 100vh;
-            }
-        }
-
-        
 
 
         svg#graphics {
             width: 60%;
             display: block;
-            height:50%;
+            height:30%;
             /* height:356px; */
             /* width:504px; */
             margin: 0 auto;
+            margin-top: 40%;
+            opacity: 0.65;
+            -background-color: yellow;
         }
         
         svg#graphics > path {
@@ -103,6 +98,7 @@
                 stroke-dasharray: 320;
                 stroke-dashoffset: 0;
                 animation: curve-dash 2s;
+                animation-fill-mode: forwards;
                 animation-timing-function: cubic-bezier(0.445, 0.05, 0.55, 0.95);
         }
 
@@ -138,6 +134,40 @@
             /* height:261px; */
             /* width:1888px; */
             display: 0 auto;
+            margin-top: 10%;
+            animation: text 4s;
+            animation-timing-function: ease;
+            animation-fill-mode: forwards;
+            -transform: translate(30px,40px);
+        }
+
+        @keyframes text {
+            0% {
+                transform:translate(0px,40px);
+                opacity:0;
+            }
+            100% {
+                transform:translate(0px,0px);
+                opacity:0.65;
+            }
+        }
+
+        @media screen and (orientation: landscape) and (max-height: 400px) {
+            html, body {
+                height: 100%;
+            }
+            .middle {
+                height: 100dvh;
+                width: 90vh;
+            }
+            svg#graphics {
+                width: 100%;
+                margin-top: 18%;
+            }
+            svg#titles {
+                width: 100%;
+                margin-top: 15%;
+            }
         }
 
 
