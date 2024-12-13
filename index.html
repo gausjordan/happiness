@@ -46,6 +46,8 @@
           <p>Welcome to the home page!</p>
         `;
       },
+      "/index.html" : "goHome"
+      ,
       "/about": () => {
         return `
           <h1>About</h1>
@@ -73,7 +75,11 @@
       const view = routes[path];
 
       if (view) {
-        app.innerHTML = typeof view === "function" ? await view() : view;
+        if (view === "goHome") {
+          window.location.href = "home";
+        } else {
+          app.innerHTML = typeof view === "function" ? await view() : view;
+        }
       } else {
         app.innerHTML = `
           <h1>404</h1>
