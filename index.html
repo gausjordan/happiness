@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vanilla JS SPA</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    nav {
+      background: #333;
+      color: #fff;
+      padding: 1em;
+    }
+    nav a {
+      color: #fff;
+      margin: 0 1em;
+      text-decoration: none;
+    }
+    nav a:hover {
+      text-decoration: underline;
+    }
+    main {
+      padding: 1em;
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="/home" data-link>Home</a>
+    <a href="/about" data-link>About</a>
+    <a href="/funk" data-link>Go funky</a>
+  </nav>
+  <main id="app">
+    <h1>Welcome to the SPA</h1>
+    <p>Click the links above to navigate.</p>
+  </main>
+  <script>
+    const routes = {
+      "/home": () => {
+        return `
+          <h1>Home</h1>
+          <p>Welcome to the home page!</p>
+        `;
+      },
+      "/about": () => {
+        return `
+          <h1>About</h1>
+          <p>This is a simple SPA implemented with vanilla JavaScript.</p>
+        `;
+      },
+      "/bug": async () => {
+        try {
+          const response = await fetch("http://127.0.0.1/funk.html");
+          const text = await response.text();
+          
+          return `<div>${text}</div>`;
+        } catch (error) {
+          return `
+            <h1>Error</h1>
+            <p>Failed to load content from bug.hr.</p>
+          `;
+        }
+      }
+    };
+
+    // Handle navigation
+    const navigateTo = async (path) => {
+      const app = document.getElementById("app");
+      const view = routes[path];
+
+      if (view) {
+        app.innerHTML = typeof view === "function" ? await view() : view;
+      } else {
+        app.innerHTML = `
+          <h1>404</h1>
+          <p>Page not found.</p>
+        `;
+      }
+    };
+
+    // Set up event listeners for navigation
+    document.addEventListener("click", (event) => {
+      if (event.target.matches("[data-link]")) {
+        event.preventDefault();
+        const path = event.target.getAttribute("href");
+        history.pushState(null, null, path);
+        navigateTo(path);
+      }
+    });
+
+    // Handle back/forward navigation
+    window.addEventListener("popstate", () => {
+      navigateTo(window.location.pathname);
+    });
+
+    // Initialize
+    navigateTo(window.location.pathname || "/home");
+  </script>
+</body>
+</html>
+
