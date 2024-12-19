@@ -1,111 +1,120 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vanilla JS SPA</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-    }
-    nav {
-      background: #333;
-      color: #fff;
-      padding: 1em;
-    }
-    nav a {
-      color: #fff;
-      margin: 0 1em;
-      text-decoration: none;
-    }
-    nav a:hover {
-      text-decoration: underline;
-    }
-    main {
-      padding: 1em;
-    }
-  </style>
-</head>
-<body>
-  <nav>
-    <a href="/home" data-link>Home</a>
-    <a href="/about" data-link>About</a>
-    <a href="/funk" data-link>Go funky</a>
-  </nav>
-  <main id="app">
-    <h1>Welcome to the SPA</h1>
-    <p>Click the links above to navigate.</p>
-  </main>
+
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vanilla SPA</title>
+    <link rel="stylesheet" href="frontend/mainstyle.css">
+    <link rel="stylesheet" href="frontend/splashstyle.css">
+
+  </head>
+
+  <body>
+
+    <aside id="splashscreen">
+      <div class="loader-grid-container">
+        <div class="loader-grid-item"></div>
+        <div class="loader-grid-item"></div>
+        <div class="loader-grid-item"></div>  
+        <div class="loader-grid-item"></div>
+        <div class="loader-grid-item middle">
+            
+          <script>
+            const svgElements = [
+                { url: 'frontend/graphics/h-logo.svg', target: 'graphics' },
+                { url: 'frontend/graphics/happiness-text-logo.svg', target: 'titles' },
+            ];
+            svgElements.forEach(({ url, target }) => {
+                fetch(url)
+                    .then(response => response.text())
+                    .then(svgContent => {
+                        document.getElementById(target).innerHTML = svgContent;
+                    });
+            });
+          </script>
+
+          <svg viewBox="0 0 504 356" xmlns="http://www.w3.org/2000/svg" id="graphics"></svg>
+          <svg viewBox="0 0 1888 261" xmlns="http://www.w3.org/2000/svg" id="titles"></svg>
+            
+        </div>
+        <div class="loader-grid-item"></div>  
+        <div class="loader-grid-item"></div>
+        <div class="loader-grid-item"></div>
+        <div class="loader-grid-item"></div>  
+      </div>
+    </aside>
+
+    <nav>
+      <a href="/home" data-link>Home</a>
+      <a href="/about" data-link>About</a>
+      <a href="/shop" data-link>Shop</a>
+    </nav>
+    <main id="app">
+    </main>
+  </body>
+
   <script>
+
+    const para = document.createElement("p");
+    const node = document.createTextNode("This is new.");
+    para.appendChild(node);
+
+    const element = document.getElementById("app");
+    element.appendChild(para);
+
     const routes = {
-      "/home": () => {
-        return `
-          <h1>Home</h1>
-          <p>Welcome to the home page!</p>
-        `;
-      },
-      "/index.html" : "goHome"
-      ,
-      "/about": () => {
-        return `
-          <h1>About</h1>
-          <p>This is a simple SPA implemented with vanilla JavaScript.</p>
-        `;
-      },
-      "/bug": async () => {
-        try {
-          const response = await fetch("http://127.0.0.1/funk.html");
-          const text = await response.text();
-          
-          return `<div>${text}</div>`;
-        } catch (error) {
-          return `
-            <h1>Error</h1>
-            <p>Failed to load content from bug.hr.</p>
-          `;
-        }
-      }
+      "/home": '/frontend/home.html',
+      "/about" : '/frontend/about.html',
+      "/shop": '/frontend/shop.html'
     };
 
-    // Handle navigation
+    // navigation handling
     const navigateTo = async (path) => {
       const app = document.getElementById("app");
       const view = routes[path];
+      const page = await loadPage(view);
+      const parser = new DOMParser();
+      const parsedPage = parser.parseFromString(page, 'text/html');
+      document.title = "Proba " + parsedPage.title;
+      //console.log(parsedPage);
+      document.getElementById("app").innerHTML = page;
+     
 
-      if (view) {
-        if (view === "goHome") {
-          window.location.href = "home";
-        } else {
-          app.innerHTML = typeof view === "function" ? await view() : view;
-        }
-      } else {
-        app.innerHTML = `
-          <h1>404</h1>
-          <p>Page not found.</p>
-        `;
-      }
     };
 
-    // Set up event listeners for navigation
+    async function loadPage(view) {
+      try {
+        const response = await fetch(view);
+        const text = await response.text();
+        return text;
+      } catch (error) {
+        return `<h1>Hardcoded Error</h1>`;
+      }
+    }
+
+    // event listeners for navigation
     document.addEventListener("click", (event) => {
       if (event.target.matches("[data-link]")) {
         event.preventDefault();
         const path = event.target.getAttribute("href");
-        history.pushState(null, null, path);
+        history.pushState({ path }, null, path);
         navigateTo(path);
       }
     });
 
-    // Handle back/forward navigation
-    window.addEventListener("popstate", () => {
-      navigateTo(window.location.pathname);
+    // back/forward navigation
+    window.addEventListener("popstate", (event) => {
+      // Navigate to the path in the current history state
+      const path = event.state?.path || window.location.pathname;
+      navigateTo(path);
     });
 
     // Initialize
-    navigateTo(window.location.pathname || "/home");
+    // const initialPath = window.location.pathname || "/home";
+    const initialPath = window.location.pathname === '/' ? '/home' : window.location.pathname;    
+    history.replaceState({ path: initialPath }, null, initialPath);
+    navigateTo(initialPath);
   </script>
-</body>
-</html>
 
+</html>
