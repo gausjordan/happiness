@@ -1,14 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 
+
   <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content">
     <title>Vanilla SPA</title>
     <link rel="stylesheet" href="frontend/mainstyle.css">
     <link rel="stylesheet" href="frontend/splashstyle.css">
-
   </head>
+
 
   <body>
 
@@ -16,105 +17,40 @@
       <div class="loader-grid-container">
         <div class="loader-grid-item"></div>
         <div class="loader-grid-item"></div>
-        <div class="loader-grid-item"></div>  
         <div class="loader-grid-item"></div>
-        <div class="loader-grid-item middle">
-            
-          <script>
-            const svgElements = [
-                { url: 'frontend/graphics/h-logo.svg', target: 'graphics' },
-                { url: 'frontend/graphics/happiness-text-logo.svg', target: 'titles' },
-            ];
-            svgElements.forEach(({ url, target }) => {
-                fetch(url)
-                    .then(response => response.text())
-                    .then(svgContent => {
-                        document.getElementById(target).innerHTML = svgContent;
-                    });
-            });
-          </script>
-
-          <svg viewBox="0 0 504 356" xmlns="http://www.w3.org/2000/svg" id="graphics"></svg>
-          <svg viewBox="0 0 1888 261" xmlns="http://www.w3.org/2000/svg" id="titles"></svg>
-            
+        <div class="loader-grid-item"></div>
+        <div class="loader-grid-item middle"> <!-- do not touch -->
+          <svg viewBox="0 0 504 356" xmlns="http://www.w3.org/2000/svg" id="icon" alt="Happiness company icon"></svg>
+          <svg viewBox="0 0 1888 261" xmlns="http://www.w3.org/2000/svg" alt="Happiness Logo and subtitle" id="logo1"></svg>
         </div>
-        <div class="loader-grid-item"></div>  
         <div class="loader-grid-item"></div>
         <div class="loader-grid-item"></div>
-        <div class="loader-grid-item"></div>  
+        <div class="loader-grid-item"></div>
+        <div class="loader-grid-item"></div>
       </div>
     </aside>
 
+    <header id="header-logo-text">
+      <div class="side-pad">Lijevo</div>
+      <div class="middle">
+          <img src="/frontend/graphics/icon.svg" viewBox="0 0 1888 261" alt="Happiness Logo"></img>
+      </div>
+      <div class="side-pad">Desno</div>
+    </header>
+
     <nav>
-      <a href="/home" data-link>Home</a>
-      <a href="/about" data-link>About</a>
-      <a href="/shop" data-link>Shop</a>
+      <div class="menu-icon" id="menu-icon">&#9776;</div>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="/shop" data-link>Proizvodi</a></li>
+        <li><a href="/home" data-link>Naslovna stranica</a></li>
+        <li><a href="/about" data-link>O nama</a></li>
+      </ul>
     </nav>
     <main id="app">
     </main>
   </body>
 
-  <script>
 
-    const para = document.createElement("p");
-    const node = document.createTextNode("This is new.");
-    para.appendChild(node);
-
-    const element = document.getElementById("app");
-    element.appendChild(para);
-
-    const routes = {
-      "/home": '/frontend/home.html',
-      "/about" : '/frontend/about.html',
-      "/shop": '/frontend/shop.html'
-    };
-
-    // navigation handling
-    const navigateTo = async (path) => {
-      const app = document.getElementById("app");
-      const view = routes[path];
-      const page = await loadPage(view);
-      const parser = new DOMParser();
-      const parsedPage = parser.parseFromString(page, 'text/html');
-      document.title = "Proba " + parsedPage.title;
-      //console.log(parsedPage);
-      document.getElementById("app").innerHTML = page;
-     
-
-    };
-
-    async function loadPage(view) {
-      try {
-        const response = await fetch(view);
-        const text = await response.text();
-        return text;
-      } catch (error) {
-        return `<h1>Hardcoded Error</h1>`;
-      }
-    }
-
-    // event listeners for navigation
-    document.addEventListener("click", (event) => {
-      if (event.target.matches("[data-link]")) {
-        event.preventDefault();
-        const path = event.target.getAttribute("href");
-        history.pushState({ path }, null, path);
-        navigateTo(path);
-      }
-    });
-
-    // back/forward navigation
-    window.addEventListener("popstate", (event) => {
-      // Navigate to the path in the current history state
-      const path = event.state?.path || window.location.pathname;
-      navigateTo(path);
-    });
-
-    // Initialize
-    // const initialPath = window.location.pathname || "/home";
-    const initialPath = window.location.pathname === '/' ? '/home' : window.location.pathname;    
-    history.replaceState({ path: initialPath }, null, initialPath);
-    navigateTo(initialPath);
-  </script>
+  <script src="/frontend/index1.js" defer></script>
 
 </html>
