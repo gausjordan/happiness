@@ -10,6 +10,7 @@ aside#splashscreen {
     animation-fill-mode: forwards;
     -webkit-box-sizing:border-box;
     box-sizing:border-box;
+    z-index: 10;
 }
 
 @keyframes splash-fade-out {

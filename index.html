@@ -31,15 +31,25 @@
     </aside>
 
     <header id="header-logo-text">
-      <div class="side-pad">Lijevo</div>
-      <div class="middle">
-          <img src="/frontend/graphics/icon.svg" viewBox="0 0 1888 261" alt="Happiness Logo"></img>
+      <div class="side-pad">
+        <img src="/frontend/graphics/magnifier.svg" alt="Search button"></img>
+        <iimg src="/frontend/graphics/flag-cro.svg" alt="HR flag" style="object-fit: cover;"></iimg>
+        <iimg src="/frontend/graphics/flag-us.svg" alt="US flag" style="object-fit: cover; object-position: 30% 0;"></-img>
       </div>
-      <div class="side-pad">Desno</div>
+      <div class="middle">
+          <img src="/frontend/graphics/icon-bold.svg" alt="Happiness Logo"></img>
+      </div>
+      <div class="side-pad">
+        <img src="/frontend/graphics/user.svg" alt="Current user"></img>
+        <img src="/frontend/graphics/cart.svg" alt="Shopping cart"></img>
+      </div>
     </header>
 
     <nav>
-      <div class="menu-icon" id="menu-icon">&#9776;</div>
+      <input type="checkbox" class="animate" id="menu-toggle">
+      <label for="menu-toggle">
+        <div class="menu-icon" id="menu-icon">&#9776;</div>
+      </label>
       <ul class="nav-links" id="nav-links">
         <li><a href="/shop" data-link>Proizvodi</a></li>
         <li><a href="/home" data-link>Naslovna stranica</a></li>
