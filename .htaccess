@@ -23,7 +23,7 @@
 </IfModule>
 
 
-### Only this last chunk of code matters
+### Only the lines below this one - matter
 RewriteEngine On
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
@@ -31,3 +31,17 @@ RewriteCond %{REQUEST_FILENAME} !-l
 RewriteRule . index.html [L]
 
 SetEnvIf Authorization "(.*)" HTTP_AUTHORIZATION=$1
+
+### Allow Cross-Origin Resource Sharing (CORS)
+### Here be dragons - delete before deploying
+<IfModule mod_headers.c>
+  Header set Access-Control-Allow-Origin "*"
+</IfModule>
+
+### Disable caching
+<IfModule mod_headers.c>
+Header unset ETag
+Header set Cache-Control "max-age=0, no-cache, no-store, must-revalidate"
+Header set Pragma "no-cache"
+Header set Expires "Wed, 12 Jan 1980 05:00:00 GMT"
+</IfModule>

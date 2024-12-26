@@ -1,0 +1,41 @@
+<script>
+    if (localStorage.getItem("lang") === 'en') {
+        document.title = "Home page";
+        document.querySelector("h1").textContent = "Product details";
+        document.querySelector("p").textContent = "Product details and images go here.";
+    }
+
+    if (typeof productId !== 'undefined') {
+        let productId = window.location.pathname.split('/');
+    } else {
+        productId = window.location.pathname.split('/');
+    }
+
+    if (typeof urlParams !== 'undefined') {
+        let urlParams = new URLSearchParams(window.location.pathname);
+    } else {
+        urlParams = new URLSearchParams(window.location.pathname);
+    }
+
+    console.log(window.location.pathname);
+    console.log(urlParams);
+</script>
+
+
+<script>
+    if (localStorage.getItem("lang") === 'en') {
+        document.title = "Product details";
+        document.querySelector("h1").textContent = "Product details";
+        document.querySelector("p").textContent = "We display details here.";
+    }
+</script>
+
+
+<head>
+    <title>Detalji o proizvodu</title>
+</head>
+</body>
+    <h1>Detalji o proizvodu</h1>
+    <p>Detalji o proizvodu idu ovdje.</p>
+    <h2></h2>
+</body>

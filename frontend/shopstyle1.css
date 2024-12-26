@@ -1,0 +1,40 @@
+* {
+    box-sizing: border-box;
+}
+
+div.shop#main-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5em;
+}
+
+div.shop#main-grid div.item {
+    background-color: pink;
+    text-align: center;
+}
+
+div .item img {
+    width: 100%;
+    object-fit: cover;
+    height: 70%;
+    
+}
+
+div .item h3 {
+    background-color: antiquewhite;
+    margin: 0.2em;
+}
+
+div .item p {
+    margin: 0;
+}
+
+div .item a {
+    color: black;
+    text-decoration: none;
+}
+
+div .item a:visited {
+    color: purple;
+    text-decoration: none;
+}

@@ -2,6 +2,10 @@
   --menu-animation-speed: 0.3s;
 }
 
+img[alt] {
+  color: #00000000;
+}
+
 body {
   font-family: Arial, sans-serif;
   margin: 0;
@@ -75,10 +79,46 @@ nav #menu-icon {
   padding: 0em 0.2em;
 }
 
-/* Prevent hamburger from highlighting on tap */
-nav #menu-icon:active {
+/* Language selector flag */
+nav img {
+  user-select: none;
+  position: absolute;
+  right: 0;
+  height: 1.5em;
+  margin: 0.7em 1em;
+  cursor: pointer;
+  z-index: 9;
+  float: right;
+  object-fit: cover;
+  width: 2.2em;
+  opacity: 0;
+}
+
+/* Prevent elements from highlighting up blue on tap event */
+nav img:active {
+  outline: none;
   outline-style:none;
   -webkit-tap-highlight-color:transparent;
+}
+nav #menu-icon:active {
+  outline: none;
+  outline-style: none;
+  -webkit-tap-highlight-color: transparent;
+}
+nav #menu-icon img:active {
+  outline: none;
+  outline-style: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Language selector flag HR */
+nav img#hr {
+  object-position: 50% 0;
+}
+
+/* Language selector flag US */
+nav img#us {
+  object-position: 0 0;
 }
 
 /* Always-invisible toggle helper */
@@ -96,7 +136,7 @@ nav input[type="checkbox"].animate:checked ~ ul {
 }
 @keyframes main-menu-slide-in {
   from {
-    transform: translateX(-100%);
+    transform: translateX(-110%);
   }
   to {
     transform: translateX(0%);
@@ -114,7 +154,7 @@ nav input[type="checkbox"].animate:not(:checked) ~ ul {
     transform: translateX(0%);
   }
   to {
-    transform: translateX(-100%);
+    transform: translateX(-110%);
   }
 }
 
@@ -153,8 +193,6 @@ nav input[type="checkbox"].animate:not(:checked) + label + ul > li {
   }
 }
 
-
-
 nav {
   background: #333;
   color: #fff;
@@ -165,37 +203,43 @@ nav {
 nav ul {
   opacity: 1;
   position: absolute;
-  background-color: #855454;
+  background-color: #4e4e4e;
   display: inline-block;
-  border-radius: 0 1em 1em 0;
-  top: 3.6em;
+  border-radius: 0 0em 1em 0;
+  top: 6.6em;
   left: 0;
   margin: 0px;
-  padding: 0.5em 1.5em 0.5em 3em;
-  transform: translateX(-100%);
+  transform: translateX(-110%);
   animation: 0.3s ease-in;
-  box-shadow: 0 0 0.5em #000;
+  box-shadow: 0.5px 0.5px 0.3em #000;
 }
 
 .nav-links {
   list-style: none;
   user-select: none;
+  padding: 0;
 }
 
 .nav-links li {
-  padding: 0.6em;
+  padding: 0.75em;
+  margin: 0.05em;
+  display: block;
+  border-bottom: 1px solid #cccccc44;
 }
+
+.nav-links li:hover {
+  background-color: #7a7a7a;
+}
+
+.nav-links a:last-of-type li {
+  border-radius: 0 0em 1em 0;
+}
+
+
 
 nav a {
   color: #fff;
   text-decoration: none;
-
+  font-size: 1.1em;
 }
 
-nav a:hover {
-  text-decoration: underline;
-}
-
-main {
-  padding: 1em;
-}

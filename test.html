@@ -1,111 +1,15 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
+<script>
+	document.title = "Pizdun";
+	history.pushState({ urlPath: "/aboutPage", title: "F-off" }, "", "/abouth");
+	document.title = "Pederana";
+	history.pushState({ urlPath: "/lolzPage" }, "", "/lolz");
+	document.title = "Volim karting";
+	history.pushState({ urlPath: "/funkPage" }, "", "/funk");
+</script>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CSS Hamburger Menu</title>
-  <style>
-    /* Basic styling for the page */
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-    }
-
-    /* Hide the checkbox */
-    input[type="checkbox"] {
-      display: none;
-    }
-
-    /* Hamburger icon (3 lines) */
-    label {
-      display: block;
-      width: 30px;
-      height: 20px;
-      position: relative;
-      cursor: pointer;
-      margin: 20px;
-    }
-
-    label span {
-      display: block;
-      background-color: #333;
-      height: 4px;
-      width: 100%;
-      margin: 4px 0;
-      transition: 0.3s;
-    }
-
-    /* Menu styling */
-    nav {
-      background-color: #333;
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      display: none;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-    }
-
-    nav a {
-      color: white;
-      text-decoration: none;
-      padding: 15px;
-      font-size: 20px;
-      text-transform: uppercase;
-      transition: background-color 0.3s;
-    }
-
-    nav a:hover {
-      background-color: #444;
-    }
-
-    /* When the checkbox is checked, display the menu */
-    input[type="checkbox"]:checked ~ nav {
-      display: flex;
-    }
-
-    /* Hamburger icon animation when checkbox is checked */
-    input[type="checkbox"]:checked ~ label span:nth-child(1) {
-      transform: rotate(45deg);
-      position: absolute;
-      top: 50%;
-    }
-
-    input[type="checkbox"]:checked ~ label span:nth-child(2) {
-      opacity: 0;
-    }
-
-    input[type="checkbox"]:checked ~ label span:nth-child(3) {
-      transform: rotate(-45deg);
-      position: absolute;
-      top: 50%;
-    }
-
-  </style>
 </head>
 <body>
-
-  <!-- Hidden checkbox, used as the trigger -->
-  <input type="checkbox" id="menu-toggle">
-
-  <!-- Hamburger icon (label) -->
-  <label for="menu-toggle">
-    <span></span>
-    <span></span>
-    <span></span>
-  </label>
-
-  <!-- Navigation menu -->
-  <nav>
-    <a href="#">Home</a>
-    <a href="#">About</a>
-    <a href="#">Services</a>
-    <a href="#">Contact</a>
-  </nav>
-
 </body>
 </html>

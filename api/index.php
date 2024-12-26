@@ -12,6 +12,13 @@ $database = new Database(
     $config->host, $config->dbName,
     $config->username, $config->password);
 
+if ($_SERVER["REQUEST_METHOD"] === "OPTIONS") {
+    header("Access-Control-Allow-Origin: *");
+    header("Access-Control-Allow-Methods: POST, GET, DELETE, PUT, PATCH, OPTIONS");
+    header("Access-Control-Allow-Headers: Content-Type, Authorization");
+    exit;
+}
+
 if ($uri[2] == "products") {
 
     if (empty($uri[3]) || $uri[3] !== "images") {

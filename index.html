@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 
-
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content">
-    <title>Vanilla SPA</title>
-    <link rel="stylesheet" href="frontend/mainstyle.css">
-    <link rel="stylesheet" href="frontend/splashstyle.css">
+    <title>Happiness</title>
+    <link rel="stylesheet" rel="preload" href="/frontend/mainstyle.css" as="style">
+    <link rel="stylesheet" href="/frontend/splashstyle.css">
+    <base href="/" />
   </head>
 
 
@@ -33,11 +33,9 @@
     <header id="header-logo-text">
       <div class="side-pad">
         <img src="/frontend/graphics/magnifier.svg" alt="Search button"></img>
-        <iimg src="/frontend/graphics/flag-cro.svg" alt="HR flag" style="object-fit: cover;"></iimg>
-        <iimg src="/frontend/graphics/flag-us.svg" alt="US flag" style="object-fit: cover; object-position: 30% 0;"></-img>
       </div>
       <div class="middle">
-          <img src="/frontend/graphics/icon-bold.svg" alt="Happiness Logo"></img>
+          <img src="/frontend/graphics/icon-static.svg" alt="Happiness Logo"></img>
       </div>
       <div class="side-pad">
         <img src="/frontend/graphics/user.svg" alt="Current user"></img>
@@ -50,10 +48,27 @@
       <label for="menu-toggle">
         <div class="menu-icon" id="menu-icon">&#9776;</div>
       </label>
+      <img src="/frontend/graphics/flag-uk.svg"  class="lang-flag" id="en"></img>
+      <img src="/frontend/graphics/flag-hr.svg"  class="lang-flag" id="hr"></img>
       <ul class="nav-links" id="nav-links">
-        <li><a href="/shop" data-link>Proizvodi</a></li>
-        <li><a href="/home" data-link>Naslovna stranica</a></li>
-        <li><a href="/about" data-link>O nama</a></li>
+        <a href="/home" data-link>
+          <li>
+            <span class="hr">Naslovna stranica</span>
+            <span class="en">Home page</span>
+          </li>
+        </a>
+        <a href="/shop" data-link>
+          <li>
+            <span class="hr">Proizvodi</span>
+            <span class="en">Products</span>
+          </li>
+        </a>
+        <a href="/about" data-link>
+          <li>
+            <span class="hr">O nama</span>
+            <span class="en">About us</span>
+          </li>
+        </a>
       </ul>
     </nav>
     <main id="app">

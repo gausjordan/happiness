@@ -27,11 +27,6 @@ aside#splashscreen {
     }
 }
 
-
-main, nav {
-    -display: none;
-}
-
 .loader-grid-container {
     display: grid;
     height: 100dvh;
@@ -122,7 +117,7 @@ main, nav {
 @media screen and (orientation: landscape) and (max-height: 400px) {
     html, body {
         height: 100dvh;
-        overflow: hidden;
+        /* overflow: hidden; */
     }
     #splashscreen .middle {
         height: 100dvh;
