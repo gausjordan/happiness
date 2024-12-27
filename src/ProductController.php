@@ -107,12 +107,24 @@ class ProductController {
 
             case "GET": 
                 if ($this->user_role === "admin" || $this->user_role === "employee") {
-                    echo json_encode($this->gateway->getAll($this->user_id));
+                    echo json_encode([
+                        "products" => $this->gateway->getAll($this->user_id),
+                        "productCount" => $this->gateway->metaData($this->user_id)
+                    ]);
                     break;
                 } else {
                     echo json_encode($this->gateway->getAll($this->user_id, true));
                     break;
                 }
+
+            // case "GET": 
+            //     if ($this->user_role === "admin" || $this->user_role === "employee") {
+            //         echo json_encode($this->gateway->getAll($this->user_id));
+            //         break;
+            //     } else {
+            //         echo json_encode($this->gateway->getAll($this->user_id, true));
+            //         break;
+            //     }
 
             case "POST":
 

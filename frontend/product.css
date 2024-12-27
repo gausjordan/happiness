@@ -1,0 +1,29 @@
+/* main#app {
+    box-sizing: border-box;
+    margin: 0.75em 0.75em 0em 0.75em;
+} */
+
+h1 {
+    margin: 0;
+}
+
+#image-big {
+    max-width: 100%;
+}
+
+div#thumbnails {
+    display: grid;
+    width: 100%;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+    gap: 0.5em;
+}
+
+div#thumbnails div {
+    width: 100%;
+}
+
+div#thumbnails img {
+    width: 100%;
+    object-fit: cover;
+    height: 100%;
+}

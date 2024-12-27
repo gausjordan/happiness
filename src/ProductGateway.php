@@ -39,7 +39,8 @@ class ProductGateway {
             ON `product`.`id` = `product_images`.`product_id` " . 
 
             ($showHiddenProducts ? "WHERE `is_visible` = 1 GROUP BY product.id, product.title;"
-                                : "GROUP BY product.id, product.title;");
+                                : "GROUP BY product.id, product.title ") .
+            "LIMIT 14;";
 
         $statement = $this->conn->prepare($sql);
         $statement->execute();
@@ -55,6 +56,15 @@ class ProductGateway {
         }
 
         return $data;
+    }
+
+    public function metaData(int $user_id, ?bool $showHiddenProducts = false): int {
+        $sql = "SELECT COUNT(*) AS productCount FROM product" . 
+        ($showHiddenProducts ? " WHERE `is_visible` = 1;"
+                                : ";");
+        $stmt = $this->conn->query($sql);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return (int)$result['productCount'];
     }
 
 

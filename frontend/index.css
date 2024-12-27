@@ -2,6 +2,11 @@
   --menu-animation-speed: 0.3s;
 }
 
+main#app {
+  box-sizing: border-box;
+  margin: 0.75em 0.75em 0em 0.75em;
+}
+
 img[alt] {
   color: #00000000;
 }

@@ -1,5 +1,13 @@
 'use strict';
 
+// Display splash screen (4 seconds)
+function displaySplashScreen() {
+    document.getElementById("app").style.display = "none";
+    document.getElementById("splashscreen").removeAttribute("style", "display: none");
+    setTimeout( () => document.getElementById("app").style.display = "block", 3000);
+}
+
+
 // Check if language is already chosen and show a single flag only
 if (!localStorage.getItem('lang')) {
     localStorage.setItem('lang', 'hr');
@@ -148,43 +156,44 @@ async function loadPage(view) {
         const text = await response.text();
         return text;
     } catch (error) {
-        return `<h1>Hardcoded Error</h1>`;
+        return `<h1>Server Error</h1>`;
     }
 }
 
 // .addEventListener("contextmenu", (e) => {e.preventDefault()});
 
 // Event listener for navigation & quick menu hide
-document.addEventListener("click", (event) => {
-    if (event.target.matches("[data-link]")) {
-        event.preventDefault();
-        let root = document.querySelector(':root');
-        let menu = document.getElementById("menu-icon");
-        const old = getComputedStyle(root, null).getPropertyValue('--menu-animation-speed');
-        root.style.setProperty('--menu-animation-speed', "0s");
-        menu.click();
-        setTimeout(() => root.style.setProperty('--menu-animation-speed', old), 500);
-        const path = event.target.getAttribute("href");
-        history.pushState({ path }, null, path);
-        navigateTo(path);
-    }
-});
+// document.addEventListener("click", (event) => collapseMenu(event));
+// function collapseMenu(event) {
 
-function collapseMenu() {
-    
-}
+//     if (event.target.matches("[data-link]")) {
+//         event.preventDefault();
+//         alert("Opa");
+//         let root = document.querySelector(':root');
+//         let menu = document.getElementById("menu-icon");
+//         const old = getComputedStyle(root, null).getPropertyValue('--menu-animation-speed');
+//         root.style.setProperty('--menu-animation-speed', "0s");
+//         menu.click();
+//         setTimeout(() => root.style.setProperty('--menu-animation-speed', old), 500);
+//         const path = event.target.getAttribute("href");
+//         history.pushState({ path }, null, path);
+//         debugger;
+//         navigateTo(path);
+//     }
+// }
 
 
-// Event listeners to close the main menu when anything else gets touched
-document.addEventListener("click", (event) => {
+// Event listeners to close the main menu when anything else gets clicked or touched
+document.addEventListener("click", (event) => anyThingButTheMainMenu(event));
+document.addEventListener("contextmenu", (event) => anyThingButTheMainMenu(event));
+function anyThingButTheMainMenu(event) {
     if (document.getElementById("menu-toggle").checked
         && event.target.getAttribute('id') !== 'menu-toggle'
         && event.target.getAttribute('id') !== 'menu-icon'
         && event.target.getAttribute('id') !== 'nav-links') {
-        console.log(event.target);
         document.getElementById("menu-toggle").click();
     }
-});
+}
 document.addEventListener("touchstart", (event) => {
     const menuToggle = document.getElementById("menu-toggle");
     const menuIcon = document.getElementById("menu-icon");
@@ -196,19 +205,15 @@ document.addEventListener("touchstart", (event) => {
 });
 
 
-
+// DAFAQ - provjeri ovo i ne brisi
 window.addEventListener("popstate", (event) => {
     const path = event.state?.path || window.location.pathname;
     navigateTo(path);
 });
 
-// Initialize the app on first load
 
+// Initialize the app on first load
+if (window.location.pathname === '/') { displaySplashScreen(); }
 const initialPath = window.location.pathname === '/' ? window.location.origin + '/home' : window.location.href; //window.location.pathname;
 history.replaceState({ path: initialPath }, null, initialPath);
 navigateTo(initialPath);
-
-// Temporary splashscreen removal 
-document.getElementsByTagName("aside")[0].style.display = "none";
-// document.getElementById("app").style.display = "none";
-// setTimeout( () => document.getElementById("app").style.display = "block", 3000);

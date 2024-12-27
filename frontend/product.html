@@ -1,41 +1,26 @@
 <script>
-    if (localStorage.getItem("lang") === 'en') {
-        document.title = "Home page";
-        document.querySelector("h1").textContent = "Product details";
-        document.querySelector("p").textContent = "Product details and images go here.";
-    }
-
-    if (typeof productId !== 'undefined') {
-        let productId = window.location.pathname.split('/');
-    } else {
-        productId = window.location.pathname.split('/');
-    }
-
-    if (typeof urlParams !== 'undefined') {
-        let urlParams = new URLSearchParams(window.location.pathname);
-    } else {
-        urlParams = new URLSearchParams(window.location.pathname);
-    }
-
-    console.log(window.location.pathname);
-    console.log(urlParams);
+    document.getElementById('atc-button').innerHTML =
+    localStorage.getItem("lang") == 'en' ? "Add to cart" : "Dodaj u košaricu";
 </script>
-
-
-<script>
-    if (localStorage.getItem("lang") === 'en') {
-        document.title = "Product details";
-        document.querySelector("h1").textContent = "Product details";
-        document.querySelector("p").textContent = "We display details here.";
-    }
-</script>
-
 
 <head>
+    <link rel="stylesheet" href="/frontend/product.css" rel="preload" as="style"></link>
+    <script src="/frontend/product.js"></script>
     <title>Detalji o proizvodu</title>
 </head>
-</body>
-    <h1>Detalji o proizvodu</h1>
-    <p>Detalji o proizvodu idu ovdje.</p>
+
+<body>
+    <script>0</script>
+    <h1></h1>
+    <p></p>
     <h2></h2>
+    <div id="gallery">
+        <img id="image-big"></img>
+        <div id="thumbnails"></div>
+    </div>
+    <div id="commerce">
+        <p id="price"></p>
+        <button id="atc-button"></button>
+    </div>
+    <p id="description"></p>
 </body>
