@@ -1,6 +1,6 @@
 <?php
     // configuration (sensitive) data
-    $config = require(__DIR__ . DIRECTORY_SEPARATOR . "config.php" );
+    $config = require(__DIR__ . DIRECTORY_SEPARATOR . "private" . DIRECTORY_SEPARATOR . "config.php" );
 
     require "src\Database.php";
 

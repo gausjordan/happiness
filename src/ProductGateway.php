@@ -38,9 +38,9 @@ class ProductGateway {
             LEFT JOIN `product_images`
             ON `product`.`id` = `product_images`.`product_id` " . 
 
-            ($showHiddenProducts ? "WHERE `is_visible` = 1 GROUP BY product.id, product.title;"
+            ($showHiddenProducts ? "WHERE `is_visible` = 1 GROUP BY product.id, product.title"
                                 : "GROUP BY product.id, product.title ") .
-            "LIMIT 14;";
+            " LIMIT 14;";
 
         $statement = $this->conn->prepare($sql);
         $statement->execute();

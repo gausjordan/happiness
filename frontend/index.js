@@ -1,11 +1,13 @@
 'use strict';
 
-// Display splash screen (4 seconds)
+// Display splash screen (4 seconds, unhide content "below" after 3s)
 function displaySplashScreen() {
     document.getElementById("app").style.display = "none";
     document.getElementById("splashscreen").removeAttribute("style", "display: none");
     setTimeout( () => document.getElementById("app").style.display = "block", 3000);
 }
+
+
 
 
 // Check if language is already chosen and show a single flag only

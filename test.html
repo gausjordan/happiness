@@ -1,15 +1,36 @@
 <!DOCTYPE html>
 <html>
+
 <script>
-	document.title = "Pizdun";
-	history.pushState({ urlPath: "/aboutPage", title: "F-off" }, "", "/abouth");
-	document.title = "Pederana";
-	history.pushState({ urlPath: "/lolzPage" }, "", "/lolz");
-	document.title = "Volim karting";
-	history.pushState({ urlPath: "/funkPage" }, "", "/funk");
+
+async function apiCall() {
+
+	const response = await fetch("http://192.168.1.12/api/products/2", {
+		headers: {
+			"Authorization": "Bearer " + "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjQsIm5hbWUiOiJhZG1pbiIsInJvbGUiOiJhZG1pbiIsImV4cCI6MTc5NTQ0MTMxOH0.evQoDKrL0lrFtGGC5K1yCdHyHl920_4R5CVjYYi3aDM"
+		}
+	});
+
+	const json = await response.json();
+	//const obj = JSON.parse(json);
+	console.log(json.message);
+
+	if (response.status == 401 && json.message == "Access token expired.") {
+		document.getElementsByTagName('p')[0].innerHTML = "FCJ"
+			
+	}
+}
+
+apiCall();
+
+
 </script>
+
 <head>
+	<p></p>
 </head>
+
 <body>
 </body>
+
 </html>

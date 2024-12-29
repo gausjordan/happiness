@@ -113,7 +113,10 @@ class ProductController {
                     ]);
                     break;
                 } else {
-                    echo json_encode($this->gateway->getAll($this->user_id, true));
+                    echo json_encode([
+                        "products" => $this->gateway->getAll($this->user_id, true),
+                        "productCount" => $this->gateway->metaData($this->user_id, true)
+                    ]);
                     break;
                 }
 

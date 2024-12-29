@@ -3,6 +3,15 @@
 declare(strict_types=1);
 require __DIR__ . DIRECTORY_SEPARATOR . "bootstrap.php";
 
+// DEBUG BLOCK
+
+// http_response_code(401);
+// echo(json_encode(["message" => "Access token expired."]));
+// exit;
+
+// -----------
+
+
 $raw = $_SERVER["REQUEST_URI"];
 $urlPath = parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH);
 $urlQuery = parse_url($_SERVER["REQUEST_URI"], PHP_URL_QUERY);
