@@ -28,43 +28,50 @@ if ($_SERVER["REQUEST_METHOD"] === "OPTIONS") {
     exit;
 }
 
-if ($uri[2] == "products") {
+$user_id = 0;           // No one is logged in for now
+$user_role = "guest";   // And has a role of "guest" by default
 
-    if (empty($uri[3]) || $uri[3] !== "images") {
+switch ($uri[2]) {
 
+    case "products" : {
+
+        // Authentication
         $user_gateway = new UserGateway($database);
         $codec = new JWTCodec($config->secret_key);
         $auth = new Auth($user_gateway, $codec);
-        
-        if (! $auth->authenticateAccessToken()) { exit; }
-        
-        $user_id = $auth->getUserId();
-        $user_role = $auth->getUserRole();
-        $id = $uri[3] ?? null;
-    
-        $product_gateway = new ProductGateway($database);
-        $controller = new ProductController($product_gateway, $user_id, $user_role);
-        $controller->processRequest($_SERVER["REQUEST_METHOD"], $id);    
 
-    } else {
-        $user_gateway = new UserGateway($database);
-        $codec = new JWTCodec($config->secret_key);
-        $auth = new Auth($user_gateway, $codec);
-        
-        if (! $auth->authenticateAccessToken()) {
-            exit;
+        if ($auth->authenticateAccessToken()) {
+            $user_id = $auth->getUserId();
+            $user_role = $auth->getUserRole();
         }
         
-        $user_id = $auth->getUserId();
-        $user_role = $auth->getUserRole();
-        $id = $uri[4] ?? null;
-
         $product_gateway = new ProductGateway($database);
         $controller = new ProductController($product_gateway, $user_id, $user_role);
-        $controller->processImageRequest($_SERVER["REQUEST_METHOD"], $id);  
-    }
 
-} else {
-    http_response_code(404);
-    exit;
+
+        // Routing
+        if (empty($uri[3]))
+        {
+            // No product id => either "get all" or "post one"
+            $controller->processRequest($_SERVER["REQUEST_METHOD"], null);    
+        } 
+        else if ($uri[3] !== "images")
+        {
+            // Does have an id, and it's not "image" => product resource request
+            $controller->processRequest($_SERVER["REQUEST_METHOD"], $uri[3]);
+        }
+        else if ($uri[3] == "images")
+        {
+            // Either a POST or a DELETE request on a "products/image" resource
+            // POST request won't have na id, a DELETE request will
+            $id = $uri[4] ?? null;
+            $controller->processImageRequest($_SERVER["REQUEST_METHOD"], $id);  
+        }
+        break;
+    }
+    default: {
+        echo(json_encode([ "message" => "Endpoint not found." ]));
+        http_response_code(404);
+        exit;
+    }
 }

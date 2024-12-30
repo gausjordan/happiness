@@ -23,11 +23,14 @@ class ProductController {
         }
     }
 
+
     private function processResourceRequest(string $method, string $id): void {
-        
+
         if ($this->user_role !== "admin" && $this->user_role !== "employee") {
+            // Employees and administrators can view hidden products (true)
             $product = $this->gateway->get($id, true);
         } else {
+            // Others can not
             $product = $this->gateway->get($id);
         }
 
@@ -37,16 +40,17 @@ class ProductController {
         }
 
         switch ($method) {
-
+            
+            // Anyone can browse
             case "GET":
                 echo json_encode($product);
                 break;
 
+            // Admins and employees can edit
             case "PATCH":
-
-                if ($this->user_role !== "admin" && $this->user_role !== "employee") {
-                    http_response_code(403);
-                    echo json_encode(["Message: " => "Administrative account required."]);
+                if ($this->user_role === "admin" || $this->user_role === "employee") {
+                    http_response_code(401);
+                    echo json_encode(["message: " => "Administrative account required."]);
                     break;
                 }
 
@@ -58,7 +62,7 @@ class ProductController {
                         $fileName = $this->sanitizeFilename($url);
                         if (!file_exists(".." . DIRECTORY_SEPARATOR . "img" . DIRECTORY_SEPARATOR . $fileName)) {
                             http_response_code(404);
-                            $errors[] = "Product update failed. Missing image file " . $fileName;
+                            $errors[] = "Product update failed. Missing image file." . $fileName;
                         }
                     }
                 }
@@ -102,10 +106,12 @@ class ProductController {
         }
     }
 
+
     private function processCollectionRequest(string $method): void {
         switch ($method) {
 
-            case "GET": 
+            case "GET":
+                // Employees and administrators can view hidden products (true)
                 if ($this->user_role === "admin" || $this->user_role === "employee") {
                     echo json_encode([
                         "products" => $this->gateway->getAll($this->user_id),
@@ -113,21 +119,13 @@ class ProductController {
                     ]);
                     break;
                 } else {
+                    // Guests and users can not
                     echo json_encode([
                         "products" => $this->gateway->getAll($this->user_id, true),
                         "productCount" => $this->gateway->metaData($this->user_id, true)
                     ]);
                     break;
                 }
-
-            // case "GET": 
-            //     if ($this->user_role === "admin" || $this->user_role === "employee") {
-            //         echo json_encode($this->gateway->getAll($this->user_id));
-            //         break;
-            //     } else {
-            //         echo json_encode($this->gateway->getAll($this->user_id, true));
-            //         break;
-            //     }
 
             case "POST":
 
@@ -141,7 +139,7 @@ class ProductController {
                     break;
                 }
 
-                if ($this->user_role !== "admin" && $this->user_role !== "employee") {
+                if ($this->user_role == "guest" || $this->user_role == "user") {
                     http_response_code(403);
                     echo json_encode(["Message: " => "Administrative account required."]);
                     break;
@@ -176,7 +174,7 @@ class ProductController {
 
         if ($this->user_role !== "employee" && $this->user_role !== "admin") {
             http_response_code(403);
-            echo json_encode(["Message: " => "Administrative account required."]);
+            echo json_encode(["message: " => "Administrative account required."]);
             exit;
         }
 

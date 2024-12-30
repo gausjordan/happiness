@@ -24,7 +24,11 @@ class Auth {
      */
     public function authenticateAccessToken(): bool {
 
-        // TODO ... neka gleda i je li dostupan httponly secure cookie u supervarijabli COOKIES
+        if (empty($_SERVER["HTTP_AUTHORIZATION"]))
+        {
+            return false;  // No Authorisation header at all => guest user
+        }
+
         if ( ! preg_match("/^Bearer\s+(.*)$/", $_SERVER["HTTP_AUTHORIZATION"], $matches)) {
             http_response_code(400);
             echo json_encode(["message" => "Incomplete authorization header"]);

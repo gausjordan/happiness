@@ -10,10 +10,11 @@ if (typeof token == 'undefined') {
 localStorage.setItem("access_token", token.access_token);
 localStorage.setItem("refresh_token", token.refresh_token);
 
-let obj = [];
-let productCount;
-
 async function fetchData() {
+
+    let obj = [];
+    let productCount;
+
     const response = await fetch("http://192.168.1.12/api/products", {
         headers: {
             "Authorization": "Bearer " + localStorage.getItem("access_token")
@@ -48,6 +49,9 @@ async function fetchData() {
         container.appendChild(insertElements("p", product.price + " €"));
 
     });
+
+    return productCount;
+        
 }
 
 function insertElements(tag, content, attributes = {}) {
@@ -59,4 +63,4 @@ function insertElements(tag, content, attributes = {}) {
     return element;
 }
 
-fetchData().then(() => console.log(productCount));
+fetchData().then((productCount) => console.log(productCount));
