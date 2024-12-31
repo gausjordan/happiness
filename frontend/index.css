@@ -37,6 +37,11 @@ header#header-logo-text > div {
   align-items: center;
 }
 
+header#header-logo-text a {
+  margin: 0;
+  padding: 0;
+}
+
 /* Top menu's left and the right section */
 header#header-logo-text > div.side-pad {
   flex-basis: 30%;
@@ -45,6 +50,7 @@ header#header-logo-text > div.side-pad {
 
 /* Top menu's right section only */
 header#header-logo-text > .middle + div.side-pad {
+  display: absolute;
   justify-content: right;
 }
 
@@ -56,7 +62,6 @@ header#header-logo-text > div.side-pad:first-child {
 /* Top menu's middle part feat. Company's icon */
 header#header-logo-text > .middle {
   align-self: center;
-  height: 2.6em;
 }
 
 /* Set size for all top menu images */
@@ -68,9 +73,10 @@ header#header-logo-text img {
 
 /* Make the top menu's company icon larger */
 header#header-logo-text .middle img {
-  height: 2.6em;
+  padding: 0;
+  margin: 0;
+  object-fit: contain;
   width: 2.6em;
-  margin: 0.7em;
 }
 
 /* Hambuger menu icon container */

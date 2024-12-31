@@ -40,8 +40,10 @@ async function apiCall() {
             price.innerHTML = obj.price + " €";
             let description = document.getElementById("description");
             description.innerHTML = (lang === 'en') ? obj.description : obj.opis;
+            document.getElementById("commerce").style.display = "block";
         });
     }
+    return obj;
 };
 
 function insertElements(tag, content, attributes = {}) {
@@ -53,4 +55,4 @@ function insertElements(tag, content, attributes = {}) {
     return element;
 }
 
-apiCall();
+apiCall().then();

@@ -7,6 +7,7 @@ h1 {
     margin: 0;
 }
 
+
 #image-big {
     max-width: 100%;
 }
@@ -25,5 +26,5 @@ div#thumbnails div {
 div#thumbnails img {
     width: 100%;
     object-fit: cover;
-    height: 100%;
+    aspect-ratio: 1;
 }

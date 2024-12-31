@@ -11,13 +11,15 @@ div.shop#main-grid {
 div.shop#main-grid div.item {
     background-color: pink;
     text-align: center;
+    /* position: relative;
+    min-height: 100%;
+    width: 100%; */
 }
 
 div .item img {
     width: 100%;
+    aspect-ratio: 1 / 1;
     object-fit: cover;
-    height: 70%;
-    
 }
 
 div .item h3 {

@@ -8,8 +8,6 @@ function displaySplashScreen() {
 }
 
 
-
-
 // Check if language is already chosen and show a single flag only
 if (!localStorage.getItem('lang')) {
     localStorage.setItem('lang', 'hr');
@@ -54,7 +52,7 @@ let flag = document.getElementsByClassName("lang-flag");
         flag[1].style.opacity = "0";
     }
     renderMainMenu();
-    navigateTo(window.location.href);
+    navigateTo(window.location.pathname);
 });
 
 
@@ -90,51 +88,84 @@ const routes = {
     "/about": '/frontend/about.html',
     "/shop": '/frontend/shop.html',
     "/product": '/frontend/product.html',
+    "/account" : '/frontend/account.html',
+    "/404" : '/frontend/404.html'
 };
 
+// Override default <a> behavior
+document.addEventListener("DOMContentLoaded", () => {
+    document.querySelectorAll('a[data-link]').forEach(anchor => {
+        anchor.addEventListener('click', (event) => {
+            event.preventDefault(); // Prevent the browser from following the link
+            const path = anchor.getAttribute('href');
+            navigateTo(path); // Use custom SPA navigation logic
+        });
+    });
+});
 
-// Navigation handling via URI
+
+// Navigation handling
 const navigateTo = async (path) => {
 
-    const url = new URL(path, window.location.origin);
-    const queryParams = url.search; // Parameters
-    const basePath = "/" + path.split('/')[3];
+    let url = new URL(window.location.origin + path);
     const app = document.getElementById("app");
-    let view = routes[basePath];
-    
-    if (!view) {
-        view = '/frontend/404.html';
+
+    let target = routes[url.pathname];
+
+    if (!target) {
+        url = new URL(window.location.origin + "/404");
+        target = routes[url.pathname];
     }
 
-    const pageUrl = view + queryParams;
-    const page = await loadPage(pageUrl);
+    // Load the page content
+    const page = await loadPage(url.origin + target + url.search);
 
+    // Parse the loaded HTML to extract the title and body content
     const parser = new DOMParser();
     const parsedPage = parser.parseFromString(page, 'text/html');
     
+    // Set the document title and replace the app's innerHTML with the new page content
     document.title = parsedPage.title;
     app.innerHTML = parsedPage.body.innerHTML;
-    
-    const baseUrl = new URL(view, window.location.origin).href;
 
+    // Get the base URL for stylesheets and scripts
+    const baseUrl = new URL(target, window.location.origin).href;
+
+    // Load stylesheets and execute scripts
     loadStylesheets(parsedPage, baseUrl);
     executeScripts(parsedPage);
 
+    // Update the browser's address bar using pushState, ensuring the query parameters are included
+    history.pushState({ path: url.href }, parsedPage.title, url.href);
 };
 
 
 // Fetch, inject, execute and remove scripts loaded from HTML content
 function executeScripts(container) {
+    const existingDynamicScripts = document.head.querySelectorAll('script[data-dynamic="true"]');
+    existingDynamicScripts.forEach(script => script.remove());
     const scripts = container.querySelectorAll('script');
     scripts.forEach(script => {
         const newScript = document.createElement('script');
+        newScript.setAttribute('data-dynamic', 'true');
+
+        // If the script has a src, set the new script's src
         if (script.src) {
             newScript.src = script.src;
+
+            // Add an event listener to remove the script after it's loaded and executed
+            newScript.onload = () => {
+                newScript.parentNode.removeChild(newScript);
+            };
         } else {
+            // If no src, just add the script content
             newScript.textContent = script.textContent;
+
+            // Execute immediately by appending it to the <head>, and remove it
+            document.head.appendChild(newScript);
+            newScript.parentNode.removeChild(newScript);
         }
-        document.body.appendChild(newScript);
-        document.body.removeChild(newScript);
+        document.head.appendChild(newScript);
     });
 }
 
@@ -151,38 +182,16 @@ function loadStylesheets(container, baseUrl) {
 }
 
 
-// Loaad and inject page content
-async function loadPage(view) {
+// Load and inject page content
+async function loadPage(target) {
     try {
-        const response = await fetch(view);
+        const response = await fetch(target);
         const text = await response.text();
         return text;
     } catch (error) {
         return `<h1>Server Error</h1>`;
     }
 }
-
-// .addEventListener("contextmenu", (e) => {e.preventDefault()});
-
-// Event listener for navigation & quick menu hide
-// document.addEventListener("click", (event) => collapseMenu(event));
-// function collapseMenu(event) {
-
-//     if (event.target.matches("[data-link]")) {
-//         event.preventDefault();
-//         alert("Opa");
-//         let root = document.querySelector(':root');
-//         let menu = document.getElementById("menu-icon");
-//         const old = getComputedStyle(root, null).getPropertyValue('--menu-animation-speed');
-//         root.style.setProperty('--menu-animation-speed', "0s");
-//         menu.click();
-//         setTimeout(() => root.style.setProperty('--menu-animation-speed', old), 500);
-//         const path = event.target.getAttribute("href");
-//         history.pushState({ path }, null, path);
-//         debugger;
-//         navigateTo(path);
-//     }
-// }
 
 
 // Event listeners to close the main menu when anything else gets clicked or touched
@@ -207,7 +216,7 @@ document.addEventListener("touchstart", (event) => {
 });
 
 
-// DAFAQ - provjeri ovo i ne brisi
+
 window.addEventListener("popstate", (event) => {
     const path = event.state?.path || window.location.pathname;
     navigateTo(path);
@@ -215,7 +224,10 @@ window.addEventListener("popstate", (event) => {
 
 
 // Initialize the app on first load
-if (window.location.pathname === '/') { displaySplashScreen(); }
-const initialPath = window.location.pathname === '/' ? window.location.origin + '/home' : window.location.href; //window.location.pathname;
-history.replaceState({ path: initialPath }, null, initialPath);
+if (window.location.pathname === '/') {
+    // displaySplashScreen();
+}
+
+const initialPath = window.location.pathname === '/' ? '/home' : window.location.pathname + window.location.search;
+// REDUNDANT - history.replaceState({ path: initialPath }, null, initialPath);
 navigateTo(initialPath);
