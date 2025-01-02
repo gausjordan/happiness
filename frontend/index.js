@@ -13,7 +13,7 @@ if (!localStorage.getItem('lang')) {
     localStorage.setItem('lang', 'hr');
  }
 
-let flags = document.getElementsByClassName("lang-flag");
+ let flags = document.getElementsByClassName("lang-flag");
 let lang = localStorage.getItem('lang');
 for (let flag of flags) {
     if (lang === flag.getAttribute('id')) {
@@ -52,7 +52,7 @@ let flag = document.getElementsByClassName("lang-flag");
         flag[1].style.opacity = "0";
     }
     renderMainMenu();
-    navigateTo(window.location.pathname);
+    navigateTo(window.location.pathname || "/home");
 });
 
 
@@ -84,6 +84,7 @@ svgElements.forEach(({ url, target }) => {
 
 // Faux-SPA routing
 const routes = {
+    "/" : '/frontend/home.html',
     "/home": '/frontend/home.html',
     "/about": '/frontend/about.html',
     "/shop": '/frontend/shop.html',
@@ -96,23 +97,31 @@ const routes = {
 document.addEventListener("DOMContentLoaded", () => {
     document.querySelectorAll('a[data-link]').forEach(anchor => {
         anchor.addEventListener('click', (event) => {
-            event.preventDefault(); // Prevent the browser from following the link
+            event.preventDefault();
             const path = anchor.getAttribute('href');
-            navigateTo(path); // Use custom SPA navigation logic
+            navigateTo(path);
         });
     });
 });
 
 
 // Navigation handling
-const navigateTo = async (path, isInitial = false) => {
+const navigateTo = async (path, doNotPushState = false) => {
+
+    // Manage browser history
+    if (!doNotPushState) {
+        if (window.location.pathname !== path) {
+            history.pushState( {}, "", path);
+        }
+    } else {
+        history.replaceState( {}, "", path);
+    }
 
     let url = new URL(window.location.origin + path);
     const app = document.getElementById("app");
 
-    // Only evaluate the first path segment, and add a slash at the beginning
+    // Only evaluate the first path segment (add a slash at the beginning)
     let target = routes["/" + url.pathname.split("/")[1]];
-
     if (!target) {
         url = new URL(window.location.origin + "/404");
         target = routes[url.pathname];
@@ -135,15 +144,17 @@ const navigateTo = async (path, isInitial = false) => {
     // Load stylesheets and execute scripts
     loadStylesheets(parsedPage, baseUrl);
     executeScripts(parsedPage);
-
-    // Update the browser's address bar using pushState, ensuring the query parameters are included
-    if (!isInitial && window.location.pathname !== path) {
-        history.pushState({ path: url.pathname }, parsedPage.title, url.href);
-    }
 };
 
 
-// Fetch, inject, execute and remove scripts loaded from HTML content
+window.addEventListener("popstate", (event) => {
+    const path = window.location.pathname + window.location.search;
+    if (path )
+    navigateTo(path);
+});
+
+
+// Inject, execute and remove scripts appended from fetched HTML content
 function executeScripts(container) {
     const existingDynamicScripts = document.head.querySelectorAll('script[data-dynamic="true"]');
     existingDynamicScripts.forEach(script => script.remove());
@@ -181,16 +192,12 @@ function loadStylesheets(container, baseUrl) {
         const href = link.getAttribute('href');
         newLink.href = href.startsWith('/') ? href : new URL(href, baseUrl).href;
 
+        // See if the CSS element is already in the DOM, only append if it's not
         let justTheFilenameAndExtension = newLink.href.split("/").slice(-1)[0];
         let linkElement = document.querySelector('link[href$=\"' + justTheFilenameAndExtension + '"]');
-        
         if (!linkElement) {
             document.head.appendChild(newLink);
         }
-
-        // if (linkElement === newLink) {
-        //     document.head.removeChild(newLink); // BRIŠE ŠTO TREBA I NE TREBA, PROBLEM JE PATH VS FULL URL
-        // }
     });
 }
 
@@ -228,30 +235,12 @@ document.addEventListener("touchstart", (event) => {
     }
 });
 
-// HISTORY ne radi kako treba! I klikanje na proizvod ne radi.
-
-
-window.addEventListener("popstate", (event) => {
-    const path = event.state?.path || window.location.pathname + window.location.search;
-    navigateTo(path, true);
-});
-
 
 // Initialize the app on first load
 if (window.location.pathname === '/') {
-    // displaySplashScreen();
+    displaySplashScreen();
 }
 
-
-
-const initialPath = window.location.pathname === '/' ? '/home' : window.location.pathname + window.location.search;
-
-// console.log(history.state);
-
-
-// GPT fix attempt
-// if (!history.state) {
-//     history.replaceState({ path: initialPath }, document.title, initialPath);
-// }
-
-navigateTo(initialPath);
+// "Silently" navigate to "/home" when no path is provided
+const initialPath = window.location.pathname + window.location.search;
+navigateTo(initialPath, true);

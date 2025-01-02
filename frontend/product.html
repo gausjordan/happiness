@@ -1,12 +1,16 @@
 <script>
-    document.getElementById('atc-button').innerHTML =
-    localStorage.getItem("lang") == 'en' ? "Add to cart" : "Dodaj u košaricu";
+    if (localStorage.getItem("lang") === 'en') {
+        //document.title = "Product details";
+        document.getElementById('atc-button').innerHTML = "Add to cart";
+    } else {
+        //document.title = "Detalji o proizvodu";
+        document.getElementById('atc-button').innerHTML = "Dodaj u košaricu";
+    }
 </script>
 
 <head>
     <link rel="stylesheet" href="/frontend/product.css" rel="preload" as="style"></link>
     <script src="/frontend/product.js"></script>
-    <title>Detalji o proizvodu</title>
 </head>
 
 <body>

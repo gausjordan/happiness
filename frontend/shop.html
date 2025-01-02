@@ -1,21 +1,23 @@
 <script>
     if (localStorage.getItem("lang") === 'en') {
-        document.title = "Shop";
-        document.querySelector("h1").textContent = "Shop";
+        document.title = "Products";
+        document.querySelector("h1").textContent = "Products";
         document.querySelector("p").textContent = "We do the browsing here.";
+    } else {
+        document.title = "Proizvodi";
+        document.querySelector("h1").textContent = "Proizvodi";
+        document.querySelector("p").textContent = "Ovdje prikazujemo proizvode.";
     }
 </script>
 
 <head>
-    <!-- <script>0</script> -->
-    <title>Proizvodi</title>
     <script src="/frontend/shop.js"></script>
     <link rel="stylesheet" href="/frontend/shop.css" rel="preload" as="style"></link>
 </head>
 
 </body>
-    <h1>Proizvodi</h1>
-    <p>Ovdje prikazujemo proizvode.</p>
+    <h1></h1>
+    <p></p>
     <div class="shop" id="main-grid">
 
     </div>

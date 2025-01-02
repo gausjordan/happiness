@@ -4,7 +4,7 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content">
-    <title>Happiness</title>
+    <!-- <title>Happiness</title> -->
     <link rel="stylesheet" rel="preload" href="/frontend/index.css" as="style">
     <link rel="stylesheet" href="/frontend/splashstyle.css">
     <base href="/" />
@@ -34,11 +34,11 @@
         <img src="/frontend/graphics/magnifier.svg" alt="Search button"></img>
       </div>
       <div class="middle">
-          <a href="/home"><img src="/frontend/graphics/icon-static.svg" alt="Happiness Logo"></img></a>
+          <a href="/home" data-link><img src="/frontend/graphics/icon-static.svg" alt="Happiness Logo"></img></a>
       </div>
       <div class="side-pad">
-        <a href="/account"><img src="/frontend/graphics/user.svg" alt="Current user"></img></a>
-        <a href="/cart"><img src="/frontend/graphics/cart.svg" alt="Shopping cart"></img></a>
+        <a href="/account" data-link><img src="/frontend/graphics/user.svg" alt="Current user"></img></a>
+        <a href="/cart" data-link><img src="/frontend/graphics/cart.svg" alt="Shopping cart"></img></a>
       </div>
     </header>
 
@@ -47,8 +47,8 @@
       <label for="menu-toggle">
         <div class="menu-icon" id="menu-icon">&#9776;</div>
       </label>
-      <img src="/frontend/graphics/flag-uk.svg"  class="lang-flag" id="en"></img>
-      <img src="/frontend/graphics/flag-hr.svg"  class="lang-flag" id="hr"></img>
+      <img src="/frontend/graphics/flag-uk.svg" class="lang-flag" id="en"></img>
+      <img src="/frontend/graphics/flag-hr.svg" class="lang-flag" id="hr"></img>
       <ul class="nav-links" id="nav-links">
         <a href="/home" data-link>
           <li>
