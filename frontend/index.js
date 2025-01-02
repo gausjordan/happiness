@@ -105,12 +105,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 // Navigation handling
-const navigateTo = async (path) => {
+const navigateTo = async (path, isInitial = false) => {
 
     let url = new URL(window.location.origin + path);
     const app = document.getElementById("app");
 
-    let target = routes[url.pathname];
+    // Only evaluate the first path segment, and add a slash at the beginning
+    let target = routes["/" + url.pathname.split("/")[1]];
 
     if (!target) {
         url = new URL(window.location.origin + "/404");
@@ -136,7 +137,9 @@ const navigateTo = async (path) => {
     executeScripts(parsedPage);
 
     // Update the browser's address bar using pushState, ensuring the query parameters are included
-    history.pushState({ path: url.href }, parsedPage.title, url.href);
+    if (!isInitial && window.location.pathname !== path) {
+        history.pushState({ path: url.pathname }, parsedPage.title, url.href);
+    }
 };
 
 
@@ -177,7 +180,17 @@ function loadStylesheets(container, baseUrl) {
         newLink.rel = 'stylesheet';
         const href = link.getAttribute('href');
         newLink.href = href.startsWith('/') ? href : new URL(href, baseUrl).href;
-        document.head.appendChild(newLink);
+
+        let justTheFilenameAndExtension = newLink.href.split("/").slice(-1)[0];
+        let linkElement = document.querySelector('link[href$=\"' + justTheFilenameAndExtension + '"]');
+        
+        if (!linkElement) {
+            document.head.appendChild(newLink);
+        }
+
+        // if (linkElement === newLink) {
+        //     document.head.removeChild(newLink); // BRIŠE ŠTO TREBA I NE TREBA, PROBLEM JE PATH VS FULL URL
+        // }
     });
 }
 
@@ -215,11 +228,12 @@ document.addEventListener("touchstart", (event) => {
     }
 });
 
+// HISTORY ne radi kako treba! I klikanje na proizvod ne radi.
 
 
 window.addEventListener("popstate", (event) => {
-    const path = event.state?.path || window.location.pathname;
-    navigateTo(path);
+    const path = event.state?.path || window.location.pathname + window.location.search;
+    navigateTo(path, true);
 });
 
 
@@ -228,6 +242,16 @@ if (window.location.pathname === '/') {
     // displaySplashScreen();
 }
 
+
+
 const initialPath = window.location.pathname === '/' ? '/home' : window.location.pathname + window.location.search;
-// REDUNDANT - history.replaceState({ path: initialPath }, null, initialPath);
+
+// console.log(history.state);
+
+
+// GPT fix attempt
+// if (!history.state) {
+//     history.replaceState({ path: initialPath }, document.title, initialPath);
+// }
+
 navigateTo(initialPath);

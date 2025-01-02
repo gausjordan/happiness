@@ -53,7 +53,10 @@ async function fetchData() {
                                 insertElements("div", null, { "class" : "item" })
                             );
             let container = div.appendChild(
-                insertElements("a", null, { "href" : "/product/" + product.id })
+                insertElements("a", null, {
+                    "href" : "/product/" + product.id,
+                    "onclick" : "event.preventDefault(); navigateTo(/" + product.id + ")"
+                })
             );                        
             container.appendChild(
                             insertElements("img", null, {
