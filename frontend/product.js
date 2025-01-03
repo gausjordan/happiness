@@ -7,11 +7,7 @@ async function apiCall() {
     let productId = basePath.pathname.split('/')[2];
     let lang = localStorage.getItem("lang");
 
-    const response = await fetch("http://192.168.1.12/api/products/" + productId, {
-        headers: {
-            "Authorization": "Bearer " + localStorage.getItem("access_token")
-        }
-    });
+    const response = await fetch("http://192.168.1.12/api/products/" + productId, authRequestObject());
 
     const json = await response.text();
     const obj = JSON.parse(json);

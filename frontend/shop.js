@@ -1,14 +1,14 @@
 "use strict";
 
-if (typeof token == 'undefined') {
-    var token = {
-        "access_token" : "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjQsIm5hbWUiOiJjYmciLCJyb2xlIjoiYWRtaW4iLCJleHAiOjE3Mzg1ODM4Mzd9.d73KGPQ0vmjLC4q9V-nQ_ewTc1mXYbMRgF-B6VL3Bk8",
-        "refresh_token" : "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjQsIm5hbWUiOiJjYmciLCJyb2xlIjoiYWRtaW4iLCJleHAiOjE3Mzg1ODM4Mzd9.d73KGPQ0vmjLC4q9V-nQ_ewTc1mXYbMRgF-B6VL3Bk8"
-    };
-}
+// if (typeof token == 'undefined') {
+//     var token = {
+//         "access_token" : "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjQsIm5hbWUiOiJjYmciLCJyb2xlIjoiYWRtaW4iLCJleHAiOjE3Mzg1ODM4Mzd9.d73KGPQ0vmjLC4q9V-nQ_ewTc1mXYbMRgF-B6VL3Bk8",
+//         "refresh_token" : "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjQsIm5hbWUiOiJjYmciLCJyb2xlIjoiYWRtaW4iLCJleHAiOjE3Mzg1ODM4Mzd9.d73KGPQ0vmjLC4q9V-nQ_ewTc1mXYbMRgF-B6VL3Bk8"
+//     };
+// }
 
-localStorage.setItem("access_token", token.access_token);
-localStorage.setItem("refresh_token", token.refresh_token);
+// localStorage.setItem("access_token", token.access_token);
+// localStorage.setItem("refresh_token", token.refresh_token);
 
 // TODO - Redeclaration issue on language switch
 // let stari = document.getElementsByTagName("h1");
@@ -31,12 +31,8 @@ async function fetchData() {
     let obj = [];
     let productCount;
 
-    const response = await fetch("http://192.168.1.12/api/products", {
-        headers: {
-            "Authorization": "Bearer " + localStorage.getItem("access_token")
-        }
-    })
-    
+    const response = await fetch("http://192.168.1.12/api/products", authRequestObject())
+      
     const data = await response.json();
 
     if (response.status == 200) {

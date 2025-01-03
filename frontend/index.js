@@ -8,6 +8,18 @@ function displaySplashScreen() {
 }
 
 
+// Returns authorization header object for the fetch(), if there is a token
+function authRequestObject() {
+    let initObject = {};
+    if (localStorage.getItem("access_token")) {
+        initObject["headers"]
+                = { "Authorization": "Bearer "
+                    + localStorage.getItem("access_token")
+                };
+    }
+    return initObject;
+}
+
 // Check if language is already chosen and show a single flag only
 if (!localStorage.getItem('lang')) {
     localStorage.setItem('lang', 'hr');
