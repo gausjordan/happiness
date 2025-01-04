@@ -11,7 +11,7 @@ if ($_SERVER["REQUEST_METHOD"] !== "POST") {
     exit;
 }
 
-// Request body must contain a JWT token containing a "username" and a "password"
+// Request body must contain a "username" and a "password"
 $data = (array) json_decode(file_get_contents("php://input"), true);
 
 if ( ! array_key_exists("username", $data) || ! array_key_exists("password", $data)) {

@@ -27,6 +27,7 @@ $codec = new JWTCodec($config->secret_key);
 
 try {
     $payload = $codec->decode($data["token"]);
+    // var_dump($payload);
 } catch (Exception) {
     // TODO - handle each error differently
     http_response_code(409);

@@ -7,15 +7,14 @@ function displaySplashScreen() {
     setTimeout( () => document.getElementById("app").style.display = "block", 3000);
 }
 
-
-// Returns authorization header object for the fetch(), if there is a token
+// If there is a token stored locally, return an authorization header object
 function authRequestObject() {
     let initObject = {};
     if (localStorage.getItem("access_token")) {
-        initObject["headers"]
-                = { "Authorization": "Bearer "
-                    + localStorage.getItem("access_token")
-                };
+        initObject["headers"] =
+            {
+                "Authorization": "Bearer " + localStorage.getItem("access_token")
+            };
     }
     return initObject;
 }
@@ -24,8 +23,7 @@ function authRequestObject() {
 if (!localStorage.getItem('lang')) {
     localStorage.setItem('lang', 'hr');
  }
-
- let flags = document.getElementsByClassName("lang-flag");
+let flags = document.getElementsByClassName("lang-flag");
 let lang = localStorage.getItem('lang');
 for (let flag of flags) {
     if (lang === flag.getAttribute('id')) {
@@ -35,7 +33,7 @@ for (let flag of flags) {
     }
 }
 
- // Translate main menu by hiding irrelevant language
+// Translate main menu by hiding irrelevant language
 renderMainMenu();
 function renderMainMenu() {
     if (localStorage.getItem('lang') === 'hr') {
@@ -94,7 +92,7 @@ svgElements.forEach(({ url, target }) => {
         });
 });
 
-// Faux-SPA routing
+// SPA routes
 const routes = {
     "/" : '/frontend/home.html',
     "/home": '/frontend/home.html',
@@ -166,7 +164,7 @@ window.addEventListener("popstate", (event) => {
 });
 
 
-// Inject, execute and remove scripts appended from fetched HTML content
+// Inject, execute and remove scripts appended from the fetched HTML content
 function executeScripts(container) {
     const existingDynamicScripts = document.head.querySelectorAll('script[data-dynamic="true"]');
     existingDynamicScripts.forEach(script => script.remove());
@@ -187,7 +185,7 @@ function executeScripts(container) {
             // If no src, just add the script content
             newScript.textContent = script.textContent;
 
-            // Execute immediately by appending it to the <head>, and remove it
+            // Execute immediately by appending it to the <head>, then remove it
             document.head.appendChild(newScript);
             newScript.parentNode.removeChild(newScript);
         }
@@ -221,12 +219,12 @@ async function loadPage(target) {
         const text = await response.text();
         return text;
     } catch (error) {
-        return `<h1>Server Error</h1>`;
+        return `<h1>Error fetching the page</h1>`;
     }
 }
 
 
-// Event listeners to close the main menu when anything else gets clicked or touched
+// Close the opened menu if anything else gets clicked
 document.addEventListener("click", (event) => anyThingButTheMainMenu(event));
 document.addEventListener("contextmenu", (event) => anyThingButTheMainMenu(event));
 function anyThingButTheMainMenu(event) {
@@ -237,11 +235,13 @@ function anyThingButTheMainMenu(event) {
         document.getElementById("menu-toggle").click();
     }
 }
+
+
+// Close the menu if the next touch target is neither the menu, nor the menu icon
 document.addEventListener("touchstart", (event) => {
     const menuToggle = document.getElementById("menu-toggle");
     const menuIcon = document.getElementById("menu-icon");
-    const navLinks = document.getElementById("nav-links");
-    // Check if the menu is open and the touch target is anywhere outside the menu and menu icon
+    const navLinks = document.getElementById("nav-links");    
     if (menuToggle.checked && !navLinks.contains(event.target) && event.target !== menuIcon) {
         menuToggle.click();
     }
@@ -253,6 +253,6 @@ if (window.location.pathname === '/') {
     displaySplashScreen();
 }
 
-// "Silently" navigate to "/home" when no path is provided
-const initialPath = window.location.pathname + window.location.search;
-navigateTo(initialPath, true);
+
+// Entry point
+navigateTo(window.location.pathname + window.location.search, true);

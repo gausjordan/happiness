@@ -1,39 +1,18 @@
 "use strict";
 
-// if (typeof token == 'undefined') {
-//     var token = {
-//         "access_token" : "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjQsIm5hbWUiOiJjYmciLCJyb2xlIjoiYWRtaW4iLCJleHAiOjE3Mzg1ODM4Mzd9.d73KGPQ0vmjLC4q9V-nQ_ewTc1mXYbMRgF-B6VL3Bk8",
-//         "refresh_token" : "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjQsIm5hbWUiOiJjYmciLCJyb2xlIjoiYWRtaW4iLCJleHAiOjE3Mzg1ODM4Mzd9.d73KGPQ0vmjLC4q9V-nQ_ewTc1mXYbMRgF-B6VL3Bk8"
-//     };
-// }
 
-// localStorage.setItem("access_token", token.access_token);
-// localStorage.setItem("refresh_token", token.refresh_token);
-
-// TODO - Redeclaration issue on language switch
-// let stari = document.getElementsByTagName("h1");
-// let novi = document.createElement('h2');
-// let main = document.getElementById('app');
-// document.body.insertBefore(novi, main);
-
-// if (!localStorage.getItem("access_token")) {
-//     novi.innerHTML = "Nemamo token";
-// } else {
-//     novi.innerHTML = "Imamo token";
-// }
-
-
-
-
-
+// TODO - Promise.all() - parallelize fetching images
 async function fetchData() {
 
     let obj = [];
     let productCount;
 
     const response = await fetch("http://192.168.1.12/api/products", authRequestObject())
-      
+
     const data = await response.json();
+
+    console.log(data.message);
+    console.log(response.status);
 
     if (response.status == 200) {
         obj = data.products;
@@ -69,9 +48,8 @@ async function fetchData() {
 
         return { productCount, grid };
     } 
-    else if (response.status == 401 && json.message == "Access token expired.") {
-		console.log("Token expired.");
-
+    else if (response.status == 401 && data.message == "Token expired.") {
+		
         const response = await fetch('http://localhost/api/refresh.php', {
             method: 'POST',
             body: JSON.stringify({
@@ -96,7 +74,6 @@ async function fetchData() {
 	} else if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
     }
-        
 }
 
 function insertElements(tag, content, attributes = {}) {
@@ -110,6 +87,6 @@ function insertElements(tag, content, attributes = {}) {
 
 fetchData()
     .then((p) => {
-        console.log(p.productCount);
+        //console.log(p.productCount);
         p.grid.style.display = "grid";
     });

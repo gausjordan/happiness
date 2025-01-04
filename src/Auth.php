@@ -46,7 +46,8 @@ class Auth {
         catch (TokenExpiredException) {
             http_response_code(401);
             echo json_encode(["message" => "Token expired."]);
-            return false;
+            exit;
+            //return false;
         }
         catch (Exception $e) {
             http_response_code(400);
