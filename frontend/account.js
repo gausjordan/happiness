@@ -18,6 +18,7 @@ async function logout() {
     
     localStorage.removeItem("access_token");
     localStorage.removeItem("refresh_token");
+    adminMenuOptions();
     navigateTo("/home");
 
 }
@@ -42,7 +43,8 @@ async function login(event) {
     if (response.status == 200) {
         localStorage.setItem("access_token", obj.access_token);
         localStorage.setItem("refresh_token", obj.refresh_token);
-        navigateTo("/home");
+        adminMenuOptions();
+        navigateTo("/shop");
     }
 
 

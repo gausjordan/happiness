@@ -24,3 +24,7 @@ div#thumbnails img {
     object-fit: cover;
     aspect-ratio: 1;
 }
+
+div#commerce button#atc-button{
+    font-size: 1em;
+}

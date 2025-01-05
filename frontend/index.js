@@ -4,7 +4,7 @@
 function displaySplashScreen() {
     document.getElementById("app").style.display = "none";
     document.getElementById("splashscreen").removeAttribute("style", "display: none");
-    setTimeout( () => document.getElementById("app").style.display = "block", 3000);
+    setTimeout(() => document.getElementById("app").style.display = "block", 3000);
 }
 
 // If there is a token stored locally, return an authorization header object
@@ -12,17 +12,82 @@ function authRequestObject() {
     let initObject = {};
     if (localStorage.getItem("access_token")) {
         initObject["headers"] =
-            {
-                "Authorization": "Bearer " + localStorage.getItem("access_token")
-            };
+        {
+            "Authorization": "Bearer " + localStorage.getItem("access_token")
+        };
     }
     return initObject;
+}
+
+// If access token had expired, but there is a refresh token
+async function getRefreshToken() {
+    const response = await fetch('http://192.168.1.12/api/refresh.php', {
+        method: 'POST',
+        body: JSON.stringify({
+            token: localStorage.getItem("refresh_token")
+        })
+    });
+    const json = await response.text();
+    const obj = JSON.parse(json);
+
+    if (response.status == 200) {
+        localStorage.setItem("access_token", obj.access_token);
+        localStorage.setItem("refresh_token", obj.refresh_token);
+    }
+    else {
+        // Refresh token is invalid, log out
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("refresh_token");
+        navigateTo("/home");
+    }
+}
+
+// Check if a token has expired (client-side)
+function isTokenExpired(token) {
+    const payload = JSON.parse(atob(token.split('.')[1])); // Decode JWT payload
+    const expiry = payload.exp * 1000; // Convert expiry to milliseconds
+    return Date.now() >= expiry;
+}
+
+// Do an API call
+async function fetchData(fetchURL) {
+    let response;
+    // If there is a stored token, and it expired, get a fresh one before even trying
+    if (localStorage.getItem("access_token") && isTokenExpired(localStorage.getItem("access_token"))) {
+        await getRefreshToken();
+    }
+
+    response = await fetch(fetchURL, authRequestObject());
+    let data = await response.json();
+
+    if (response.status == 200) {
+        return data;
+    }
+
+    // This may happen if a token had just expired mid-transaction in the last second
+    else if (response.status == 401 && data.message == "Token expired.") {
+        await getRefreshToken();
+        let response = await fetch(fetchURL, authRequestObject());
+        let data = await response.json();
+
+        if (response.status == 200) {
+            return data;
+        }
+        else {
+            // If a refresh token had also expired, log out
+            localStorage.removeItem("access_token");
+            localStorage.removeItem("refresh_token");
+            navigateTo("/home");
+        }
+    } else {
+        throw new Error("API error");
+    }
 }
 
 // Check if language is already chosen and show a single flag only
 if (!localStorage.getItem('lang')) {
     localStorage.setItem('lang', 'hr');
- }
+}
 let flags = document.getElementsByClassName("lang-flag");
 let lang = localStorage.getItem('lang');
 for (let flag of flags) {
@@ -33,8 +98,14 @@ for (let flag of flags) {
     }
 }
 
-// Translate main menu by hiding irrelevant language
+
+// Show administrative options to the main menu, when required
+adminMenuOptions();
+
+// Show or hide menu items, depenting on the language selected
 renderMainMenu();
+
+// Translate main menu by hiding irrelevant language
 function renderMainMenu() {
     if (localStorage.getItem('lang') === 'hr') {
         Array.from(document.getElementsByClassName("en")).forEach(e => { e.style.display = "none"; });
@@ -45,9 +116,10 @@ function renderMainMenu() {
     }
 }
 
- // Language selector icon funcionality
+
+// Language selector icon funcionality
 let flag = document.getElementsByClassName("lang-flag");
-    flag[1].addEventListener("click", () => {
+flag[1].addEventListener("click", () => {
     flag[0].style.transition = "opacity 0.5s ease-in-out";
     flag[1].style.transition = "opacity 0.5s ease-in-out";
     const lang = localStorage.getItem('lang');
@@ -94,13 +166,13 @@ svgElements.forEach(({ url, target }) => {
 
 // SPA routes
 const routes = {
-    "/" : '/frontend/home.html',
+    "/": '/frontend/home.html',
     "/home": '/frontend/home.html',
     "/about": '/frontend/about.html',
     "/shop": '/frontend/shop.html',
     "/product": '/frontend/product.html',
-    "/account" : '/frontend/account.html',
-    "/404" : '/frontend/404.html'
+    "/account": '/frontend/account.html',
+    "/404": '/frontend/404.html'
 };
 
 // Override default <a> behavior
@@ -121,10 +193,10 @@ const navigateTo = async (path, doNotPushState = false) => {
     // Manage browser history
     if (!doNotPushState) {
         if (window.location.pathname !== path) {
-            history.pushState( {}, "", path);
+            history.pushState({}, "", path);
         }
     } else {
-        history.replaceState( {}, "", path);
+        history.replaceState({}, "", path);
     }
 
     let url = new URL(window.location.origin + path);
@@ -143,7 +215,7 @@ const navigateTo = async (path, doNotPushState = false) => {
     // Parse the loaded HTML to extract the title and body content
     const parser = new DOMParser();
     const parsedPage = parser.parseFromString(page, 'text/html');
-    
+
     // Set the document title and replace the app's innerHTML with the new page content
     document.title = parsedPage.title;
     app.innerHTML = parsedPage.body.innerHTML;
@@ -159,8 +231,8 @@ const navigateTo = async (path, doNotPushState = false) => {
 
 window.addEventListener("popstate", (event) => {
     const path = window.location.pathname + window.location.search;
-    if (path )
-    navigateTo(path);
+    if (path)
+        navigateTo(path);
 });
 
 
@@ -241,18 +313,69 @@ function anyThingButTheMainMenu(event) {
 document.addEventListener("touchstart", (event) => {
     const menuToggle = document.getElementById("menu-toggle");
     const menuIcon = document.getElementById("menu-icon");
-    const navLinks = document.getElementById("nav-links");    
+    const navLinks = document.getElementById("nav-links");
     if (menuToggle.checked && !navLinks.contains(event.target) && event.target !== menuIcon) {
         menuToggle.click();
     }
 });
 
 
+
+function adminMenuOptions() {
+    let token = localStorage.getItem("access_token");
+    if (token) {
+        let payload = JSON.parse(atob(token.split('.')[1]));
+        if (payload["role"] === "employee" || payload["role"] === "admin") {
+            document.querySelectorAll('[employee]').forEach(i => i.removeAttribute("hidden"));
+            if (payload["role"] === "admin") {
+                document.querySelectorAll('[admin]').forEach(i => i.removeAttribute("hidden"));
+            }
+        } else {
+            hideAdminMenuOptions();
+        }
+    } else {
+        hideAdminMenuOptions();
+    }
+}
+
+
+function hideAdminMenuOptions() {
+    document.querySelectorAll('[employee]').forEach(i => {
+        if (!i.hasAttribute("hidden", "")) {
+           i.setAttribute("hidden", "");
+        }
+   });
+   document.querySelectorAll('[admin]').forEach(i => {
+       if (!i.hasAttribute("hidden", "")) {
+          i.setAttribute("hidden", "");
+       }
+  });
+}
+
+// Add options to the main menu. [Unused, for future use]
+function addMenuOptions(croatianText, englishText, path) {
+    let spanHr = document.createElement("span");
+        spanHr.setAttribute("class", "hr");
+        spanHr.textContent = croatianText;
+    let spanEn = document.createElement("span");
+        spanEn.setAttribute("class", "en");
+        spanEn.textContent = englishText;
+    let listItem = document.createElement("li");
+        listItem.appendChild(spanHr);
+        listItem.appendChild(spanEn);
+    let usersMenu = document.createElement("a");
+        usersMenu.setAttribute("href", path);
+        usersMenu.setAttribute("data-link", "");
+        usersMenu.setAttribute("admin", "");
+        usersMenu.appendChild(listItem);
+    let list = document.getElementById("nav-links");
+        list.appendChild(usersMenu);
+}
+
 // Initialize the app on first load
 if (window.location.pathname === '/') {
     displaySplashScreen();
 }
-
 
 // Entry point
 navigateTo(window.location.pathname + window.location.search, true);

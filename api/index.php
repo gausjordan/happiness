@@ -3,15 +3,6 @@
 declare(strict_types=1);
 require __DIR__ . DIRECTORY_SEPARATOR . "bootstrap.php";
 
-// DEBUG BLOCK
-
-// http_response_code(401);
-// echo(json_encode(["message" => "Access token expired."]));
-// exit;
-
-// -----------
-
-
 $raw = $_SERVER["REQUEST_URI"];
 $urlPath = parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH);
 $urlQuery = parse_url($_SERVER["REQUEST_URI"], PHP_URL_QUERY);
@@ -29,7 +20,7 @@ if ($_SERVER["REQUEST_METHOD"] === "OPTIONS") {
 }
 
 $user_id = 0;           // No one is logged in for now
-$user_role = "guest";   // And has a role of "guest" by default
+$user_role = "guest";   // And noone has a role of "guest" by default
 
 switch ($uri[2]) {
 
