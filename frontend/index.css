@@ -19,7 +19,7 @@ body {
   box-sizing: border-box;
 }
 
-/* Top menu; at the top of the page */
+/* Top menu; at the top of the page (not the main menu) */
 header#header-logo-text {
   background: #8d8d8d;
   color: #fff;
@@ -37,6 +37,7 @@ header#header-logo-text > div {
   align-items: center;
 }
 
+/* Top menu links */
 header#header-logo-text a {
   margin: 0;
   padding: 0;
@@ -225,6 +226,13 @@ nav ul {
   box-shadow: 0.5px 0.5px 0.3em #000;
 }
 
+/* Main menu items' font size */
+nav a {
+  color: #fff;
+  text-decoration: none;
+  font-size: 1.1em;
+}
+
 .nav-links {
   list-style: none;
   user-select: none;
@@ -234,7 +242,6 @@ nav ul {
 .nav-links [hidden] {
   display: none;
 }
-
 
 .nav-links li {
   padding: 0.75em;
@@ -247,15 +254,6 @@ nav ul {
   background-color: #7a7a7a;
 }
 
-.nav-links a:last-of-type li {
+.nav-links a[last-visible-item] li {
   border-radius: 0 0em 1em 0;
 }
-
-
-
-nav a {
-  color: #fff;
-  text-decoration: none;
-  font-size: 1.1em;
-}
-

@@ -84,7 +84,7 @@ async function fetchData(fetchURL) {
     }
 }
 
-// Check if language is already chosen and show a single flag only
+// Check if language is already chosen and show a single languages flag only
 if (!localStorage.getItem('lang')) {
     localStorage.setItem('lang', 'hr');
 }
@@ -132,7 +132,7 @@ flag[1].addEventListener("click", () => {
         localStorage.setItem('lang', 'hr');
         flag[0].style.opacity = "1";
         flag[1].style.opacity = "0";
-    }
+    }    
     renderMainMenu();
     navigateTo(window.location.pathname || "/home");
 });
@@ -171,6 +171,7 @@ const routes = {
     "/about": '/frontend/about.html',
     "/shop": '/frontend/shop.html',
     "/product": '/frontend/product.html',
+    "/products-admin": '/frontend/products-admin.html',
     "/account": '/frontend/account.html',
     "/404": '/frontend/404.html'
 };
@@ -319,25 +320,30 @@ document.addEventListener("touchstart", (event) => {
     }
 });
 
-
-
+// Hide/show main menu items depending on the role by setting boolean attributes
 function adminMenuOptions() {
     let token = localStorage.getItem("access_token");
     if (token) {
         let payload = JSON.parse(atob(token.split('.')[1]));
-        if (payload["role"] === "employee" || payload["role"] === "admin") {
-            document.querySelectorAll('[employee]').forEach(i => i.removeAttribute("hidden"));
-            if (payload["role"] === "admin") {
-                document.querySelectorAll('[admin]').forEach(i => i.removeAttribute("hidden"));
-            }
-        } else {
+        
+        if (payload["role"] === "admin") {
+            let employeeOptions = document.querySelectorAll('[employee]');
+                employeeOptions.forEach(i => i.removeAttribute("hidden"));
+            let adminOptions = document.querySelectorAll('[admin]');
+                adminOptions.forEach(i => i.removeAttribute("hidden"));
+        }
+        else if (payload["role"] === "employee") {
+            let employeeOptions = document.querySelectorAll('[employee]');
+                employeeOptions.forEach(i => i.removeAttribute("hidden"));
+        }
+        else {
             hideAdminMenuOptions();
         }
     } else {
         hideAdminMenuOptions();
     }
+    tagLastVisibleMenuItem();
 }
-
 
 function hideAdminMenuOptions() {
     document.querySelectorAll('[employee]').forEach(i => {
@@ -350,6 +356,24 @@ function hideAdminMenuOptions() {
           i.setAttribute("hidden", "");
        }
   });
+}
+
+// CSS needs this: find the last visible menu item (for the current user) and tag it
+function tagLastVisibleMenuItem() {
+    let items = document.querySelectorAll('nav ul#nav-links a');
+
+    // Clear previous tags, if any
+    items.forEach(i => i.removeAttribute("last-visible-item"));
+
+    for (let i = items.length-1; i >= 0; i--) {
+        if (items[i].hasAttribute("hidden")) {
+            continue;
+        }
+        else {
+            items[i].setAttribute("last-visible-item", "");
+            break;
+        }
+    }
 }
 
 // Add options to the main menu. [Unused, for future use]

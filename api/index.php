@@ -43,13 +43,17 @@ switch ($uri[2]) {
         // Routing
         if (empty($uri[3]))
         {
+            // Inspect and transform URL queries
+            $urlQuery = unpackQueries($urlQuery);
+            $urlQuery = checkQueries($urlQuery);
+
             // No product id => either "get all" or "post one"
-            $controller->processRequest($_SERVER["REQUEST_METHOD"], null);    
+            $controller->processRequest($_SERVER["REQUEST_METHOD"], null, $urlQuery);    
         } 
         else if ($uri[3] !== "images")
         {
             // Does have an id, and it's not "image" => product resource request
-            $controller->processRequest($_SERVER["REQUEST_METHOD"], $uri[3]);
+            $controller->processRequest($_SERVER["REQUEST_METHOD"], $uri[3], $urlQuery);
         }
         else if ($uri[3] == "images")
         {
@@ -64,5 +68,47 @@ switch ($uri[2]) {
         echo(json_encode([ "message" => "Endpoint not found." ]));
         http_response_code(404);
         exit;
+    }
+}
+
+
+// Converts a string of '&'-separated key=value pairs into an array
+function unpackQueries($urlQuery) : array | null {
+    if ($urlQuery == null || $urlQuery == "") {
+        return null;
+    }
+    parse_str($urlQuery, $result);
+
+    foreach ($result as $r => $value) {
+        if ($value == null || $value == "") {
+            http_response_code(400);
+            echo(json_encode([
+                "message" => "Invalid query format."
+            ]));
+            exit;
+        }
+
+        // if (substr_count($value, ",") !== 0) {
+        //     $result[$r] = explode(",", $value, 120);
+        // } else {
+        //     $result[$r] = $value;
+        // }
+    }
+    return $result;
+}
+
+
+// Check query validity
+function checkQueries($urlQuery) {
+    if($urlQuery) {
+        foreach ($urlQuery as $key => $value) {
+            if ($key !== "products_and_categories" && $key !== "products_and_tags" && $key !== "limit") {
+                echo("KEY: " . $key . "\tVALUE: ");
+                echo(json_encode([ "message" => "Invalid query key(s)." ]));
+                http_response_code(400);
+                exit;
+            }
+        }
+        return $urlQuery;
     }
 }

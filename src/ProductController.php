@@ -9,7 +9,7 @@ class ProductController {
                                 private int $user_id,
                                 private string $user_role) { }
     
-    public function processRequest(string $method, ?string $id): void {
+    public function processRequest(string $method, ?string $id, ?array $urlQuery): void {
         if ($id) {
             if (!ctype_digit($id)) {
                 http_response_code(404);
@@ -19,7 +19,7 @@ class ProductController {
             $this->processResourceRequest($method, $id);
         }
         else {
-            $this->processCollectionRequest($method);
+            $this->processCollectionRequest($method, $urlQuery);
         }
     }
 
@@ -107,21 +107,21 @@ class ProductController {
     }
 
 
-    private function processCollectionRequest(string $method): void {
+    private function processCollectionRequest(string $method, ?array $urlQuery): void {
         switch ($method) {
 
             case "GET":
                 // Employees and administrators can view hidden products (true)
                 if ($this->user_role === "admin" || $this->user_role === "employee") {
                     echo json_encode([
-                        "products" => $this->gateway->getAll($this->user_id),
+                        "products" => $this->gateway->getAll($this->user_id, false, $urlQuery),
                         "productCount" => $this->gateway->metaData($this->user_id)
                     ]);
                     break;
                 } else {
                     // Guests and users can not
                     echo json_encode([
-                        "products" => $this->gateway->getAll($this->user_id, true),
+                        "products" => $this->gateway->getAll($this->user_id, true, $urlQuery),
                         "productCount" => $this->gateway->metaData($this->user_id, true)
                     ]);
                     break;

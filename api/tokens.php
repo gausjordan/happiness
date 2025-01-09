@@ -2,7 +2,8 @@
 
 $payload = [
     "sub" => $user["id"],
-    "name" => $user["username"],
+    // "name" => $user["username"],
+    "name" => $user["firstName"],
     "role" => $user["description"],
     "exp" => time() + 10 // TODO: Change this
 ];

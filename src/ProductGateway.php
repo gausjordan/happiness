@@ -9,8 +9,28 @@ class ProductGateway {
         $this->conn = $database->getConnection();
     }
 
+    public function getAll(int $user_id, ?bool $hideHiddenProducts = false, ?array $urlQuery = null): array {
 
-    public function getAll(int $user_id, ?bool $showHiddenProducts = false): array {
+        $products_and_categories = null;
+        $products_and_tags = null;
+
+        // Use variable variables; assign all
+        if ($urlQuery) {
+            foreach ($urlQuery as $key => $value) {
+                $$key = $value;
+            }
+        }
+
+        // Future SQL query may or may not need the WHERE clause (is there at least one query)
+        if ($products_and_categories || $products_and_tags || $hideHiddenProducts) {
+            $injectWhere = "WHERE ";
+        } else {
+            $injectWhere = "";
+        }
+
+        // Also, AND keyword(s) may be required
+        $injectAndNo1 = $products_and_categories ? " AND " : "";
+        $injectAndNo2 = $products_and_tags ? " AND " : "";
 
         $sql = "
 
@@ -36,13 +56,17 @@ class ProductGateway {
             LEFT JOIN `product_tags`
             ON `products_and_tags`.`tag_id` = `product_tags`.`id`
             LEFT JOIN `product_images`
-            ON `product`.`id` = `product_images`.`product_id` " . 
-
-            ($showHiddenProducts ? "WHERE `is_visible` = 1 GROUP BY product.id, product.title"
-                                : "GROUP BY product.id, product.title ") .
-            " LIMIT 14;";
+            ON `product`.`id` = `product_images`.`product_id` " .
+            $injectWhere .
+            ($products_and_categories ? "`products_and_tags`.tag_id IN (:prod_n_categ) " : "") .
+            ($products_and_tags ? $injectAndNo1 . "`products_and_categories`.`category_id` IN (:prod_n_tags)" : "") .
+            ($hideHiddenProducts ? $injectAndNo2 . "`is_visible` = 1" : "") .
+            " GROUP BY product.id, product.title " .
+            " LIMIT 0, 26;";
 
         $statement = $this->conn->prepare($sql);
+        $products_and_tags ? $statement->bindValue(":prod_n_tags", $products_and_tags, PDO::PARAM_INT) : "";
+        $products_and_categories ? $statement->bindValue(":prod_n_categ", $products_and_categories, PDO::PARAM_INT) : "";
         $statement->execute();
         $data = [];
         while ($row = $statement->fetch(PDO::FETCH_ASSOC)) {
@@ -58,9 +82,9 @@ class ProductGateway {
         return $data;
     }
 
-    public function metaData(int $user_id, ?bool $showHiddenProducts = false): int {
+    public function metaData(int $user_id, ?bool $hideHiddenProducts = false): int {
         $sql = "SELECT COUNT(*) AS productCount FROM product" . 
-        ($showHiddenProducts ? " WHERE `is_visible` = 1;"
+        ($hideHiddenProducts ? " WHERE `is_visible` = 1;"
                                 : ";");
         $stmt = $this->conn->query($sql);
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -160,7 +184,7 @@ class ProductGateway {
     }
 
 
-    public function get(string $productId, ?bool $showHiddenProducts = false) : array | false {
+    public function get(string $productId, ?bool $hideHiddenProducts = false) : array | false {
         $sql = "
 
             SELECT
@@ -188,7 +212,7 @@ class ProductGateway {
             ON `product`.`id` = `product_images`.`product_id`
             WHERE `product`.`id` = :productId " .
 
-            ($showHiddenProducts ? " AND `is_visible` = 1 GROUP BY product.id, product.title;"
+            ($hideHiddenProducts ? " AND `is_visible` = 1 GROUP BY product.id, product.title;"
                                : "GROUP BY product.id, product.title;");
 
         $statement = $this->conn->prepare($sql);
@@ -327,3 +351,36 @@ class ProductGateway {
         return $statement->rowCount();
     }
 }
+
+
+
+/*
+
+SELECT
+    product.id,
+    product.naslov,
+    product.title,
+    COALESCE(product.description, "No description.") as description,
+    COALESCE(product.opis, "Nema opisa proizvoda.") as opis,
+    COALESCE(GROUP_CONCAT(DISTINCT product_categories.category ORDER BY products_and_categories.id SEPARATOR ', '), "None") as category,
+    COALESCE(GROUP_CONCAT(DISTINCT product_tags.tag ORDER BY products_and_tags.id SEPARATOR ', '), "None") as tag,
+    GROUP_CONCAT(DISTINCT product_images.url ORDER BY product_images.id SEPARATOR ', ') as url,
+    product.price,
+    product.is_available,
+    product.is_visible
+FROM `product`
+LEFT JOIN `products_and_categories`
+ON `product`.`id` = `products_and_categories`.`product_id`
+LEFT JOIN `product_categories`
+ON `products_and_categories`.`category_id` = `product_categories`.`id`
+LEFT JOIN `products_and_tags`
+ON `product`.`id` = `products_and_tags`.`product_id`
+LEFT JOIN `product_tags`
+ON `products_and_tags`.`tag_id` = `product_tags`.`id`
+LEFT JOIN `product_images`
+ON `product`.`id` = `product_images`.`product_id`
+WHERE `products_and_tags`.tag_id IN (2, 3) AND `products_and_categories`.`category_id` IN (3)
+GROUP BY product.id, product.title
+LIMIT 0,90;
+
+*/
