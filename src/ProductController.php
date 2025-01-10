@@ -114,15 +114,19 @@ class ProductController {
                 // Employees and administrators can view hidden products (true)
                 if ($this->user_role === "admin" || $this->user_role === "employee") {
                     echo json_encode([
+                        // Get all the required data (obeying given limits)
                         "products" => $this->gateway->getAll($this->user_id, false, $urlQuery),
-                        "productCount" => $this->gateway->metaData($this->user_id)
+                        // Count how many items meet the given conditions had there been no limit set
+                        "metadata" => $this->gateway->getAll($this->user_id, false, $urlQuery, true)
                     ]);
                     break;
                 } else {
                     // Guests and users can not
                     echo json_encode([
+                        // Get all the required data (obeying given limits) & hide hidden items
                         "products" => $this->gateway->getAll($this->user_id, true, $urlQuery),
-                        "productCount" => $this->gateway->metaData($this->user_id, true)
+                        // Count how many visible items meet the given conditions had there been no limit set 
+                        "metadata" => $this->gateway->getAll($this->user_id, true, $urlQuery, true)
                     ]);
                     break;
                 }

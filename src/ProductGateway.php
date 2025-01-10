@@ -9,33 +9,37 @@ class ProductGateway {
         $this->conn = $database->getConnection();
     }
 
-    public function getAll(int $user_id, ?bool $hideHiddenProducts = false, ?array $urlQuery = null): array {
+    public function getAll(int $user_id, ?bool $hideHiddenProducts = false, ?array $urlQuery = null, ?bool $count = false): array {
 
+        // In case those variable don't get initialized via $urlQuery array
         $products_and_categories = null;
         $products_and_tags = null;
+        $limit = null;
 
-        // Use variable variables; assign all
+        // Use PHP's variable variables to assign all of them
         if ($urlQuery) {
             foreach ($urlQuery as $key => $value) {
                 $$key = $value;
             }
         }
 
-        // Future SQL query may or may not need the WHERE clause (is there at least one query)
+        // In counting mode, ignore the limit
+        if ($count) { $limit = "0,1000"; }
+
+        // Future SQL query may or may not need the WHERE clause (whether there is at least one variable present)
         if ($products_and_categories || $products_and_tags || $hideHiddenProducts) {
             $injectWhere = "WHERE ";
         } else {
             $injectWhere = "";
         }
 
-        // Also, AND keyword(s) may be required
+        // Also, literal "AND" keyword(s) may be required
         $injectAndNo1 = $products_and_categories ? " AND " : "";
-        $injectAndNo2 = $products_and_tags ? " AND " : "";
+        $injectAndNo2 = $products_and_tags || $products_and_categories ? " AND " : "";
 
-        $sql = "
-
-            SELECT
-                product.id,
+        $sql = "SELECT " .
+            ($count ? "COUNT(DISTINCT product.id) AS productCount " : 
+                "product.id,
                 product.naslov,
                 product.title,
                 COALESCE(product.description, \"No description.\") as description,
@@ -45,8 +49,8 @@ class ProductGateway {
                 GROUP_CONCAT(DISTINCT product_images.url ORDER BY product_images.id SEPARATOR ', ') as url,
                 product.price,
                 product.is_available,
-                product.is_visible
-            FROM `product`
+                product.is_visible ") . 
+            "FROM `product`
             LEFT JOIN `products_and_categories`
             ON `product`.`id` = `products_and_categories`.`product_id`
             LEFT JOIN `product_categories`
@@ -58,38 +62,55 @@ class ProductGateway {
             LEFT JOIN `product_images`
             ON `product`.`id` = `product_images`.`product_id` " .
             $injectWhere .
-            ($products_and_categories ? "`products_and_tags`.tag_id IN (:prod_n_categ) " : "") .
-            ($products_and_tags ? $injectAndNo1 . "`products_and_categories`.`category_id` IN (:prod_n_tags)" : "") .
+            ($products_and_categories ? "FIND_IN_SET(`products_and_categories`.category_id, :prod_n_categ) " : "") .
+            ($products_and_tags ? $injectAndNo1 . "FIND_IN_SET(`products_and_tags`.`tag_id`, :prod_n_tags)" : "") .
             ($hideHiddenProducts ? $injectAndNo2 . "`is_visible` = 1" : "") .
-            " GROUP BY product.id, product.title " .
-            " LIMIT 0, 26;";
+            ($count ? "" : " GROUP BY product.id, product.title ") .
+            ($limit ? " LIMIT :limit_from,:limit_size;" : " LIMIT 0, 200;");
 
-        $statement = $this->conn->prepare($sql);
-        $products_and_tags ? $statement->bindValue(":prod_n_tags", $products_and_tags, PDO::PARAM_INT) : "";
-        $products_and_categories ? $statement->bindValue(":prod_n_categ", $products_and_categories, PDO::PARAM_INT) : "";
-        $statement->execute();
-        $data = [];
-        while ($row = $statement->fetch(PDO::FETCH_ASSOC)) {
-            $row["is_visible"] = (bool) $row["is_visible"];
-            $row["is_available"] = (bool) $row["is_available"];
-            $row["price"] = (float) $row["price"];
-            $row["tag"] = $row["tag"] == null ? [] : explode(", ", $row["tag"]);
-            $row["url"] = $row["url"] == null ? [] : explode(", ", $row["url"]);
-            $row["category"] = $row["category"] == null ? [] : explode(", ", $row["category"]);
-            $data[] = $row;
+            $statement = $this->conn->prepare($sql);
+            $products_and_categories ? $statement->bindValue(":prod_n_categ", $products_and_categories, PDO::PARAM_STR) : "";
+            $products_and_tags ? $statement->bindValue(":prod_n_tags", $products_and_tags, PDO::PARAM_STR) : "";
+            $limit ? $statement->bindValue(":limit_from", $limit[0], PDO::PARAM_INT) : "";
+            $limit ? $statement->bindValue(":limit_size", $limit[2], PDO::PARAM_INT) : "";
+            $statement->execute();
+
+            if ($count) {
+            $data[] = $statement->fetch(PDO::FETCH_ASSOC);
+        } else {
+            $data = [];
+            while ($row = $statement->fetch(PDO::FETCH_ASSOC)) {
+                $row["is_visible"] = (bool) $row["is_visible"];
+                $row["is_available"] = (bool) $row["is_available"];
+                $row["price"] = (float) $row["price"];
+                $row["tag"] = $row["tag"] == null ? [] : explode(", ", $row["tag"]);
+                $row["url"] = $row["url"] == null ? [] : explode(", ", $row["url"]);
+                $row["category"] = $row["category"] == null ? [] : explode(", ", $row["category"]);
+                $data[] = $row;
+            }
         }
 
         return $data;
     }
 
-    public function metaData(int $user_id, ?bool $hideHiddenProducts = false): int {
-        $sql = "SELECT COUNT(*) AS productCount FROM product" . 
-        ($hideHiddenProducts ? " WHERE `is_visible` = 1;"
-                                : ";");
-        $stmt = $this->conn->query($sql);
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        return (int)$result['productCount'];
-    }
+
+    // public function metaData(int $user_id, ?bool $hideHiddenProducts = false): int {
+    //     $sql = "SELECT COUNT(*) AS productCount FROM product" . 
+    //     ($hideHiddenProducts ? " WHERE `is_visible` = 1;"
+    //                             : ";");
+    //     $stmt = $this->conn->query($sql);
+    //     $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    //     return (int)$result['productCount'];
+    // }
+
+    // public function metaData(int $user_id, ?bool $hideHiddenProducts = false): int {
+    //     $sql = "SELECT COUNT(*) AS productCount FROM product" . 
+    //     ($hideHiddenProducts ? " WHERE `is_visible` = 1;"
+    //                             : ";");
+    //     $stmt = $this->conn->query($sql);
+    //     $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    //     return (int)$result['productCount'];
+    // }
 
 
     public function create(array $data) : string {
@@ -351,36 +372,3 @@ class ProductGateway {
         return $statement->rowCount();
     }
 }
-
-
-
-/*
-
-SELECT
-    product.id,
-    product.naslov,
-    product.title,
-    COALESCE(product.description, "No description.") as description,
-    COALESCE(product.opis, "Nema opisa proizvoda.") as opis,
-    COALESCE(GROUP_CONCAT(DISTINCT product_categories.category ORDER BY products_and_categories.id SEPARATOR ', '), "None") as category,
-    COALESCE(GROUP_CONCAT(DISTINCT product_tags.tag ORDER BY products_and_tags.id SEPARATOR ', '), "None") as tag,
-    GROUP_CONCAT(DISTINCT product_images.url ORDER BY product_images.id SEPARATOR ', ') as url,
-    product.price,
-    product.is_available,
-    product.is_visible
-FROM `product`
-LEFT JOIN `products_and_categories`
-ON `product`.`id` = `products_and_categories`.`product_id`
-LEFT JOIN `product_categories`
-ON `products_and_categories`.`category_id` = `product_categories`.`id`
-LEFT JOIN `products_and_tags`
-ON `product`.`id` = `products_and_tags`.`product_id`
-LEFT JOIN `product_tags`
-ON `products_and_tags`.`tag_id` = `product_tags`.`id`
-LEFT JOIN `product_images`
-ON `product`.`id` = `product_images`.`product_id`
-WHERE `products_and_tags`.tag_id IN (2, 3) AND `products_and_categories`.`category_id` IN (3)
-GROUP BY product.id, product.title
-LIMIT 0,90;
-
-*/

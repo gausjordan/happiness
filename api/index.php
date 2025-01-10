@@ -87,12 +87,6 @@ function unpackQueries($urlQuery) : array | null {
             ]));
             exit;
         }
-
-        // if (substr_count($value, ",") !== 0) {
-        //     $result[$r] = explode(",", $value, 120);
-        // } else {
-        //     $result[$r] = $value;
-        // }
     }
     return $result;
 }
@@ -103,7 +97,6 @@ function checkQueries($urlQuery) {
     if($urlQuery) {
         foreach ($urlQuery as $key => $value) {
             if ($key !== "products_and_categories" && $key !== "products_and_tags" && $key !== "limit") {
-                echo("KEY: " . $key . "\tVALUE: ");
                 echo(json_encode([ "message" => "Invalid query key(s)." ]));
                 http_response_code(400);
                 exit;
