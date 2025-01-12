@@ -11,32 +11,50 @@ div.shop#main-grid {
 div.shop#main-grid div.item {
     background-color: pink;
     text-align: center;
-    /* position: relative;
-    min-height: 100%;
-    width: 100%; */
 }
 
-div .item img {
+div#main-grid .item img {
     width: 100%;
     aspect-ratio: 1 / 1;
     object-fit: cover;
 }
 
-div .item h3 {
+div#main-grid .item h3 {
     background-color: antiquewhite;
     margin: 0.2em;
 }
 
-div .item p {
+div#main-grid .item p {
     margin: 0;
 }
 
-div .item a {
+div#main-grid .item a {
     color: black;
     text-decoration: none;
 }
 
-div .item a:visited {
+div#main-grid .item a:visited {
     color: purple;
     text-decoration: none;
+}
+
+nav.shop-filter-menu {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    flex: 1 1;
+    
+}
+
+nav.shop-filter-menu img {
+    height: 1.8em;
+    padding: 0.3em;
+    border-radius: 0.2em;
+    border: solid black 1px;
+    margin-left: auto;
+    -margin-right: 0.65em;
+}
+
+nav.shop-filter-menu p.filters {
+    margin: 0 0.65em;
 }

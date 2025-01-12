@@ -4,8 +4,7 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content">
-    <!-- <title>Happiness</title> -->
-    <link rel="stylesheet" rel="preload" href="/frontend/index.css" as="style">
+    <link rel="stylesheet" rel="preload" href="/frontend/index.css" as="style" onerror="setTimeout( () => document.querySelectorAll('svg, img').forEach(i => i.style.height = '1.25em'), 100)">
     <link rel="stylesheet" rel="preload" href="/frontend/splashstyle.css" as="style">
     <base href="/" />
   </head>
@@ -29,20 +28,20 @@
       </div>
     </aside>
 
-    <header id="header-logo-text">
-      <div class="side-pad">
-        <img src="/frontend/graphics/magnifier.svg" alt="Search button"></img>
+    <header class="top-menu">
+      <div class="block left">
+        <a href="/search" data-link><img src="/frontend/graphics/magnifier.svg" alt="Search button"></img></a>
       </div>
-      <div class="middle">
+      <div class="block middle">
           <a href="/home" data-link><img src="/frontend/graphics/icon-static.svg" alt="Happiness Logo"></img></a>
       </div>
-      <div class="side-pad">
+      <div class="block right">
         <a href="/account" data-link><img src="/frontend/graphics/user.svg" alt="Current user"></img></a>
         <a href="/cart" data-link><img src="/frontend/graphics/cart.svg" alt="Shopping cart"></img></a>
       </div>
     </header>
 
-    <nav>
+    <nav class="mainmenu">
       <input type="checkbox" class="animate" id="menu-toggle">
       <label for="menu-toggle">
         <div class="menu-icon" id="menu-icon">&#9776;</div>
@@ -90,6 +89,9 @@
     </nav>
     <main id="app">
     </main>
+    <footer>
+      © Pretentious software solutions™ by Checkbox G® 2025
+    </footer>
   </body>
 
 

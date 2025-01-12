@@ -2,15 +2,6 @@
   --menu-animation-speed: 0.3s;
 }
 
-main#app {
-  box-sizing: border-box;
-  margin: 0.75em 0.75em 0em 0.75em;
-}
-
-img[alt] {
-  color: #00000000;
-}
-
 body {
   font-family: Arial, sans-serif;
   margin: 0;
@@ -19,71 +10,70 @@ body {
   box-sizing: border-box;
 }
 
-/* Top menu; at the top of the page (not the main menu) */
-header#header-logo-text {
-  background: #8d8d8d;
-  color: #fff;
-  display: flex;
-  flex-wrap: nowrap;
-  justify-content: space-between;
-  align-items: stretch;
-  padding: 0.3em;
+/* Main app - middle of the page - injected content */
+main#app {
+  box-sizing: border-box;
+  margin: 0.75em 0.75em 0em 0.75em;
+  min-height: calc(100dvh - 3em - 3em - 4em);
 }
 
-/* Top menu has three sections */
-header#header-logo-text > div {
+/* Alt-text for images, transparent */
+img[alt] {
+  color: #00000000;
+}
+
+
+/* Top menu; at the top of the page (not the main menu) */
+header.top-menu {
   display: flex;
-  justify-content: space-around;
+  box-sizing: border-box;
+  justify-content: space-between;
+  position: relative;
+  background: #8d8d8d;
+  color: #fff;
+  height: 3em;
+  padding: 0 0.85em;
+}
+
+header.top-menu div.block {
+  height: 100%;
+  display: flex;
+  gap: 0.85em;
+}
+
+header.top-menu div.block a {
+  box-sizing: border-box;
+  display: flex;
+  height: 100%;
   align-items: center;
 }
 
-/* Top menu links */
-header#header-logo-text a {
-  margin: 0;
-  padding: 0;
+header.top-menu div.block a img {
+  height: 60%;
+  -margin: 1em;
 }
 
-/* Top menu's left and the right section */
-header#header-logo-text > div.side-pad {
-  flex-basis: 30%;
-  flex-shrink: 0;
+header.top-menu div.block.left {
+  /* */
 }
 
-/* Top menu's right section only */
-header#header-logo-text > .middle + div.side-pad {
-  display: absolute;
-  justify-content: right;
+header.top-menu div.block.middle {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
-/* Top menu's left section only */
-header#header-logo-text > div.side-pad:first-child {
-  justify-content: left;
+header.top-menu div.block.right {
+  /* */
 }
 
-/* Top menu's middle part feat. Company's icon */
-header#header-logo-text > .middle {
-  align-self: center;
-}
 
-/* Set size for all top menu images */
-header#header-logo-text img {
-  height: 1.6em;
-  width: 1.6em;
-  margin: 0.7em;
-}  
 
-/* Make the top menu's company icon larger */
-header#header-logo-text .middle img {
-  padding: 0;
-  margin: 0;
-  object-fit: contain;
-  width: 2.6em;
-}
 
 /* Hambuger menu icon container */
-nav #menu-icon {
+nav.mainmenu #menu-icon {
   user-select: none;
-  position: relative;
+  position: absolute;
   display: inline;
   font-size: 2em;
   cursor: pointer;
@@ -92,55 +82,55 @@ nav #menu-icon {
 }
 
 /* Language selector flag */
-nav img {
+nav.mainmenu img {
   user-select: none;
   position: absolute;
   right: 0;
-  height: 1.5em;
-  margin: 0.7em 1em;
+  height: 1.1em;
+  margin: 0.9em 1em;
   cursor: pointer;
   z-index: 9;
   float: right;
   object-fit: cover;
-  width: 2.2em;
+  width: 1.6em;
   opacity: 0;
 }
 
 /* Prevent elements from highlighting up blue on tap event */
-nav img:active {
+nav.mainmenu img:active {
   outline: none;
   outline-style:none;
   -webkit-tap-highlight-color:transparent;
 }
-nav #menu-icon:active {
+nav.mainmenu #menu-icon:active {
   outline: none;
   outline-style: none;
   -webkit-tap-highlight-color: transparent;
 }
-nav #menu-icon img:active {
+nav.mainmenu #menu-icon img:active {
   outline: none;
   outline-style: none;
   -webkit-tap-highlight-color: transparent;
 }
 
 /* Language selector flag HR */
-nav img#hr {
+nav.mainmenu img#hr {
   object-position: 50% 0;
 }
 
 /* Language selector flag US */
-nav img#us {
+nav.mainmenu img#us {
   object-position: 0 0;
 }
 
 /* Always-invisible toggle helper */
-nav input[type="checkbox"] {
+nav.mainmenu input[type="checkbox"] {
   display: none;
   user-select: none;
 }
 
 /* On-click main menu animation styling */
-nav input[type="checkbox"].animate:checked ~ ul {
+nav.mainmenu input[type="checkbox"].animate:checked ~ ul {
   transform: translateX(0%);
   animation: var(--menu-animation-speed) ease-out;
   animation-name: main-menu-slide-int;
@@ -156,7 +146,7 @@ nav input[type="checkbox"].animate:checked ~ ul {
 }
 
 /* On-close main menu animation w/ animation prevention onLoad */
-nav input[type="checkbox"].animate:not(:checked) ~ ul {
+nav.mainmenu input[type="checkbox"].animate:not(:checked) ~ ul {
   animation: var(--menu-animation-speed) ease-out;
   animation-name: this-placeholder-gets-modified-by-JS;
   animation-fill-mode: forwards;
@@ -172,7 +162,7 @@ nav input[type="checkbox"].animate:not(:checked) ~ ul {
 
 
 /* On-click bring in opacity when menu is opened */
-nav input[type="checkbox"].animate:checked + label + ul > li {
+nav.mainmenu input[type="checkbox"].animate:checked + label + ul > li {
   opacity: 1;
   animation: var(--menu-animation-speed) ease-in;
   animation-name: main-menu-items-fade-in;
@@ -189,7 +179,7 @@ nav input[type="checkbox"].animate:checked + label + ul > li {
 }
 
 /* Reset opacity when menu is closed */
-nav input[type="checkbox"].animate:not(:checked) + label + ul > li {
+nav.mainmenu input[type="checkbox"].animate:not(:checked) + label + ul > li {
   opacity: 0;
   animation: var(--menu-animation-speed) ease-out;
   animation-name: main-menu-items-fade-out;
@@ -205,20 +195,20 @@ nav input[type="checkbox"].animate:not(:checked) + label + ul > li {
   }
 }
 
-nav {
+nav.mainmenu {
   background: #333;
   color: #fff;
   height: 3em;
 }
 
 /* Main menu container */
-nav ul {
+nav.mainmenu ul {
   opacity: 1;
-  position: absolute;
+  position: relative;
   background-color: #4e4e4e;
   display: inline-block;
   border-radius: 0 0em 1em 0;
-  top: 6.8em;
+  top: 3em;
   left: 0;
   margin: 0px;
   transform: translateX(-110%);
@@ -227,33 +217,33 @@ nav ul {
 }
 
 /* Main menu items' font size */
-nav a {
+nav.mainmenu a {
   color: #fff;
   text-decoration: none;
   font-size: 1.1em;
 }
 
-.nav-links {
+nav.mainmenu .nav-links {
   list-style: none;
   user-select: none;
   padding: 0;
 }
 
-.nav-links [hidden] {
+nav.mainmenu .nav-links [hidden] {
   display: none;
 }
 
-.nav-links li {
+nav.mainmenu .nav-links li {
   padding: 0.75em;
   margin: 0.05em;
   display: block;
   border-bottom: 1px solid #cccccc44;
 }
 
-.nav-links li:hover {
+nav.mainmenu .nav-links li:hover {
   background-color: #7a7a7a;
 }
 
-.nav-links a[last-visible-item] li {
+nav.mainmenu .nav-links a[last-visible-item] li {
   border-radius: 0 0em 1em 0;
 }

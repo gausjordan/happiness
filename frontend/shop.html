@@ -1,12 +1,14 @@
 <script>
     if (localStorage.getItem("lang") === 'en') {
         document.title = "Products";
-        document.querySelector("h1").textContent = "Products";
-        document.querySelector("p").textContent = "We do the browsing here.";
+        document.querySelector("nav.shop-filter-menu h1.shop-title").textContent = "Products";
+        document.querySelector("p.shop-text").textContent = "We do the browsing here.";
+        document.querySelector("nav.shop-filter-menu p.filters").textContent = "Filters";
     } else {
         document.title = "Proizvodi";
-        document.querySelector("h1").textContent = "Proizvodi";
-        document.querySelector("p").textContent = "Ovdje prikazujemo proizvode.";
+        document.querySelector("nav.shop-filter-menu h1.shop-title").textContent = "Proizvodi";
+        document.querySelector("p.shop-text").textContent = "Ovdje prikazujemo proizvode.";
+        document.querySelector("nav.shop-filter-menu p.filters").textContent = "Filtriranje";
     }
 </script>
 
@@ -16,8 +18,8 @@
 </head>
 
 </body>
-    <h1></h1>
-    <p></p>
+    <nav class="shop-filter-menu"><h1 class="shop-title"></h1><img src='/frontend/graphics/filter.svg'><p class="filters"></p></nav>
+    <p class="shop-text"></p>
     <div class="shop" id="main-grid">
 
     </div>

@@ -309,7 +309,6 @@ function anyThingButTheMainMenu(event) {
     }
 }
 
-
 // Close the menu if the next touch target is neither the menu, nor the menu icon
 document.addEventListener("touchstart", (event) => {
     const menuToggle = document.getElementById("menu-toggle");
