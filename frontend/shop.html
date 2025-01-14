@@ -1,26 +1,68 @@
 <script>
+
+    // Prevent le FOUC
+    document.getElementById('app').style.display = 'none';
+    document.getElementsByTagName('footer')[0].style.display = 'none';
+
     if (localStorage.getItem("lang") === 'en') {
         document.title = "Products";
         document.querySelector("nav.shop-filter-menu h1.shop-title").textContent = "Products";
-        document.querySelector("p.shop-text").textContent = "We do the browsing here.";
+        // document.querySelector("p.shop-text").textContent = "We do the browsing here.";
         document.querySelector("nav.shop-filter-menu p.filters").textContent = "Filters";
     } else {
         document.title = "Proizvodi";
         document.querySelector("nav.shop-filter-menu h1.shop-title").textContent = "Proizvodi";
-        document.querySelector("p.shop-text").textContent = "Ovdje prikazujemo proizvode.";
+        // document.querySelector("p.shop-text").textContent = "Ovdje prikazujemo proizvode.";
         document.querySelector("nav.shop-filter-menu p.filters").textContent = "Filtriranje";
     }
 </script>
 
 <head>
-    <script src="/frontend/shop.js"></script>
     <link rel="stylesheet" href="/frontend/shop.css" rel="preload" as="style"></link>
+    <script src="/frontend/shop.js"></script>
 </head>
 
 </body>
-    <nav class="shop-filter-menu"><h1 class="shop-title"></h1><img src='/frontend/graphics/filter.svg'><p class="filters"></p></nav>
-    <p class="shop-text"></p>
-    <div class="shop" id="main-grid">
+    <nav class="shop-filter-menu">
+        <h1 class="shop-title"></h1>
+        <div class="shop-option-buttons">
+            <div class="filtering">
+                <img src='/frontend/graphics/filter.svg' id="shop-filtering-icon">
+                <ul id="shop-filtering-menu">
+                    <li>
+                        <input type="checkbox" id="fil1">
+                        <label class="container" for="fil1">Filter criteria 1</label>
+                    <li>
+                        <!-- <svg
+                        viewBox="-15 -15 234 252" id="tick" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
+                        <path style="opacity:1;fill:none;stroke:#000000;stroke-width:43;stroke-opacity:1;stroke-linecap:round"
+                            d="M 7,70 C 47,110 75.83894,174.75863 75.83894,174.75863 110,100 153,40 194,7"
+                            id="tick-path" />
+                      </svg> -->
+                        <input type="checkbox" id="fil2">
+                        <label class="container" for="fil2">Filter criteria 2</label>
+                    </li>
+                    <li>
+                        <input type="checkbox" id="fil3">
+                        <label class="container" for="fil3">Filter criteria 3</label>
+                    </li>
+                    <div class="separator"></div>
+                    <li>
+                        <input type="checkbox" id="fil5">
+                        <label class="container" for="fil5">Filter criteria 1</label>
+                    </li>
+                    <li>
+                        <input type="checkbox" id="fil6">
+                        <label class="container" for="fil6">Filter criteria 2</label>
+                    </li>
 
-    </div>
+                    <input type="button" id="fil4" value="Reset">
+
+                </ul>
+            </div>
+        </div>
+        <p class="filters"></p>
+    </nav>
+    <p class="shop-text"></p>
+
 </body>

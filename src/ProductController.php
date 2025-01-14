@@ -117,7 +117,9 @@ class ProductController {
                         // Get all the required data (obeying given limits)
                         "products" => $this->gateway->getAll($this->user_id, false, $urlQuery),
                         // Count how many items meet the given conditions had there been no limit set
-                        "metadata" => $this->gateway->getAll($this->user_id, false, $urlQuery, true)
+                        "metadata" => $this->gateway->getAll($this->user_id, false, $urlQuery, true),
+                        "tags" => $this->gateway->getTags(),
+                        "categories" => $this->gateway->getCategories(),
                     ]);
                     break;
                 } else {

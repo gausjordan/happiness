@@ -93,24 +93,17 @@ class ProductGateway {
         return $data;
     }
 
+    public function getTags() : array {
+        $sql = "SELECT `product_tags`.id AS tag_id, `product_tags`.tag AS tagname_hr, `product_tags`.tag_english AS tagname_en FROM product_tags";
+        $stmt = $this->conn->query($sql);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 
-    // public function metaData(int $user_id, ?bool $hideHiddenProducts = false): int {
-    //     $sql = "SELECT COUNT(*) AS productCount FROM product" . 
-    //     ($hideHiddenProducts ? " WHERE `is_visible` = 1;"
-    //                             : ";");
-    //     $stmt = $this->conn->query($sql);
-    //     $result = $stmt->fetch(PDO::FETCH_ASSOC);
-    //     return (int)$result['productCount'];
-    // }
-
-    // public function metaData(int $user_id, ?bool $hideHiddenProducts = false): int {
-    //     $sql = "SELECT COUNT(*) AS productCount FROM product" . 
-    //     ($hideHiddenProducts ? " WHERE `is_visible` = 1;"
-    //                             : ";");
-    //     $stmt = $this->conn->query($sql);
-    //     $result = $stmt->fetch(PDO::FETCH_ASSOC);
-    //     return (int)$result['productCount'];
-    // }
+    public function getCategories() : array {
+        $sql = "SELECT `product_categories`.id AS category_id, `product_categories`.category AS categoryname_hr, `product_categories`.category_english AS categoryname_en FROM product_categories";
+        $stmt = $this->conn->query($sql);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 
 
     public function create(array $data) : string {

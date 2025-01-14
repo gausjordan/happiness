@@ -15,12 +15,19 @@ async function buildShop() {
     let obj;
     let fetchURL = "http://192.168.1.12/api/products";
     try { obj = await fetchData(fetchURL) }     
-    catch (e) { console.log("Greska. " + e) }
+    catch (e) { console.log("Error. " + e) }
 
     let imagesAreLoadedPromise = getImages(obj.products);
     buildGrid(obj);
+    populateFilterMenu(obj);
     await imagesAreLoadedPromise;
-    document.getElementById('main-grid').style.display = "grid";
+    // Prevent le FOUC
+    document.getElementById('app').style.display = 'block';
+    document.getElementsByTagName('footer')[0].style.display = 'flex';
+}
+
+function populateFilterMenu(obj) {
+    console.log(obj);
 }
 
 async function getImages(products) {
@@ -33,11 +40,14 @@ async function getImages(products) {
 
 // Build a grid filled with as many elements as needed
 function buildGrid(obj) {
-    let grid = document.getElementById('main-grid');
-    grid.style.display = "none";
+
+    // let grid = document.getElementById('main-grid');
+    let grid = document.createElement('div');
+    grid.setAttribute("class", "shop");
+    grid.setAttribute("id", "main-grid");
+    //grid.style.display = "none";
     
     obj.products.forEach(o => {
-
         let div = grid.appendChild(
             insertElements("div", null, { "class" : "item" })
         );
@@ -50,13 +60,17 @@ function buildGrid(obj) {
         container.appendChild(
             insertElements("img", null, {
                     "src" : "/../img/" + o.url[0],
-                    "style" : "opacity: 0",
-                    "onload" : "this.style.opacity = 1"
                 }
             ));
         container.appendChild(insertElements("h3", localStorage.getItem('lang') == 'hr' ? o.naslov : o.title));
         container.appendChild(insertElements("p", o.price + " €"));
     });
+    
+    let footer = document.getElementsByTagName('footer')[0];
+    // console.log(footer);
+    document.getElementById('app');
+    //app.insertBefore(grid, footer);
+    app.appendChild(grid, footer);
 }
 
 // Simplify appending an element
@@ -69,5 +83,52 @@ function insertElements(tag, content, attributes = {}) {
     return element;
 }
 
+function filterButtonToggle() {
+    let body = document.body;
+    let button = document.getElementById("shop-filtering-icon");
+    let menu = document.getElementById("shop-filtering-menu");
 
+    // Handle the button press
+    button.addEventListener("click", (e) => {
+
+        // If it wasn't opened already - open it
+        if (!menu.hasAttribute("active")) {
+            menu.setAttribute("active", "");
+            // Listen for any clicks outside of the menu in order to close it
+            body.addEventListener("click", filteringMenuHandler, true);
+        } else {
+            // Menu was already open - close it
+            // TODO - apply settings
+            menu.removeAttribute("active");
+            // And remove a no-longer-needed listener
+            body.removeEventListener("click", filteringMenuHandler, true);
+        }
+    });
+}
+
+function filteringMenuHandler(event) {
+
+    let body = document.body;
+    let menu = document.getElementById("shop-filtering-menu");
+
+    // If a click occured inside of an opened menu
+    if (event.target.parentNode.id == 'shop-filtering-menu' ||
+        event.target.parentNode.parentNode.id == 'shop-filtering-menu' ||
+        event.target.parentNode.parentNode.parentNode.id == 'shop-filtering-menu') {
+        // Do nothing - user is picking options
+    }
+    // If a click occured anywhere outside of the menu
+    else {
+        // Prevent a click event from doing anything else
+        event.preventDefault();
+        event.stopPropagation();
+        // Close the menu
+        menu.removeAttribute("active");
+        // Remove a no-longer-needed listener
+        body.removeEventListener("click", filteringMenuHandler, true);
+        // TODO - Apply settings
+    }
+}
+
+filterButtonToggle();
 buildShop();

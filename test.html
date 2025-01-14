@@ -3,33 +3,32 @@
 
 <script>
 
-async function apiCall() {
-
-	const response = await fetch("http://192.168.1.12/api/products/2", {
-		headers: {
-			"Authorization": "Bearer " + "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjQsIm5hbWUiOiJhZG1pbiIsInJvbGUiOiJhZG1pbiIsImV4cCI6MTc5NTQ0MTMxOH0.evQoDKrL0lrFtGGC5K1yCdHyHl920_4R5CVjYYi3aDM"
-		}
-	});
-
-	const json = await response.json();
-	//const obj = JSON.parse(json);
-	console.log(json.message);
-
-	if (response.status == 401 && json.message == "Access token expired.") {
-		document.getElementsByTagName('p')[0].innerHTML = "FCJ"
-	}
-}
-
-apiCall();
-
-
 </script>
 
 <head>
-	<p></p>
 </head>
 
 <body>
+
+
+
+
+  <svg
+    viewBox="-15 -15 395 242" id="tick" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
+    <path style="opacity:1;fill:none;stroke:#000000;stroke-width:43;stroke-opacity:1;stroke-linecap:round"
+        d="M 7,70 C 47,110 75.83894,174.75863 75.83894,174.75863 110,100 153,40 194,7"
+        id="tick-path" />
+  </svg>
+
+
+
+
+
+
+
+
+
+
 </body>
 
 </html>

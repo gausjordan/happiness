@@ -400,5 +400,8 @@ if (window.location.pathname === '/') {
     displaySplashScreen();
 }
 
+// console.log(window.innerHeight);
+// console.log(document.body.scrollHeight);
+
 // Entry point
 navigateTo(window.location.pathname + window.location.search, true);
