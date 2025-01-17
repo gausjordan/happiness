@@ -2,7 +2,7 @@
     box-sizing: content-box;
 }
 
-/* Title and filtering options */
+/* Title and filtering options invisible placeholder */
 nav.shop-filter-menu {
     display: flex;
     width: 100%;
@@ -37,47 +37,82 @@ nav.shop-filter-menu .shop-option-buttons img:hover {
 /* Filtering menu options when active */
 .shop-option-buttons ul[active] {
     margin: 0;
-    padding: 0;
+    border-radius: 0.5em;
+    padding: 1em 0 1em 0;
     display: block;
     list-style: none;
     user-select: none;
     position: absolute;
     transform: translate(-100%) translate(2.2em, -0.1em);
-    background-color: #ececec;
+    background-color: #eeeeeeed;
     overflow: hidden;
+    border-width: 0.15em;
+    border-style: solid;
+    border-color: white rgb(196, 196, 196) rgb(196, 196, 196) white;
+    animation: filter-menu-popup 0.05s linear;
+    box-shadow: 2px 2px 9px rgba(160, 160, 160, 0.5);
 }
+
+@keyframes filter-menu-popup {
+    0% {
+        opacity: 0%;
+    }
+    100% {
+        opacity: 100%;
+    }
+}
+
 
 /* Filtering menu options when hidden */
 .shop-option-buttons ul {
     display: none;
 }
 
+/* Includes all the buttons (currently just one) */
 .shop-option-buttons li {
     display: flex;
-    background-color: yellow;
 }
 
+/* Filter item plain-text description */
 .shop-option-buttons label {
-    padding: 1em;
+    padding: 0.35em 1em 0.35em 0.25em;
+    width: 100%;
+    font-size: 1.1em;
     display: inline-block;
     white-space: nowrap;
+    order: 3;
 }
 
+/* Mid-menu separator */
 .shop-option-buttons .separator {
     width: 100%;
-    height: 0.1em;
-    background-color: red;
+    height: 1px;
+    margin: 0.5em 0;
+    background-color: rgb(196, 196, 196);
 }
 
+/* Always hidden checkbice */
 .shop-option-buttons input[type='checkbox'] {
-   display: inline-block;
-
+   display: none;
+   order: 2;
 }
 
+/* Graphical checkbox tick while unchecked */
 .shop-option-buttons svg {
-    -height: 2em;
+    align-items: left;
+    stroke: purple;
+    height: 1.6em;
+    align-self: center;
+    order: 1;
+    visibility: hidden;
+    margin: 0 0 0 1em;
 }
 
+
+/* Graphical checkbox tick while checked */
+#shop-filtering-menu input[type="checkbox"]:checked + label + svg {
+    visibility: visible;
+}
 
 
 /* Plain text caption of a 'filter' button (unused) */

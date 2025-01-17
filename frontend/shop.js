@@ -27,8 +27,59 @@ async function buildShop() {
 }
 
 function populateFilterMenu(obj) {
-    console.log(obj);
+    let ulRef = document.getElementById("shop-filtering-menu");
+    let template = document.querySelector('template.shop');
+    let li;
+    let label = null;
+    let input = null;
+    let svgtick = null;
+    let separator = document.createElement('div');
+        separator.setAttribute("class", "separator");
+
+    if (localStorage.getItem('lang') == "hr") {
+
+        obj.categories.forEach((c) => {
+            li = document.createElement('li');
+            label = insertElements('label', c.categoryname_hr, {
+                "class" : "container",
+                "for" : 'catId' + c.category_id,
+            });
+            input = insertElements('input', null, {
+                "type" : "checkbox",
+                "id" : 'catId' + c.category_id,
+                "value" : c.category_id
+            });
+            svgtick = template.content.querySelector('svg').cloneNode(true);
+            li.appendChild(input);
+            li.appendChild(label);
+            li.appendChild(svgtick);
+            ulRef.appendChild(li);
+        });
+
+        ulRef.appendChild(separator);
+
+        obj.tags.forEach((c) => {
+            li = document.createElement('li');
+            label = insertElements('label', c.tagname_hr, {
+                "class" : "container",
+                "for" : 'tagId' + c.tag_id,
+            });
+            input = insertElements('input', null, {
+                "type" : "checkbox",
+                "id" : 'tagId' + c.tag_id,
+                "value" : c.tag_id
+            });
+            svgtick = template.content.querySelector('svg').cloneNode(true);
+            li.appendChild(input);
+            li.appendChild(label);
+            li.appendChild(svgtick);
+            ulRef.appendChild(li);
+        });
+
+    }   
 }
+
+
 
 async function getImages(products) {
     let imagePromises = [];
@@ -106,6 +157,7 @@ function filterButtonToggle() {
     });
 }
 
+// Open and close the filter menu in special cases
 function filteringMenuHandler(event) {
 
     let body = document.body;
