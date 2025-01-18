@@ -21,7 +21,7 @@ function authRequestObject() {
 
 // If access token had expired, but there is a refresh token
 async function getRefreshToken() {
-    const response = await fetch('http://192.168.1.12/api/refresh.php', {
+    const response = await fetch('/api/refresh.php', {
         method: 'POST',
         body: JSON.stringify({
             token: localStorage.getItem("refresh_token")

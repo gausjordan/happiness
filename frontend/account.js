@@ -9,7 +9,7 @@ else {
 
 async function logout() {
 
-    const response = await fetch('http://192.168.1.12/api/logout.php', {
+    const response = await fetch('/api/logout.php', {
         method: 'POST',
         body: JSON.stringify({
             token: localStorage.getItem("refresh_token")
@@ -29,7 +29,7 @@ async function login(event) {
     let user = document.getElementById("username");
     let pass = document.getElementById("password");
     
-    const response = await fetch("http://192.168.1.12/api/login.php", {
+    const response = await fetch("/api/login.php", {
         method: 'POST',
         body: JSON.stringify({
             "username" : user.value,

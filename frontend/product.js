@@ -6,7 +6,7 @@ async function buildProductPage() {
     let basePath = new URL(window.location.href);
     let productId = basePath.pathname.split('/')[2];
     let lang = localStorage.getItem("lang");
-    let fetchURL = `http://192.168.1.12/api/products/${productId}`;
+    let fetchURL = `/api/products/${productId}`;
 
     try { obj = await fetchData(fetchURL) }     
     catch (e) { console.log("Greska: " + e) }

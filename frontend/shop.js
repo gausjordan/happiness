@@ -14,12 +14,14 @@ function loadImage(src) {
 async function buildShop() {
     let obj;
     let fetchURL = "/api/products";
+
     try { obj = await fetchData(fetchURL) }     
     catch (e) { console.log("Error. " + e) }
 
     let imagesAreLoadedPromise = getImages(obj.products);
     buildGrid(obj);
     populateFilterMenu(obj);
+
     await imagesAreLoadedPromise;
     // Prevent le FOUC
     document.getElementById('app').style.display = 'block';
@@ -36,6 +38,8 @@ function populateFilterMenu(obj) {
     let svgtick = null;
     let separator = document.createElement('div');
         separator.setAttribute("class", "separator");
+    
+        console.log(obj);
 
     obj.categories.forEach((c) => {
         li = document.createElement('li');
@@ -122,7 +126,7 @@ function populateFilterMenu(obj) {
 async function getImages(products) {
     let imagePromises = [];
     products.forEach(p => {
-        imagePromises.push(fetch('http://192.168.1.12/img/' + p.url[0]));
+        imagePromises.push(fetch('/img/' + p.url[0]));
     });
     return Promise.all(imagePromises);
 }
