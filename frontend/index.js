@@ -2,9 +2,9 @@
 
 // Display splash screen (4 seconds, unhide content "below" after 3s)
 function displaySplashScreen() {
-    document.getElementById("app").style.display = "none";
-    document.getElementById("splashscreen").removeAttribute("style", "display: none");
-    setTimeout(() => document.getElementById("app").style.display = "block", 3000);
+    let splash = document.getElementById("splashscreen");
+    splash.removeAttribute("hidden");
+    
 }
 
 // If there is a token stored locally, return an authorization header object

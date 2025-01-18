@@ -119,7 +119,7 @@ class ProductController {
                         // Count how many items meet the given conditions had there been no limit set
                         "metadata" => $this->gateway->getAll($this->user_id, false, $urlQuery, true),
                         "tags" => $this->gateway->getTags(),
-                        "categories" => $this->gateway->getCategories(),
+                        "categories" => $this->gateway->getCategories()
                     ]);
                     break;
                 } else {
@@ -128,7 +128,9 @@ class ProductController {
                         // Get all the required data (obeying given limits) & hide hidden items
                         "products" => $this->gateway->getAll($this->user_id, true, $urlQuery),
                         // Count how many visible items meet the given conditions had there been no limit set 
-                        "metadata" => $this->gateway->getAll($this->user_id, true, $urlQuery, true)
+                        "metadata" => $this->gateway->getAll($this->user_id, true, $urlQuery, true),
+                        "tags" => $this->gateway->getTags(),
+                        "categories" => $this->gateway->getCategories()
                     ]);
                     break;
                 }

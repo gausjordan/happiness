@@ -1,30 +1,46 @@
 <!DOCTYPE html>
-<html>
-
-
+<html lang="en">
 <head>
-</head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Menu Animation</title>
+<style>
+  /* Basic menu styles */
+  .menu {
+    width: 200px;
+    height: 0;
+    background: lightblue;
+    overflow: hidden;
+    transition: height 0.3s ease;
+  }
 
+  /* Open state */
+  .menu.open {
+    height: 100px; /* Example expanded height */
+  }
+
+  /* Prevent transition on page load */
+  .menu:not(.initial) {
+    transition: height 0.3s ease;
+  }
+
+  /* Optional: Hide the "initial" state after load */
+  .menu.initial {
+    height: 0;
+  }
+</style>
+</head>
 <body>
 
-  <template class="shop">
-    <svg viewBox="-15 -15 234 252" id="tick" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
-        <path style="opacity:1;fill:none;stroke-width:43;stroke-opacity:1;stroke-linecap:round" d="M 7,70 C 47,110 75.83894,174.75863 75.83894,174.75863 110,100 153,40 194,7" />
-    </svg>
-</template>
+<div class="menu initial">Menu Content</div>
+<button onclick="document.querySelector('.menu').classList.toggle('open')">Toggle Menu</button>
 
 <script>
-    // Select the <template> element with the class 'shop'
-    let template = document.querySelector('template.shop');
-    
-    // Access its content and select the <svg> inside the template's content
-    let svg = template.content.querySelector('svg');
-    
-    // Now you can manipulate the svg element
-    console.log(svg); // Logs the <svg> element
+  // Remove the "initial" class after the page loads
+  window.onload = () => {
+    document.querySelector('.menu').classList.remove('initial');
+  };
 </script>
 
-
 </body>
-
 </html>

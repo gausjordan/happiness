@@ -11,7 +11,10 @@ function loadImage(src) {
 }
 
 // Build the page (<app>)
-async function buildShop() {
+async function buildShop(rebuild) {
+    let app = document.getElementById('app');
+        app.setAttribute("hidden", "");
+
     let obj;
     let fetchURL = "/api/products";
 
@@ -22,10 +25,9 @@ async function buildShop() {
     buildGrid(obj);
     populateFilterMenu(obj);
 
-    await imagesAreLoadedPromise;
-    // Prevent le FOUC
-    document.getElementById('app').style.display = 'block';
-    document.getElementsByTagName('footer')[0].style.display = 'flex';
+    await imagesAreLoadedPromise
+        .then( () => { app.removeAttribute("hidden", "") })
+        .then( () => { document.getElementsByTagName('footer')[0].removeAttribute("hidden")})
 }
 
 function populateFilterMenu(obj) {
@@ -38,8 +40,6 @@ function populateFilterMenu(obj) {
     let svgtick = null;
     let separator = document.createElement('div');
         separator.setAttribute("class", "separator");
-    
-        console.log(obj);
 
     obj.categories.forEach((c) => {
         li = document.createElement('li');
@@ -120,7 +120,15 @@ function populateFilterMenu(obj) {
                 element.classList.remove('hovered');
             }
         });
-     });
+    });
+
+    /* Prevent window closing animation on page load by targeting a classname provided after onload event */
+    function oneTimeEvent() {
+        document.getElementById('shop-filtering-menu').setAttribute("loaded", "");
+        document.getElementById('shop-filtering-icon').removeEventListener("click", oneTimeEvent);
+    }
+    document.getElementById('shop-filtering-icon').addEventListener("click", oneTimeEvent);
+    
 }
 
 async function getImages(products) {
@@ -226,3 +234,4 @@ function filteringMenuHandler(event) {
 
 filterButtonToggle();
 buildShop();
+// console.log(document.querySelector('main#app > div#main-grid.shop'));

@@ -1,6 +1,5 @@
-/* Splash screen animation container, once a day, while the page is loading */
+/* Splash screen animation container */
 aside#splashscreen {
-    /* Boja iz knjige standarda za logo je #f9e6e5 */ 
     /* background-image:radial-gradient(circle, #fce9e8 75%, #e0cfce 100%); */
     background-color: white;
     display: block;
@@ -27,6 +26,33 @@ aside#splashscreen {
         pointer-events: none;
     }
 }
+
+aside#splashscreen[hidden] {
+    display: none;
+}
+
+/* Everything else should be inaccessible while spashing */
+aside#splashscreen[hidden] + main#app {
+    opacity: 0;
+    overflow: hidden;
+    animation: unhide-app 5s;
+    animation-fill-mode: forwards;
+}
+
+@keyframes funhide-app {
+    0% {
+        opacity: 0;
+        overflow: hidden;
+    }
+    100% { 
+        display: block;
+        opacity: 1;
+        overflow: auto;
+        -pointer-events: all;
+    }
+}
+
+
 
 .loader-grid-container {
     display: grid;

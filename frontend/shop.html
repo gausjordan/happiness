@@ -1,9 +1,5 @@
 <script>
 
-    // Prevent le FOUC
-    document.getElementById('app').style.display = 'none';
-    document.getElementsByTagName('footer')[0].style.display = 'none';
-
     if (localStorage.getItem("lang") === 'en') {
         document.title = "Products";
         document.querySelector("nav.shop-filter-menu h1.shop-title").textContent = "Products";
@@ -22,7 +18,7 @@
     <script src="/frontend/shop.js"></script>
 </head>
 
-</body>
+<body>
     <nav class="shop-filter-menu">
         <h1 class="shop-title"></h1>
         <div class="shop-option-buttons">
