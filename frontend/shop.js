@@ -13,7 +13,7 @@ function loadImage(src) {
 // Build the page (<app>)
 async function buildShop() {
     let obj;
-    let fetchURL = "http://192.168.1.12/api/products";
+    let fetchURL = "/api/products";
     try { obj = await fetchData(fetchURL) }     
     catch (e) { console.log("Error. " + e) }
 
@@ -28,6 +28,7 @@ async function buildShop() {
 
 function populateFilterMenu(obj) {
     let ulRef = document.getElementById("shop-filtering-menu");
+    let lang = localStorage.getItem("lang");
     let template = document.querySelector('template.shop');
     let li;
     let label = null;
@@ -36,50 +37,87 @@ function populateFilterMenu(obj) {
     let separator = document.createElement('div');
         separator.setAttribute("class", "separator");
 
-    if (localStorage.getItem('lang') == "hr") {
-
-        obj.categories.forEach((c) => {
-            li = document.createElement('li');
-            label = insertElements('label', c.categoryname_hr, {
-                "class" : "container",
-                "for" : 'catId' + c.category_id,
-            });
-            input = insertElements('input', null, {
-                "type" : "checkbox",
-                "id" : 'catId' + c.category_id,
-                "value" : c.category_id
-            });
-            svgtick = template.content.querySelector('svg').cloneNode(true);
-            li.appendChild(input);
-            li.appendChild(label);
-            li.appendChild(svgtick);
-            ulRef.appendChild(li);
+    obj.categories.forEach((c) => {
+        li = document.createElement('li');
+        label = insertElements('label', lang === 'en' ? c.categoryname_en : c.categoryname_hr, {
+            "class" : "container",
+            "for" : 'catId' + c.category_id,
         });
-
-        ulRef.appendChild(separator);
-
-        obj.tags.forEach((c) => {
-            li = document.createElement('li');
-            label = insertElements('label', c.tagname_hr, {
-                "class" : "container",
-                "for" : 'tagId' + c.tag_id,
-            });
-            input = insertElements('input', null, {
-                "type" : "checkbox",
-                "id" : 'tagId' + c.tag_id,
-                "value" : c.tag_id
-            });
-            svgtick = template.content.querySelector('svg').cloneNode(true);
-            li.appendChild(input);
-            li.appendChild(label);
-            li.appendChild(svgtick);
-            ulRef.appendChild(li);
+        input = insertElements('input', null, {
+            "type" : "checkbox",
+            "id" : 'catId' + c.category_id,
+            "value" : c.category_id
         });
+        svgtick = template.content.querySelector('svg').cloneNode(true);
+        li.appendChild(input);
+        li.appendChild(label);
+        li.appendChild(svgtick);
+        ulRef.appendChild(li);
+    });
 
-    }   
+    ulRef.appendChild(separator.cloneNode(true));
+
+    obj.tags.forEach((c) => {
+        li = document.createElement('li');
+        label = insertElements('label', lang === 'en' ? c.tagname_en : c.tagname_hr, {
+            "class" : "container",
+            "for" : 'tagId' + c.tag_id,
+        });
+        input = insertElements('input', null, {
+            "type" : "checkbox",
+            "id" : 'tagId' + c.tag_id,
+            "value" : c.tag_id
+        });
+        svgtick = template.content.querySelector('svg').cloneNode(true);
+        li.appendChild(input);
+        li.appendChild(label);
+        li.appendChild(svgtick);
+        ulRef.appendChild(li);
+    });
+
+    ulRef.appendChild(separator.cloneNode(true));
+
+    input = insertElements('input', null, {
+        "type" : "checkbox",
+    });
+    svgtick = template.content.querySelector('svg').cloneNode(true);
+    li.appendChild(input);
+    li = document.createElement('li');
+    label = insertElements('label', lang === 'en' ? "Reset filters" : "Poništi odabir", {
+        "class" : "container shop-filter-reset"
+    });
+    li.appendChild(label);
+    li.appendChild(svgtick);
+    ulRef.appendChild(li);
+
+    li.addEventListener("click", () => {
+        let checkbice = document.querySelectorAll('ul#shop-filtering-menu input[type="checkbox"]');
+        checkbice.forEach(element => {
+            element.checked = false;
+        });
+    });
+
+    let okButton = document.createElement('button');
+        okButton.textContent = "debug: manual fetch trigger";
+    ulRef.appendChild(okButton);
+
+    
+    // Prevent "mouse over" styling on touch-based devices, keep it for mouse users only
+    let items = document.querySelectorAll('ul#shop-filtering-menu li');
+    items.forEach(element => {
+        let isTouched = false;
+        element.addEventListener('pointerenter', (event) => {
+            if (event.pointerType === 'mouse') {
+                element.classList.add('hovered');
+            }
+        });
+        element.addEventListener('pointerleave', (event) => {
+            if (event.pointerType === 'mouse') {
+                element.classList.remove('hovered');
+            }
+        });
+     });
 }
-
-
 
 async function getImages(products) {
     let imagePromises = [];

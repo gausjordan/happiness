@@ -29,16 +29,23 @@ nav.shop-filter-menu .shop-option-buttons img {
     border: none;
     box-shadow: 0px 0px 1em #d4c4c3;
 }
+
 nav.shop-filter-menu .shop-option-buttons img:hover {
-    background-color: #f9e6e5;
+    background-color: rgb(223, 223, 223);
     box-shadow: 0px 0px 1em #d4c4c3;
 }
+
+nav.shop-filter-menu .shop-option-buttons img:active {
+    background-color: rgb(255, 255, 255);
+    box-shadow: 0px 0px 1em #d4c4c3;
+}
+
 
 /* Filtering menu options when active */
 .shop-option-buttons ul[active] {
     margin: 0;
     border-radius: 0.5em;
-    padding: 1em 0 1em 0;
+    padding: 0.5em 0 0.5em 0;
     display: block;
     list-style: none;
     user-select: none;
@@ -71,13 +78,18 @@ nav.shop-filter-menu .shop-option-buttons img:hover {
 /* Includes all the buttons (currently just one) */
 .shop-option-buttons li {
     display: flex;
+    background-color: none;
+}
+
+.shop-option-buttons li.hovered {
+    background-color: silver;
 }
 
 /* Filter item plain-text description */
 .shop-option-buttons label {
-    padding: 0.35em 1em 0.35em 0.25em;
+    padding: 0.45em 1em 0.45em 0.25em;
     width: 100%;
-    font-size: 1.1em;
+    font-size: 1em;
     display: inline-block;
     white-space: nowrap;
     order: 3;
@@ -94,24 +106,24 @@ nav.shop-filter-menu .shop-option-buttons img:hover {
 /* Always hidden checkbice */
 .shop-option-buttons input[type='checkbox'] {
    display: none;
-   order: 2;
 }
 
 /* Graphical checkbox tick while unchecked */
 .shop-option-buttons svg {
     align-items: left;
-    stroke: purple;
+    stroke: rgb(238, 216, 238);
     height: 1.6em;
     align-self: center;
     order: 1;
     visibility: hidden;
-    margin: 0 0 0 1em;
+    margin: 0 0.5em 0 1em;
 }
 
 
 /* Graphical checkbox tick while checked */
 #shop-filtering-menu input[type="checkbox"]:checked + label + svg {
     visibility: visible;
+    stroke: purple;
 }
 
 
