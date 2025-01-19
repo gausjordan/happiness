@@ -36,6 +36,7 @@ function populateFilterMenu(obj) {
     let template = document.querySelector('template.shop');
     let li;
     let label = null;
+    let valueText = null;
     let input = null;
     let svgtick = null;
     let separator = document.createElement('div');
@@ -43,19 +44,25 @@ function populateFilterMenu(obj) {
 
     obj.categories.forEach((c) => {
         li = document.createElement('li');
-        label = insertElements('label', lang === 'en' ? c.categoryname_en : c.categoryname_hr, {
+        label = insertElements('label', null, {
             "class" : "container",
             "for" : 'catId' + c.category_id,
         });
+
+        valueText = document.createElement('p');
+        valueText.innerHTML = lang === 'en' ? c.categoryname_en : c.categoryname_hr;
+        label.appendChild(valueText);
+
         input = insertElements('input', null, {
             "type" : "checkbox",
             "id" : 'catId' + c.category_id,
             "value" : c.category_id
         });
         svgtick = template.content.querySelector('svg').cloneNode(true);
-        li.appendChild(input);
+        
+        label.appendChild(input);
+        label.appendChild(svgtick);
         li.appendChild(label);
-        li.appendChild(svgtick);
         ulRef.appendChild(li);
     });
 
@@ -63,37 +70,49 @@ function populateFilterMenu(obj) {
 
     obj.tags.forEach((c) => {
         li = document.createElement('li');
-        label = insertElements('label', lang === 'en' ? c.tagname_en : c.tagname_hr, {
+        label = insertElements('label', null, {
             "class" : "container",
             "for" : 'tagId' + c.tag_id,
         });
+
+        valueText = document.createElement('p');
+        valueText.innerHTML = lang === 'en' ? c.tagname_en : c.tagname_hr;
+        label.appendChild(valueText);
+
         input = insertElements('input', null, {
             "type" : "checkbox",
             "id" : 'tagId' + c.tag_id,
             "value" : c.tag_id
         });
         svgtick = template.content.querySelector('svg').cloneNode(true);
-        li.appendChild(input);
+        label.appendChild(input);
+        label.appendChild(svgtick);
         li.appendChild(label);
-        li.appendChild(svgtick);
         ulRef.appendChild(li);
     });
 
     ulRef.appendChild(separator.cloneNode(true));
 
+    li = document.createElement('li');
+    label = insertElements('label', null, {
+        "class" : "container",
+        "for" : 'tagId' + "reset",
+    });
+
+    valueText = document.createElement('p');
+    valueText.innerHTML = lang === 'en' ? "Reset filters" : "Poništi odabir";
+    label.appendChild(valueText);
+
     input = insertElements('input', null, {
         "type" : "checkbox",
+        "id" : "filters-reset-button",
+        "value" : "reset"
     });
     svgtick = template.content.querySelector('svg').cloneNode(true);
-    li.appendChild(input);
-    li = document.createElement('li');
-    label = insertElements('label', lang === 'en' ? "Reset filters" : "Poništi odabir", {
-        "class" : "container shop-filter-reset"
-    });
+    label.appendChild(input);
+    label.appendChild(svgtick);
     li.appendChild(label);
-    li.appendChild(svgtick);
-    ulRef.appendChild(li);
-
+   
     li.addEventListener("click", () => {
         let checkbice = document.querySelectorAll('ul#shop-filtering-menu input[type="checkbox"]');
         checkbice.forEach(element => {
@@ -101,8 +120,15 @@ function populateFilterMenu(obj) {
         });
     });
 
+    ulRef.appendChild(li);
+
     let okButton = document.createElement('button');
         okButton.textContent = "debug: manual fetch trigger";
+
+    okButton.addEventListener("click", (e) => {
+        let queryPath = assembleQueryPath();
+    });
+
     ulRef.appendChild(okButton);
 
     
@@ -129,6 +155,39 @@ function populateFilterMenu(obj) {
     }
     document.getElementById('shop-filtering-icon').addEventListener("click", oneTimeEvent);
     
+}
+
+function assembleQueryPath() {
+    let checked = document.querySelectorAll('ul#shop-filtering-menu li input[type="checkbox"]:checked');
+    let queryPath = "/api/products";
+
+    if (checked.length == 0) {
+        return queryPath;
+    }
+
+    let categories = [];
+    let tags = [];
+
+    checked.forEach((i) => {
+        if (i.id.substring(0,3) === 'cat') {
+            categories.push(i.value);
+        } else if (i.id.substring(0,3) === 'tag') {
+            tags.push(i.value);
+        }
+    });
+
+    queryPath += "?";
+
+    if (categories.length > 0) {
+        queryPath += "products_and_categories=" + categories.join(",");
+    }
+    if (tags.length > 0) {
+        queryPath += "&";
+        queryPath += "products_and_tags=" + tags.join(",");
+    }
+    
+    console.log(queryPath);
+
 }
 
 async function getImages(products) {
@@ -216,8 +275,6 @@ function filteringMenuHandler(event) {
 
     let menu = document.getElementById("shop-filtering-menu");
 
-    console.log("Event");
-
     // If a click occured inside of an opened menu
     if (menu.contains(event.target)) {
         // Do nothing - user is picking options
@@ -225,7 +282,7 @@ function filteringMenuHandler(event) {
     // If a click occured anywhere outside of the menu
     else {
         // Prevent a click event from doing anything else
-        document.body.remove("menu-active");
+        document.body.classList.remove("menu-active");
         // Close the menu
         menu.removeAttribute("active");
         // Remove a no-longer-needed listener
@@ -236,4 +293,3 @@ function filteringMenuHandler(event) {
 
 filterButtonToggle();
 buildShop();
-// console.log(document.querySelector('main#app > div#main-grid.shop'));

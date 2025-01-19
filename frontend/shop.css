@@ -1,7 +1,6 @@
 * {
     box-sizing: content-box;
 }
-
 body.menu-active {
     pointer-events: none;
 }
@@ -38,24 +37,43 @@ nav.shop-filter-menu .shop-option-buttons img {
     background-color: rgb(243, 243, 243);
     box-shadow: 0px 0px 1em #d4c4c3;
 }
-
 nav.shop-filter-menu .shop-option-buttons img:hover {
     background-color: rgb(223, 223, 223);
     box-shadow: 0px 0px 1em #d4c4c3;
     cursor: pointer;
 }
-
 nav.shop-filter-menu .shop-option-buttons img:active {
     background-color: rgb(240, 240, 240);
     box-shadow: 0px 0px 1em #d4c4c3;
 }
 
-/* Filtering menu options when hidden */
+/* Includes all the buttons (currently just one) */
+.shop-option-buttons li {
+    display: flex;
+    background-color: none;
+}
+
+/* Filter item label element */
+.shop-option-buttons label {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    font-size: 1em;
+}
+
+
+
+
+
+
+
+
+/* Filtering menu - options when hidden */
 .shop-option-buttons ul {
     display: none;
     transform: translate(-100%) translate(1.8em, -1em) scale(1, 1);
     border-radius: 0.5em;
-    padding: 0.5em 0 0.5em 0;
+    padding: 0.75em 0 0.75em 0;
     list-style: none;
     user-select: none;
     position: absolute;
@@ -70,7 +88,8 @@ nav.shop-filter-menu .shop-option-buttons img:active {
 
 /* Prevent window closing animation on page load by targeting a classname provided after onload event */
 .shop-option-buttons ul[loaded] {
-    display: block;
+    display: flex;
+    flex-direction: column;
     animation: filter-menu-popdown 0.1s linear;
     transform-origin: top right;
     animation-fill-mode: forwards;
@@ -83,52 +102,66 @@ nav.shop-filter-menu .shop-option-buttons img:active {
 }
 
 @keyframes filter-menu-popup {
-    0% {
-        opacity: 0%;
-        transform: translate(-100%) translate(1.8em, -1em) scale(0.1, 0.1);
-    }
-    100% {
-        opacity: 100%;
-        transform: translate(-100%) translate(1.8em, -1em) scale(1, 1);
-    }
+    0% { opacity: 0%; transform: translate(-100%) translate(1.8em, -1em) scale(0.1, 0.1); }
+    100% { opacity: 100%; transform: translate(-100%) translate(1.8em, -1em) scale(1, 1);  }
 }
-
 @keyframes filter-menu-popdown {
-    0% {
-        opacity: 100%;
-        transform: translate(-100%) translate(1.8em, -1em) scale(1, 1);
-    }
-    100% {
-        opacity: 0%;
-        transform: translate(-100%) translate(1.8em, -1em) scale(0.1, 0.1);
-    }
+    0% { opacity: 100%; transform: translate(-100%) translate(1.8em, -1em) scale(1, 1); }
+    100% { opacity: 0%; transform: translate(-100%) translate(1.8em, -1em) scale(0.1, 0.1); }
 }
 
-.shop-option-buttons ul[active] {
+/* Always hidden checkbice */
+.shop-option-buttons input[type='checkbox'] {
+    order: 2;
+    display: none;
+ }
+
+/* Single menu list item' label nested p text */
+.shop-option-buttons #shop-filtering-menu li label p {
+    white-space: nowrap;
+    align-self: center;
+    order: 3;
+    padding: 0.7em 1em 0.7em 0.5em;
 }
 
 
 
-/* Includes all the buttons (currently just one) */
-.shop-option-buttons li {
-    display: flex;
-    background-color: none;
+ /* Filter menu - All menu children elements */
+.shop-option-buttons #shop-filtering-menu li * {
+    padding: 0;
+    margin: 0;
 }
 
-.shop-option-buttons li.hovered {
+ /* Filter menu - Single master menu item */
+ .shop-option-buttons #shop-filtering-menu li {
+    -padding: 0.5em;
+}
+.shop-option-buttons #shop-filtering-menu li.hovered {
     background-color: silver;
 }
 
-/* Filter item plain-text description */
-.shop-option-buttons label {
-    padding: 0.45em 1em 0.45em 0.25em;
-    width: 100%;
-    font-size: 1em;
+/* Graphical checkbox tick while unchecked */
+#shop-filtering-menu label input[type="checkbox"] + svg {
     display: inline-block;
-    white-space: nowrap;
-    order: 3;
-    cursor:pointer;
+    height: 1.4em;
+    order: 1;
+    align-self: center;
+    padding: 0em 0 0 0.75em;
 }
+
+/* Graphical checkbox tick while checked */
+#shop-filtering-menu label input[type="checkbox"]:checked + svg {
+    stroke: purple;
+}
+
+
+
+
+
+
+
+
+
 
 /* Mid-menu separator */
 .shop-option-buttons .separator {
@@ -138,31 +171,7 @@ nav.shop-filter-menu .shop-option-buttons img:active {
     background-color: rgb(196, 196, 196);
 }
 
-/* Always hidden checkbice */
-.shop-option-buttons input[type='checkbox'] {
-   display: none;
-}
-
-/* Graphical checkbox tick while unchecked */
-.shop-option-buttons svg {
-    align-items: left;
-    stroke: rgb(238, 216, 238);
-    height: 1.6em;
-    align-self: center;
-    order: 1;
-    visibility: hidden;
-    margin: 0 0.5em 0 1em;
-}
-
-
-/* Graphical checkbox tick while checked */
-#shop-filtering-menu input[type="checkbox"]:checked + label + svg {
-    visibility: visible;
-    stroke: purple;
-}
-
-
-/* Plain text caption of a 'filter' button (unused) */
+/* Plain text caption of a 'filter' button (unused/always hidden) */
 nav.shop-filter-menu p.filters {
     margin: 0 0.65em;
     display: none;

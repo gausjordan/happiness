@@ -306,7 +306,6 @@ function anyThingButTheMainMenu(event) {
         && event.target.getAttribute('id') !== 'menu-icon'
         && event.target.getAttribute('id') !== 'nav-links') {
         document.getElementById("menu-toggle").click();
-        alert("Here");
     }
 }
 
