@@ -2,6 +2,14 @@
     box-sizing: content-box;
 }
 
+body.menu-active {
+    pointer-events: none;
+}
+
+body.menu-active .menu, body.menu-active .menu * {
+    pointer-events: auto;
+}
+
 /* Title and filtering options invisible placeholder */
 nav.shop-filter-menu {
     display: flex;

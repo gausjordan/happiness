@@ -185,49 +185,51 @@ function insertElements(tag, content, attributes = {}) {
 }
 
 function filterButtonToggle() {
-    let body = document.body;
     let button = document.getElementById("shop-filtering-icon");
     let menu = document.getElementById("shop-filtering-menu");
 
     // Handle the button press
-    button.addEventListener("click", (e) => {
+    button.addEventListener("click", () => {
 
         // If it wasn't opened already - open it
         if (!menu.hasAttribute("active")) {
             menu.setAttribute("active", "");
             // Listen for any clicks outside of the menu in order to close it
-            body.addEventListener("click", filteringMenuHandler, true);
+            document.documentElement.addEventListener("click", filteringMenuHandler, true);
+            // Prevent mouse cursor from turning "clickable" outside of the menu
+            document.body.classList.add("menu-active");
         } else {
             // Menu was already open - close it
             // TODO - apply settings
             menu.removeAttribute("active");
             // And remove a no-longer-needed listener
-            body.removeEventListener("click", filteringMenuHandler, true);
+            document.documentElement.removeEventListener("click", filteringMenuHandler, true);
         }
     });
 }
 
+
+
+
 // Open and close the filter menu in special cases
 function filteringMenuHandler(event) {
 
-    let body = document.body;
     let menu = document.getElementById("shop-filtering-menu");
 
+    console.log("Event");
+
     // If a click occured inside of an opened menu
-    if (event.target.parentNode.id == 'shop-filtering-menu' ||
-        event.target.parentNode.parentNode.id == 'shop-filtering-menu' ||
-        event.target.parentNode.parentNode.parentNode.id == 'shop-filtering-menu') {
+    if (menu.contains(event.target)) {
         // Do nothing - user is picking options
     }
     // If a click occured anywhere outside of the menu
     else {
         // Prevent a click event from doing anything else
-        event.preventDefault();
-        event.stopPropagation();
+        document.body.remove("menu-active");
         // Close the menu
         menu.removeAttribute("active");
         // Remove a no-longer-needed listener
-        body.removeEventListener("click", filteringMenuHandler, true);
+        document.documentElement.removeEventListener("click", filteringMenuHandler, true);
         // TODO - Apply settings
     }
 }
