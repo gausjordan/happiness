@@ -201,8 +201,9 @@ const navigateTo = async (path, doNotPushState = false) => {
     }
 
     let url = new URL(window.location.origin + path);
-    const app = document.getElementById("app");
-
+    
+    let app = document.getElementById("app");
+    
     // Only evaluate the first path segment (add a slash at the beginning)
     let target = routes["/" + url.pathname.split("/")[1]];
     if (!target) {
