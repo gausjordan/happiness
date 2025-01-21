@@ -80,7 +80,7 @@ async function fetchData(fetchURL) {
             navigateTo("/home");
         }
     } else {
-        throw new Error("API error");
+        throw new Error("THIS happens! API error");
     }
 }
 
@@ -399,9 +399,6 @@ function addMenuOptions(croatianText, englishText, path) {
 if (window.location.pathname === '/') {
     displaySplashScreen();
 }
-
-// console.log(window.innerHeight);
-// console.log(document.body.scrollHeight);
 
 // Entry point
 navigateTo(window.location.pathname + window.location.search, true);

@@ -8,6 +8,14 @@ $urlPath = parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH);
 $urlQuery = parse_url($_SERVER["REQUEST_URI"], PHP_URL_QUERY);
 $uri = explode("/" , $urlPath);
 
+
+// DEBUG
+$myfile = fopen("indexlog.txt", "a") or die("Unable to open file!");
+$txt = $raw . "\n";
+fwrite($myfile, $txt);
+fclose($myfile);
+
+
 $database = new Database(
     $config->host, $config->dbName,
     $config->username, $config->password);

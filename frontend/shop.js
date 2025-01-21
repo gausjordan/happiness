@@ -11,24 +11,34 @@ function loadImage(src) {
 }
 
 // Build the page (<app>)
-async function buildShop(rebuild) {
+async function buildShop(fetchURL = "/api/products", refreshExisting) {
     let app = document.getElementById('app');
         app.setAttribute("hidden", "");
 
     let obj;
-    let fetchURL = "/api/products";
 
     try { obj = await fetchData(fetchURL) }     
     catch (e) { console.log("Error. " + e) }
 
+    if(refreshExisting) {
+        if (document.getElementById('main-grid')) {
+            document.getElementById('main-grid').remove();
+        }
+    }
+
     let imagesAreLoadedPromise = getImages(obj.products);
     buildGrid(obj);
-    populateFilterMenu(obj);
+    
+    if(!refreshExisting) {
+        populateFilterMenu(obj);
+    }
 
     await imagesAreLoadedPromise
         .then( () => { app.removeAttribute("hidden", "") })
         .then( () => { document.getElementsByTagName('footer')[0].removeAttribute("hidden")})
 }
+
+
 
 function populateFilterMenu(obj) {
     let ulRef = document.getElementById("shop-filtering-menu");
@@ -118,18 +128,42 @@ function populateFilterMenu(obj) {
         checkbice.forEach(element => {
             element.checked = false;
         });
+
+        let queryPath = assembleQueryPath() !== null ? queryPath : "/api/products";
+        buildShop(queryPath, true);
+
+        // Close filtering menu after resetting filtering
+        document.getElementById('shop-filtering-menu').removeAttribute("active");
+        // And remove a no-longer-needed listener
+        document.documentElement.removeEventListener("click", filteringMenuHandler, true);
+        // Re-enable clicking action
+        document.body.classList.remove("menu-active");
+
     });
 
     ulRef.appendChild(li);
 
-    let okButton = document.createElement('button');
-        okButton.textContent = "debug: manual fetch trigger";
+    // let okButton = document.createElement('button');
+    //     okButton.textContent = "debug: manual fetch trigger";
+    // okButton.addEventListener("click", (e) => {
+    //     let queryPath = assembleQueryPath();
+    //     if (queryPath) {
+    //         buildShop(queryPath, true);
+    //     }
+    // });
+    // ulRef.appendChild(okButton);
 
-    okButton.addEventListener("click", (e) => {
-        let queryPath = assembleQueryPath();
-    });
-
-    ulRef.appendChild(okButton);
+    let checkbice = document.querySelectorAll('input[type="checkbox"]');
+    
+    checkbice.forEach(c => {
+        c.addEventListener("change", (e) => {
+            let queryPath = assembleQueryPath();
+            queryPath = assembleQueryPath() !== null ? queryPath : "/api/products";
+            buildShop(queryPath, true);
+        });
+    })
+        
+    
 
     
     // Prevent "mouse over" styling on touch-based devices, keep it for mouse users only
@@ -157,12 +191,13 @@ function populateFilterMenu(obj) {
     
 }
 
+
 function assembleQueryPath() {
     let checked = document.querySelectorAll('ul#shop-filtering-menu li input[type="checkbox"]:checked');
     let queryPath = "/api/products";
 
     if (checked.length == 0) {
-        return queryPath;
+        return null;
     }
 
     let categories = [];
@@ -185,9 +220,8 @@ function assembleQueryPath() {
         queryPath += "&";
         queryPath += "products_and_tags=" + tags.join(",");
     }
-    
-    console.log(queryPath);
 
+    return queryPath;
 }
 
 async function getImages(products) {
@@ -195,6 +229,7 @@ async function getImages(products) {
     products.forEach(p => {
         imagePromises.push(fetch('/img/' + p.url[0]));
     });
+    
     return Promise.all(imagePromises);
 }
 

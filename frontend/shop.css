@@ -62,18 +62,12 @@ nav.shop-filter-menu .shop-option-buttons img:active {
 }
 
 
-
-
-
-
-
-
 /* Filtering menu - options when hidden */
 .shop-option-buttons ul {
     display: none;
     transform: translate(-100%) translate(1.8em, -1em) scale(1, 1);
     border-radius: 0.5em;
-    padding: 0.75em 0 0.75em 0;
+    padding: 0.2em 0 0.75em 0;
     list-style: none;
     user-select: none;
     position: absolute;
@@ -121,10 +115,8 @@ nav.shop-filter-menu .shop-option-buttons img:active {
     white-space: nowrap;
     align-self: center;
     order: 3;
-    padding: 0.7em 1em 0.7em 0.5em;
+    padding: 0.7em 1.2em 0.7em 0.5em;
 }
-
-
 
  /* Filter menu - All menu children elements */
 .shop-option-buttons #shop-filtering-menu li * {
@@ -155,14 +147,6 @@ nav.shop-filter-menu .shop-option-buttons img:active {
 }
 
 
-
-
-
-
-
-
-
-
 /* Mid-menu separator */
 .shop-option-buttons .separator {
     width: 100%;
@@ -173,7 +157,7 @@ nav.shop-filter-menu .shop-option-buttons img:active {
 
 /* Plain text caption of a 'filter' button (unused/always hidden) */
 nav.shop-filter-menu p.filters {
-    margin: 0 0.65em;
+    margin: 0 0.6em;
     display: none;
 }
 
