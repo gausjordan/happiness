@@ -153,7 +153,7 @@ function populateFilterMenu(obj) {
     // });
     // ulRef.appendChild(okButton);
 
-    let checkbice = document.querySelectorAll('input[type="checkbox"]');
+    let checkbice = document.querySelectorAll('ul#shop-filtering-menu input[type="checkbox"]');
     
     checkbice.forEach(c => {
         c.addEventListener("change", (e) => {
