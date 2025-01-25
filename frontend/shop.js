@@ -143,16 +143,6 @@ function populateFilterMenu(obj) {
 
     ulRef.appendChild(li);
 
-    // let okButton = document.createElement('button');
-    //     okButton.textContent = "debug: manual fetch trigger";
-    // okButton.addEventListener("click", (e) => {
-    //     let queryPath = assembleQueryPath();
-    //     if (queryPath) {
-    //         buildShop(queryPath, true);
-    //     }
-    // });
-    // ulRef.appendChild(okButton);
-
     let checkbice = document.querySelectorAll('ul#shop-filtering-menu input[type="checkbox"]');
     
     checkbice.forEach(c => {

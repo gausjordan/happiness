@@ -7,7 +7,13 @@ class ProductController {
     
     public function __construct(private ProductGateway $gateway,
                                 private int $user_id,
-                                private string $user_role) { }
+                                private string $user_role
+                                
+                                
+                                
+                                
+                                
+                                ) { }
     
     public function processRequest(string $method, ?string $id, ?array $urlQuery): void {
         if ($id) {
@@ -228,7 +234,6 @@ class ProductController {
                     echo json_encode(["Message: " => "Image resource " . $fileName . " created."]);
                     exit;
                 }
-
                 break;
             
             case "DELETE":

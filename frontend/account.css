@@ -22,7 +22,18 @@ div#login-form input[type=submit] {
     padding: 0.1em;
 }
 
-/* DEBUG */
+div#login-form p {
+    margin: 2em 0 0 0;
+    font-weight: 400;
+    line-height: 1.5;
+}
+
+div#login-form p a {
+    font-weight: bold;
+}
+
+
+/* TESTING ACCOUNTS */
 div#login-form div#brza-prijava {
     margin: 1em auto 1em auto;
     text-align: center;
@@ -30,26 +41,4 @@ div#login-form div#brza-prijava {
 div#login-form div#brza-prijava button {
     font-size: 1em;
     margin: 0.25em;
-}
-
-
-
-
-
-
-
-
-div#user-details-form {
-    
-}
-
-
-
-
-
-
-
-
-div#register-form {
-    
 }

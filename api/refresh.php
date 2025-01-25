@@ -17,15 +17,6 @@ if ($_SERVER["REQUEST_METHOD"] !== "POST") {
 
 $data = (array) json_decode(file_get_contents("php://input"), true);
 
-
-// DEBUG
-$myfile = fopen("refreshlog.txt", "a") or die("Unable to open file!");
-$txt = implode($data) . "\n";
-fwrite($myfile, $txt);
-fclose($myfile);
-
-
-
 if ( ! array_key_exists("token", $data) ) {
     http_response_code(400);
     echo json_encode(["message" => "Missing token"]);
