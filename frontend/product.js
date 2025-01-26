@@ -21,13 +21,13 @@ function buildProductInfo(obj, lang) {
     document.getElementsByTagName("h1")[0].innerHTML = (lang === 'en') ? obj.title : obj.naslov;
     // Main image
     let mainImage = document.getElementById("image-big");
-    mainImage.src = '/img/' + obj.url[0];
+    mainImage.src = '/product-images/' + obj.url[0];
     // Build gallery
     let thumbnails = document.getElementById('thumbnails');
     obj.url.forEach(u => {
         let div = document.createElement('div');
         let img = document.createElement('img');
-        img.setAttribute('src', '/img/' + u);
+        img.setAttribute('src', '/product-images/' + u);
         img.addEventListener("click", (u) => {
         mainImage.src = u.target.currentSrc;
     });

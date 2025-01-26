@@ -24,32 +24,12 @@
 
 
 ### Only those lines below this one - matter
-
-# RewriteBase /
 RewriteEngine On
-
-# Debug
-#RewriteLogLevel 3
-#RewriteLog rewrite.log
-
-
-#Also prevent listing root content
-RewriteCond %{REQUEST_URI} ^/$
-RewriteRule ^$ "frontend/index.html" [L]
-
-
-### Prevent accessing everything that's not a file, directory or a simlink
+## RewriteBase /
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_FILENAME} !-l
-
-#RewriteRule ^$ "frontend/index.html" [L]
-RewriteRule . "frontend/index.html" [L]
-
-#RewriteRule ^$ /your-target-url [L]
-#RewriteRule . "frontend/index.html" [L]
-
-
+RewriteRule . frontend/index.html [L]
 
 SetEnvIf Authorization "(.*)" HTTP_AUTHORIZATION=$1
 

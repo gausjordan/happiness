@@ -217,7 +217,7 @@ function assembleQueryPath() {
 async function getImages(products) {
     let imagePromises = [];
     products.forEach(p => {
-        imagePromises.push(fetch('/img/' + p.url[0]));
+        imagePromises.push(fetch('/product-images/' + p.url[0]));
     });
     
     return Promise.all(imagePromises);
@@ -244,7 +244,7 @@ function buildGrid(obj) {
         ))
         container.appendChild(
             insertElements("img", null, {
-                    "src" : "/../img/" + o.url[0],
+                    "src" : "/../product-images/" + o.url[0],
                 }
             ));
         container.appendChild(insertElements("h3", localStorage.getItem('lang') == 'hr' ? o.naslov : o.title));

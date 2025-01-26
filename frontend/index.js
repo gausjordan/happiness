@@ -80,7 +80,7 @@ async function fetchData(fetchURL) {
             navigateTo("/home");
         }
     } else {
-        throw new Error("THIS happens! API error");
+        throw new Error("API error");
     }
 }
 
@@ -223,7 +223,7 @@ const navigateTo = async (path, doNotPushState = false) => {
     app.innerHTML = parsedPage.body.innerHTML;
 
     // Get the base URL for stylesheets and scripts
-    const baseUrl = new URL(target, window.location.origin).href;
+   const baseUrl = new URL(target, window.location.origin).href; // Won't work if .htaccess works
 
     // Load stylesheets and execute scripts
     loadStylesheets(parsedPage, baseUrl);
