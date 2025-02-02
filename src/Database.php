@@ -21,9 +21,10 @@ class Database {
     public function getConnection(): PDO {
 
         if ($this->conn === null) {
+            
             $dataSourceName = "mysql:host={$this->host};
-                            dbname={$this->dbName};
-                            charset=utf8";
+                            dbname={$this->dbName}; 
+                            charset=utf8;";
             $this->conn = new PDO($dataSourceName,
                         $this->username, $this->password,
                             [

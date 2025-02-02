@@ -15,10 +15,10 @@ $txt = $raw . "\n";
 fwrite($myfile, $txt);
 fclose($myfile);
 
-
 $database = new Database(
     $config->host, $config->dbName,
     $config->username, $config->password);
+
 
 if ($_SERVER["REQUEST_METHOD"] === "OPTIONS") {
     header("Access-Control-Allow-Origin: *");
