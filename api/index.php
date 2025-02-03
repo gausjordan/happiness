@@ -71,7 +71,7 @@ switch ($uri[2]) {
         }
         break;
     }
-    case "user" : {
+    case "user" : { 
         
     }
     default: {
