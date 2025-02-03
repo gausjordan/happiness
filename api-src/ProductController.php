@@ -5,30 +5,22 @@
  */
 class ProductController {
     
-    public function __construct(private ProductGateway $gateway,
-                                private int $user_id,
-                                private string $user_role
-                                
-                                
-                                
-                                
-                                
-                                ) { }
+    public function __construct(
+        private ProductGateway $gateway,
+        private Sanitization $sanitize,
+        private int $user_id,
+        private string $user_role
+    ) { }
     
     public function processRequest(string $method, ?string $id, ?array $urlQuery): void {
         if ($id) {
-            if (!ctype_digit($id)) {
-                http_response_code(404);
-                echo json_encode(["message" => "Product id must be a number."]);
-                exit;
-            }
+            $this->sanitize->isDigit($id);
             $this->processResourceRequest($method, $id);
         }
         else {
             $this->processCollectionRequest($method, $urlQuery);
         }
     }
-
 
     private function processResourceRequest(string $method, string $id): void {
 
@@ -65,8 +57,8 @@ class ProductController {
 
                 if (!empty($data["url"])) {
                     foreach($data["url"] as $url) {
-                        $fileName = $this->sanitizeFilename($url);
-                        if (!file_exists(".." . DIRECTORY_SEPARATOR . "img" . DIRECTORY_SEPARATOR . $fileName)) {
+                        $fileName = $this->sanitize->sanitizeFilename($url);
+                        if (!file_exists(".." . DIRECTORY_SEPARATOR . "product-images" . DIRECTORY_SEPARATOR . $fileName)) {
                             http_response_code(404);
                             $errors[] = "Product update failed. Missing image file." . $fileName;
                         }
@@ -162,8 +154,8 @@ class ProductController {
                 $failure = false;
 
                 foreach($data["url"] as $url) {
-                    $fileName = $this->sanitizeFilename($url);
-                    if (!file_exists(".." . DIRECTORY_SEPARATOR . "img" . DIRECTORY_SEPARATOR . $fileName)) {
+                    $fileName = $this->sanitize->sanitizeFilename($url);
+                    if (!file_exists(".." . DIRECTORY_SEPARATOR . "product-images" . DIRECTORY_SEPARATOR . $fileName)) {
                         http_response_code(404);
                         echo json_encode(["Message: " => "Product insertion failed. Missing image " . $fileName]);
                         $failure = true;
@@ -222,10 +214,10 @@ class ProductController {
                     exit;
                 }
 
-                $rawFilename = $this->sanitizeFilename($file['name']);
+                $rawFilename = $this->sanitize->sanitizeFilename($file['name']);
                 $fileName = uniqid(substr($rawFilename, 0, strripos($rawFilename, '.')) . "_", false) . '.jpg';
 
-                if (!move_uploaded_file($file['tmp_name'], ".." . DIRECTORY_SEPARATOR . "img" . DIRECTORY_SEPARATOR . $fileName)) {
+                if (!move_uploaded_file($file['tmp_name'], ".." . DIRECTORY_SEPARATOR . "product-images" . DIRECTORY_SEPARATOR . $fileName)) {
                     http_response_code(400);
                     echo json_encode(["Message: " => "Unable to save uploaded file."]);
                     exit;
@@ -238,13 +230,13 @@ class ProductController {
             
             case "DELETE":
                 
-                $fileName = $this->sanitizeFilename($id);
-                if (!file_exists(".." . DIRECTORY_SEPARATOR . "img" . DIRECTORY_SEPARATOR . $fileName)) {
+                $fileName = $this->sanitize->sanitizeFilename($id);
+                if (!file_exists(".." . DIRECTORY_SEPARATOR . "product-images" . DIRECTORY_SEPARATOR . $fileName)) {
                     http_response_code(404);
                     echo json_encode(["Message: " => "File not found."]);
                     exit;
                 }
-                if (!unlink(".." . DIRECTORY_SEPARATOR . "img" . DIRECTORY_SEPARATOR . $fileName)) {
+                if (!unlink(".." . DIRECTORY_SEPARATOR . "product-images" . DIRECTORY_SEPARATOR . $fileName)) {
                     http_response_code(500);
                     echo json_encode(["Message: " => "An error occurred while attempting to delete the file."]);
                     exit;
@@ -256,8 +248,10 @@ class ProductController {
                 break;
             
             case "GET":
-                $fileName = $this->sanitizeFilename($id);
-                if (!file_exists(".." . DIRECTORY_SEPARATOR . "img" . DIRECTORY_SEPARATOR . $fileName)) {
+                echo($id);
+                $fileName = $this->sanitize->sanitizeFilename($id);
+                
+                if (!file_exists(".." . DIRECTORY_SEPARATOR . "product-images" . DIRECTORY_SEPARATOR . $fileName)) {
                     http_response_code(404);
                     echo json_encode(["Message: " => "File not found."]);
                     exit;
@@ -273,15 +267,11 @@ class ProductController {
 
     }
 
-    private function sanitizeFilename(string $filename) : string {
-        $filename = mb_ereg_replace("([^(a-zA-Z0-9šđčćž\s\d\-_~,\[\]\(\).])", '', $filename, 'i');
-        $filename = mb_ereg_replace("([\.]{2,})", '', $filename);
-        return $filename;
-    }
 
     private function sanitizeString(string $string) : string {
         return htmlspecialchars($string);
     }
+
 
     private function getValidationErrors(array $data, bool $is_new = true): array {
 

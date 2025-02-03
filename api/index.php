@@ -8,17 +8,15 @@ $urlPath = parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH);
 $urlQuery = parse_url($_SERVER["REQUEST_URI"], PHP_URL_QUERY);
 $uri = explode("/" , $urlPath);
 
-
-// DEBUG
-$myfile = fopen("indexlog.txt", "a") or die("Unable to open file!");
-$txt = $raw . "\n";
-fwrite($myfile, $txt);
-fclose($myfile);
+// // DEBUG .txt logger
+// $myfile = fopen("indexlog.txt", "a") or die("Unable to open file!");
+// $txt = $raw . "\n";
+// fwrite($myfile, $txt);
+// fclose($myfile);
 
 $database = new Database(
     $config->host, $config->dbName,
     $config->username, $config->password);
-
 
 if ($_SERVER["REQUEST_METHOD"] === "OPTIONS") {
     header("Access-Control-Allow-Origin: *");
@@ -27,8 +25,8 @@ if ($_SERVER["REQUEST_METHOD"] === "OPTIONS") {
     exit;
 }
 
-$user_id = 0;           // No one is logged in for now
-$user_role = "guest";   // And noone has a role of "guest" by default
+$user_id = 0;           // No one is logged for the moment
+$user_role = "guest";   // And 'no one' has a role of a "guest" by default
 
 switch ($uri[2]) {
 
@@ -38,6 +36,7 @@ switch ($uri[2]) {
         $user_gateway = new UserGateway($database);
         $codec = new JWTCodec($config->secret_key);
         $auth = new Auth($user_gateway, $codec);
+        $sanitize = new Sanitization();
 
         if ($auth->authenticateAccessToken()) {
             $user_id = $auth->getUserId();
@@ -45,15 +44,15 @@ switch ($uri[2]) {
         }
         
         $product_gateway = new ProductGateway($database);
-        $controller = new ProductController($product_gateway, $user_id, $user_role);
+        $controller = new ProductController($product_gateway, $sanitize, $user_id, $user_role);
 
 
         // Routing
         if (empty($uri[3]))
         {
             // Inspect and transform URL queries
-            $urlQuery = unpackQueries($urlQuery);
-            $urlQuery = checkQueries($urlQuery);
+            $urlQuery = $sanitize->unpackQueries($urlQuery);
+            $urlQuery = $sanitize->checkQueries($urlQuery);
 
             // No product id => either "get all" or "post one"
             $controller->processRequest($_SERVER["REQUEST_METHOD"], null, $urlQuery);    
@@ -72,44 +71,12 @@ switch ($uri[2]) {
         }
         break;
     }
+    case "user" : {
+        
+    }
     default: {
         echo(json_encode([ "message" => "Endpoint not found." ]));
         http_response_code(404);
         exit;
-    }
-}
-
-
-// Converts a string of '&'-separated key=value pairs into an array
-function unpackQueries($urlQuery) : array | null {
-    if ($urlQuery == null || $urlQuery == "") {
-        return null;
-    }
-    parse_str($urlQuery, $result);
-
-    foreach ($result as $r => $value) {
-        if ($value == null || $value == "") {
-            http_response_code(400);
-            echo(json_encode([
-                "message" => "Invalid query format."
-            ]));
-            exit;
-        }
-    }
-    return $result;
-}
-
-
-// Check query validity
-function checkQueries($urlQuery) {
-    if($urlQuery) {
-        foreach ($urlQuery as $key => $value) {
-            if ($key !== "products_and_categories" && $key !== "products_and_tags" && $key !== "limit") {
-                echo(json_encode([ "message" => "Invalid query key(s)." ]));
-                http_response_code(400);
-                exit;
-            }
-        }
-        return $urlQuery;
     }
 }

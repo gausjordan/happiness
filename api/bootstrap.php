@@ -13,7 +13,7 @@
 $config = require(dirname(__DIR__, 1) . DIRECTORY_SEPARATOR . "private" . DIRECTORY_SEPARATOR . "config.php");
 
 spl_autoload_register(function ($class) {
-    require dirname(__DIR__, 1) . DIRECTORY_SEPARATOR . "src" . DIRECTORY_SEPARATOR . $class . ".php";
+    require dirname(__DIR__, 1) . DIRECTORY_SEPARATOR . "api-src" . DIRECTORY_SEPARATOR . $class . ".php";
 });
 
 set_error_handler("CustomErrorHandler::handleError");
