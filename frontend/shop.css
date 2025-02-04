@@ -41,6 +41,7 @@ nav.shop-filter-menu .shop-option-buttons img:hover {
     background-color: rgb(223, 223, 223);
     box-shadow: 0px 0px 1em #d4c4c3;
     cursor: pointer;
+    user-select: none;
 }
 nav.shop-filter-menu .shop-option-buttons img:active {
     background-color: rgb(240, 240, 240);

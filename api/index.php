@@ -28,7 +28,10 @@ if ($_SERVER["REQUEST_METHOD"] === "OPTIONS") {
 $user_id = 0;           // No one is logged for the moment
 $user_role = "guest";   // And 'no one' has a role of a "guest" by default
 
+
+
 switch ($uri[2]) {
+
 
     case "products" : {
 
@@ -44,7 +47,7 @@ switch ($uri[2]) {
         }
         
         $product_gateway = new ProductGateway($database);
-        $controller = new ProductController($product_gateway, $sanitize, $user_id, $user_role);
+        $productController = new ProductController($product_gateway, $sanitize, $user_id, $user_role);
 
 
         // Routing
@@ -52,31 +55,57 @@ switch ($uri[2]) {
         {
             // Inspect and transform URL queries
             $urlQuery = $sanitize->unpackQueries($urlQuery);
-            $urlQuery = $sanitize->checkQueries($urlQuery);
+            $urlQuery = $sanitize->checkProductQueries($urlQuery);
 
             // No product id => either "get all" or "post one"
-            $controller->processRequest($_SERVER["REQUEST_METHOD"], null, $urlQuery);    
+            $productController->processRequest($_SERVER["REQUEST_METHOD"], null, $urlQuery);
         } 
         else if ($uri[3] !== "images")
         {
             // Does have an id, and it's not "image" => product resource request
-            $controller->processRequest($_SERVER["REQUEST_METHOD"], $uri[3], $urlQuery);
+            $productController->processRequest($_SERVER["REQUEST_METHOD"], $uri[3], $urlQuery);
         }
         else if ($uri[3] == "images")
         {
             // Either a POST or a DELETE request on a "products/image" resource
             // POST request won't have na id, a DELETE request will
             $id = $uri[4] ?? null;
-            $controller->processImageRequest($_SERVER["REQUEST_METHOD"], $id);  
+            $productController->processImageRequest($_SERVER["REQUEST_METHOD"], $id);  
         }
         break;
     }
-    case "user" : { 
+
+
+    case "users" : {
+        // Authentication
+        $user_gateway = new UserGateway($database);
+        $codec = new JWTCodec($config->secret_key);
+        $auth = new Auth($user_gateway, $codec);
+        $sanitize = new Sanitization();
+
+        if ($auth->authenticateAccessToken()) {
+            $user_id = $auth->getUserId();
+            $user_role = $auth->getUserRole();
+        }
+
+        $user_gateway = new UserGateway($database);
+        $user_controller = new UserController($user_gateway, $sanitize, $user_id, $user_role);
+
+        // Inspect and transform URL queries
+        $urlQuery = $sanitize->unpackQueries($urlQuery);
+        $urlQuery = $sanitize->checkUserQueries($urlQuery);
+
+        $user_controller->processRequest($_SERVER["REQUEST_METHOD"], $uri[3] ?? null, $urlQuery);
+
+        break;
         
     }
+
+
     default: {
         echo(json_encode([ "message" => "Endpoint not found." ]));
         http_response_code(404);
         exit;
     }
+
 }

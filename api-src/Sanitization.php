@@ -22,7 +22,7 @@ class Sanitization {
     }
 
     // Check query validity
-    function checkQueries($urlQuery) {
+    function checkProductQueries($urlQuery) {
         if($urlQuery) {
 
             $validQueries = [
@@ -42,6 +42,27 @@ class Sanitization {
             return $urlQuery;
         }
     }
+
+
+    function checkUserQueries($urlQuery) {
+        if($urlQuery) {
+
+            $validQueries = [
+                "search",
+                "limit"
+            ];
+
+            foreach ($urlQuery as $key => $value) {
+                if (!in_array($key, $validQueries, true)) {
+                    echo(json_encode([ "message" => "Invalid query key(s)." ]));
+                    http_response_code(400);
+                    exit;
+                }
+            }
+            return $urlQuery;
+        }
+    }
+    
 
     function isDigit($id) {
         if (!ctype_digit($id)) {
