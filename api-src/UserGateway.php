@@ -54,9 +54,6 @@ class UserGateway {
 
     public function updateUser(array $user, array $data) : int | null {
 
-        $anyChanges = false;
-        
-        // $sql = "INSERT INTO user (username, firstName, lastName, email, phone, addressStreet, addressNumber, postalCode, city, country, role, password_hash) VALUES (:username, :firstName, :lastName, :email, :phone, :addressStreet, :addressNumber, :postalCode, :city, :country, :role, :password_hash)";
         $sql = "
             UPDATE user
                 SET
@@ -102,5 +99,13 @@ class UserGateway {
             $data[] = $row;
         }
         return $data;
+    }
+
+    public function deleteUser($id): int | false {
+        $sql = "DELETE FROM user WHERE id = :id";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindValue(":id", $id, PDO::PARAM_INT);
+        $stmt->execute();        
+        return $stmt->rowCount();
     }
 }

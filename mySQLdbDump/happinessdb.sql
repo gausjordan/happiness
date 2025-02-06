@@ -2,10 +2,10 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Host: 127.0.0.1
--- Generation Time: Jan 26, 2025 at 01:37 AM
--- Server version: 10.4.32-MariaDB
--- PHP Version: 8.2.12
+-- Host: mysql
+-- Generation Time: Feb 06, 2025 at 08:39 PM
+-- Server version: 8.1.0
+-- PHP Version: 8.2.27
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -28,14 +28,14 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE `product` (
-  `id` int(11) UNSIGNED NOT NULL,
-  `title` varchar(255) DEFAULT NULL,
-  `naslov` varchar(255) DEFAULT NULL,
-  `description` text DEFAULT NULL,
-  `opis` text DEFAULT NULL,
-  `price` decimal(12,2) NOT NULL DEFAULT 0.00,
-  `is_available` tinyint(1) NOT NULL DEFAULT 1,
-  `is_visible` tinyint(1) NOT NULL DEFAULT 1
+  `id` int UNSIGNED NOT NULL,
+  `title` varchar(255) COLLATE utf8mb4_croatian_ci DEFAULT NULL,
+  `naslov` varchar(255) COLLATE utf8mb4_croatian_ci DEFAULT NULL,
+  `description` text COLLATE utf8mb4_croatian_ci,
+  `opis` text COLLATE utf8mb4_croatian_ci,
+  `price` decimal(12,2) NOT NULL DEFAULT '0.00',
+  `is_available` tinyint(1) NOT NULL DEFAULT '1',
+  `is_visible` tinyint(1) NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_croatian_ci;
 
 --
@@ -65,9 +65,9 @@ INSERT INTO `product` (`id`, `title`, `naslov`, `description`, `opis`, `price`, 
 --
 
 CREATE TABLE `products_and_categories` (
-  `id` int(11) UNSIGNED NOT NULL,
-  `product_id` int(11) UNSIGNED NOT NULL,
-  `category_id` int(11) UNSIGNED NOT NULL
+  `id` int UNSIGNED NOT NULL,
+  `product_id` int UNSIGNED NOT NULL,
+  `category_id` int UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -97,9 +97,9 @@ INSERT INTO `products_and_categories` (`id`, `product_id`, `category_id`) VALUES
 --
 
 CREATE TABLE `products_and_tags` (
-  `id` int(11) UNSIGNED NOT NULL,
-  `product_id` int(11) UNSIGNED NOT NULL,
-  `tag_id` int(11) UNSIGNED NOT NULL
+  `id` int UNSIGNED NOT NULL,
+  `product_id` int UNSIGNED NOT NULL,
+  `tag_id` int UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -131,9 +131,9 @@ INSERT INTO `products_and_tags` (`id`, `product_id`, `tag_id`) VALUES
 --
 
 CREATE TABLE `product_categories` (
-  `id` int(11) UNSIGNED NOT NULL,
-  `category` varchar(255) NOT NULL,
-  `category_english` varchar(255) NOT NULL
+  `id` int UNSIGNED NOT NULL,
+  `category` varchar(255) COLLATE utf8mb4_croatian_ci NOT NULL,
+  `category_english` varchar(255) COLLATE utf8mb4_croatian_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_croatian_ci;
 
 --
@@ -154,9 +154,9 @@ INSERT INTO `product_categories` (`id`, `category`, `category_english`) VALUES
 --
 
 CREATE TABLE `product_images` (
-  `id` int(11) UNSIGNED NOT NULL,
-  `product_id` int(11) UNSIGNED NOT NULL,
-  `url` varchar(255) NOT NULL
+  `id` int UNSIGNED NOT NULL,
+  `product_id` int UNSIGNED NOT NULL,
+  `url` varchar(255) COLLATE utf8mb4_general_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -218,9 +218,9 @@ INSERT INTO `product_images` (`id`, `product_id`, `url`) VALUES
 --
 
 CREATE TABLE `product_tags` (
-  `id` int(11) UNSIGNED NOT NULL,
+  `id` int UNSIGNED NOT NULL,
   `tag` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_croatian_ci NOT NULL,
-  `tag_english` varchar(255) NOT NULL
+  `tag_english` varchar(255) COLLATE utf8mb4_general_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -240,8 +240,8 @@ INSERT INTO `product_tags` (`id`, `tag`, `tag_english`) VALUES
 --
 
 CREATE TABLE `refresh_token` (
-  `token_hash` varchar(64) NOT NULL,
-  `expires_at` int(11) UNSIGNED NOT NULL
+  `token_hash` varchar(64) COLLATE utf8mb4_general_ci NOT NULL,
+  `expires_at` int UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -280,7 +280,8 @@ INSERT INTO `refresh_token` (`token_hash`, `expires_at`) VALUES
 ('0cae52fee4f8a0441e2c1a8ba10cfd20d81596f92d0fc5980913587172b78a8f', 1737861174),
 ('20b4f960d2e5b142011af750d7a08800f64a17ab3b3c4913fdc6490a1aa91b5a', 1737927701),
 ('fa827105743d6e985349134d46c803d12b6c780f43810a6fcd96e865ce377a31', 1737934284),
-('59f2fc90bf8064b72b02c227cb871bf43bea47b74ad1a506211ce3f6367f3292', 1737967850);
+('59f2fc90bf8064b72b02c227cb871bf43bea47b74ad1a506211ce3f6367f3292', 1737967850),
+('11b641fce97991a55750214a8df35be4486b02f078b445c037bf788927f534f0', 1739228975);
 
 -- --------------------------------------------------------
 
@@ -289,19 +290,19 @@ INSERT INTO `refresh_token` (`token_hash`, `expires_at`) VALUES
 --
 
 CREATE TABLE `user` (
-  `id` int(11) UNSIGNED NOT NULL,
-  `username` varchar(127) NOT NULL,
-  `firstName` varchar(127) NOT NULL,
-  `lastName` varchar(127) NOT NULL,
-  `email` varchar(127) NOT NULL,
-  `phone` varchar(25) NOT NULL,
-  `addressStreet` varchar(255) NOT NULL,
-  `addressNumber` varchar(11) NOT NULL,
-  `postalCode` int(11) UNSIGNED NOT NULL,
-  `city` varchar(127) NOT NULL,
-  `country` varchar(127) NOT NULL,
-  `password_hash` varchar(255) NOT NULL,
-  `role` int(11) UNSIGNED NOT NULL DEFAULT 1
+  `id` int UNSIGNED NOT NULL,
+  `username` varchar(127) COLLATE utf8mb4_croatian_ci NOT NULL,
+  `firstName` varchar(127) COLLATE utf8mb4_croatian_ci NOT NULL,
+  `lastName` varchar(127) COLLATE utf8mb4_croatian_ci NOT NULL,
+  `email` varchar(127) COLLATE utf8mb4_croatian_ci NOT NULL,
+  `phone` varchar(25) COLLATE utf8mb4_croatian_ci NOT NULL,
+  `addressStreet` varchar(255) COLLATE utf8mb4_croatian_ci NOT NULL,
+  `addressNumber` varchar(11) COLLATE utf8mb4_croatian_ci NOT NULL,
+  `postalCode` int UNSIGNED NOT NULL,
+  `city` varchar(127) COLLATE utf8mb4_croatian_ci NOT NULL,
+  `country` varchar(127) COLLATE utf8mb4_croatian_ci NOT NULL,
+  `password_hash` varchar(255) COLLATE utf8mb4_croatian_ci NOT NULL,
+  `role` int UNSIGNED NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_croatian_ci;
 
 --
@@ -309,9 +310,10 @@ CREATE TABLE `user` (
 --
 
 INSERT INTO `user` (`id`, `username`, `firstName`, `lastName`, `email`, `phone`, `addressStreet`, `addressNumber`, `postalCode`, `city`, `country`, `password_hash`, `role`) VALUES
-(9, 'admin', 'Adminko', 'Adminirović', 'admin@lolzords.lol', '0951234567', 'Fulfinumska ulica', '24', 54947, 'Ćepikućke kotline', 'Istarski kanton', '$2y$10$tHbsj6GJFByCUJ45GbBxOubGxib7/1uqeoEf/GgkgsIlkotdDrUNG', 4),
+(9, 'admin', 'Adminko', 'Adminirović', 'admin@lolzords.lol', '0951234567', 'Fulfinumska ulica', '24', 54947, 'Ćepikućke kotline', 'Istarski kanton', '$2y$10$e9fiq93mcZNVAOwZzZfQG.RnlzkAayu5VkDJSBRlwbyWIPHT9B/ii', 4),
 (10, 'user', 'Juzimir', 'Korisniković', 'korisnik@usel.es', '0911234567', 'Lješnjačkih brigada', '87', 10000, 'Zagreb', 'Hrvatska', '$2y$10$qXvldyVAe4Zg5v2JBBVmUOP2iwMQZSdQcTqTxR0osiNp02FnQ.YzS', 2),
-(11, 'employee', 'Šljakana', 'Radnik', 'dradnik~1@oldschool.srce.hr', '097654321', 'Huplanova', '11d', 12555, 'Balvanovo', 'Hrvatska', '$2y$10$4GWLV8VaPCOwYtgXiJyt0OkHgiA6LzOnocIw7zGfD/ZM4i5unx8Y2', 3);
+(11, 'employee', 'Šljakana', 'Radnik', 'dradnik~1@oldschool.srce.hr', '097654321', 'Huplanova', '11d', 12555, 'Balvanovo', 'Hrvatska', '$2y$10$4GWLV8VaPCOwYtgXiJyt0OkHgiA6LzOnocIw7zGfD/ZM4i5unx8Y2', 3),
+(34, 'bozo', 'Bosanac', 'Opet-adminović', 'bozo@lolzords.lol', '8888888888', 'Fulfinumska ulica', '04', 23237, 'Pufkovljanec Gornji', 'Zagorje', '$2y$10$LJGhswtVRYxSXyUbg8GUeetIuO3wQMRpfvDqsd8D/BpJnCapqwIri', 3);
 
 -- --------------------------------------------------------
 
@@ -320,8 +322,8 @@ INSERT INTO `user` (`id`, `username`, `firstName`, `lastName`, `email`, `phone`,
 --
 
 CREATE TABLE `user_roles` (
-  `id` int(11) UNSIGNED NOT NULL,
-  `description` varchar(25) NOT NULL DEFAULT '0'
+  `id` int UNSIGNED NOT NULL,
+  `description` varchar(25) COLLATE utf8mb4_croatian_ci NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_croatian_ci;
 
 --
@@ -395,6 +397,7 @@ ALTER TABLE `refresh_token`
 --
 ALTER TABLE `user`
   ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `username` (`username`),
   ADD KEY `username_index` (`username`),
   ADD KEY `role` (`role`);
 
@@ -413,49 +416,49 @@ ALTER TABLE `user_roles`
 -- AUTO_INCREMENT for table `product`
 --
 ALTER TABLE `product`
-  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=111;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=112;
 
 --
 -- AUTO_INCREMENT for table `products_and_categories`
 --
 ALTER TABLE `products_and_categories`
-  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=247;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=250;
 
 --
 -- AUTO_INCREMENT for table `products_and_tags`
 --
 ALTER TABLE `products_and_tags`
-  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=236;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=238;
 
 --
 -- AUTO_INCREMENT for table `product_categories`
 --
 ALTER TABLE `product_categories`
-  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `product_images`
 --
 ALTER TABLE `product_images`
-  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=367;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=370;
 
 --
 -- AUTO_INCREMENT for table `product_tags`
 --
 ALTER TABLE `product_tags`
-  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `user`
 --
 ALTER TABLE `user`
-  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
 
 --
 -- AUTO_INCREMENT for table `user_roles`
 --
 ALTER TABLE `user_roles`
-  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- Constraints for dumped tables
