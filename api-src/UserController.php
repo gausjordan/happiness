@@ -112,7 +112,21 @@ class UserController {
                 break;
 
             case "DELETE":
-                    echo "Delete";
+
+                $user = $this->gateway->getByUserId($id);
+                
+                if(!$user) {
+                    http_response_code(404);
+                    echo json_encode(["Message: " => "User $id does not exist."]);
+                    break;
+                } else {
+                    $rows = $this->gateway->deleteUser($user["id"]);
+                    echo json_encode([
+                        "message" => "Product $id deleted",
+                        "rows" => $rows
+                    ]);
+                }
+
                 break;
 
             default:
