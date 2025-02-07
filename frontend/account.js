@@ -45,6 +45,9 @@ async function login(event) {
         localStorage.setItem("refresh_token", obj.refresh_token);
         adminMenuOptions();
         navigateTo("/shop");
+    } else if (response.status == 401) {
+        alert("Gay");
+        console.log("You are gay");
     }
 
 
