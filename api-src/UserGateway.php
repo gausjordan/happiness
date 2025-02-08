@@ -57,6 +57,7 @@ class UserGateway {
         $sql = "
             UPDATE user
                 SET
+                    username = :username,
                     firstName = :firstName,
                     lastName = :lastName,
                     email = :email,
@@ -70,9 +71,10 @@ class UserGateway {
                     password_hash = :password_hash
             WHERE user.id = :id;
         ";
-        
+
         $stmt = $this->conn->prepare($sql);
         $stmt->bindValue(":id", $user["id"], PDO::PARAM_STR);
+        $stmt->bindValue(":username", $data["username"] ?? $user["username"], PDO::PARAM_STR);
         $stmt->bindValue(":firstName", $data["firstName"] ?? $user["firstName"], PDO::PARAM_STR);
         $stmt->bindValue(":lastName", $data["lastName"] ?? $user["lastName"], PDO::PARAM_STR);
         $stmt->bindValue(":email", $data["email"] ?? $user["email"], PDO::PARAM_STR);
@@ -84,7 +86,7 @@ class UserGateway {
         $stmt->bindValue(":country", $data["country"] ?? $user["country"], PDO::PARAM_STR);
         $stmt->bindValue(":role", $data["role"] ?? $user["role"], PDO::PARAM_STR);
         $stmt->bindValue(":password_hash", !empty($data["password"]) ? password_hash($data["password"], PASSWORD_DEFAULT) : $user["password_hash"], PDO::PARAM_STR);
-        
+
         $stmt->execute();
         
         return $stmt->rowCount();
