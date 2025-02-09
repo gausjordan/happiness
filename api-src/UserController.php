@@ -37,7 +37,7 @@ class UserController {
         switch ($method) {
 
             case "GET":
-                echo json_encode([ $this->gateway->getAllUsers()  ]);
+                echo json_encode( $this->gateway->getAllUsers() );
                 break;
 
             case "POST":

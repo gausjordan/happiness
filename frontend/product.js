@@ -52,6 +52,8 @@ function insertElements(tag, content, attributes = {}) {
     return element;
 }
 
-// apiCall();
-
 buildProductPage();
+
+document.getElementById('atc-button').addEventListener("click", () => {
+    alert("test");
+})

@@ -55,7 +55,7 @@ switch ($uri[2]) {
         {
             // Inspect and transform URL queries
             $urlQuery = $sanitize->unpackQueries($urlQuery);
-            $urlQuery = $sanitize->checkProductQueries($urlQuery);
+            $urlQuery = $sanitize->validateQueries($urlQuery, ["products_and_categories", "products_and_tags", "limit"]);
 
             // No product id => either "get all" or "post one"
             $productController->processRequest($_SERVER["REQUEST_METHOD"], null, $urlQuery);
@@ -93,12 +93,38 @@ switch ($uri[2]) {
 
         // Inspect and transform URL queries
         $urlQuery = $sanitize->unpackQueries($urlQuery);
-        $urlQuery = $sanitize->checkUserQueries($urlQuery);
+        $urlQuery = $sanitize->validateQueries($urlQuery, ["search", "limit"]);
 
         $user_controller->processRequest($_SERVER["REQUEST_METHOD"], $uri[3] ?? null, $urlQuery);
 
         break;
-        
+    }
+    
+
+    case "orders" : {
+        // Authentication
+        $user_gateway = new UserGateway($database);
+        $codec = new JWTCodec($config->secret_key);
+        $auth = new Auth($user_gateway, $codec);
+        $sanitize = new Sanitization();
+
+        if ($auth->authenticateAccessToken()) {
+            $user_id = $auth->getUserId();
+            $user_role = $auth->getUserRole();
+        }
+
+        if (isset($uri[3])) {
+            if($uri[3] === 'user') {
+                echo "Checking...";
+                echo $urlQuery;
+            }
+        }
+
+        // Inspect and transform URL queries
+        $urlQuery = $sanitize->unpackQueries($urlQuery);
+        $urlQuery = $sanitize->validateQueries($urlQuery, []);
+
+        break;
     }
 
 

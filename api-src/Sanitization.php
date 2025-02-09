@@ -44,13 +44,8 @@ class Sanitization {
     }
 
 
-    function checkUserQueries($urlQuery) {
+    function validateQueries($urlQuery, $validQueries) {
         if($urlQuery) {
-
-            $validQueries = [
-                "search",
-                "limit"
-            ];
 
             foreach ($urlQuery as $key => $value) {
                 if (!in_array($key, $validQueries, true)) {

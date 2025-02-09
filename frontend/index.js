@@ -170,11 +170,19 @@ const routes = {
     "/home": '/frontend/home.html',
     "/about": '/frontend/about.html',
     "/shop": '/frontend/shop.html',
+    "/cart": '/frontend/cart.html',
     "/product": '/frontend/product.html',
     "/products-admin": '/frontend/products-admin.html',
     "/account": '/frontend/account.html',
     "/404": '/frontend/404.html'
 };
+
+// Re-route from 'view cart' to login if logged off
+document.querySelector("header a[href='/cart']").addEventListener("click", () => {
+    if (!localStorage.getItem('access_token')) {
+        navigateTo("/account");
+    }
+});
 
 // Override default <a> behavior
 document.addEventListener("DOMContentLoaded", () => {
