@@ -8,11 +8,13 @@ $urlPath = parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH);
 $urlQuery = parse_url($_SERVER["REQUEST_URI"], PHP_URL_QUERY);
 $uri = explode("/" , $urlPath);
 
-// // DEBUG .txt logger
-// $myfile = fopen("indexlog.txt", "a") or die("Unable to open file!");
-// $txt = $raw . "\n";
-// fwrite($myfile, $txt);
-// fclose($myfile);
+/*
+// DEBUG .txt logger
+$myfile = fopen("indexlog.txt", "a") or die("Unable to open file!");
+$txt = $raw . "\n";
+fwrite($myfile, $txt);
+fclose($myfile);
+*/
 
 $database = new Database(
     $config->host, $config->dbName,
@@ -25,27 +27,26 @@ if ($_SERVER["REQUEST_METHOD"] === "OPTIONS") {
     exit;
 }
 
+// Authentication
 $user_id = 0;           // No one is logged for the moment
 $user_role = "guest";   // And 'no one' has a role of a "guest" by default
+
+$user_gateway = new UserGateway($database);
+$codec = new JWTCodec($config->secret_key);
+$auth = new Auth($user_gateway, $codec);
+$sanitize = new Sanitization();
+
+if ($auth->authenticateAccessToken()) {
+    $user_id = $auth->getUserId();
+    $user_role = $auth->getUserRole();
+}
 
 
 
 switch ($uri[2]) {
 
-
     case "products" : {
 
-        // Authentication
-        $user_gateway = new UserGateway($database);
-        $codec = new JWTCodec($config->secret_key);
-        $auth = new Auth($user_gateway, $codec);
-        $sanitize = new Sanitization();
-
-        if ($auth->authenticateAccessToken()) {
-            $user_id = $auth->getUserId();
-            $user_role = $auth->getUserRole();
-        }
-        
         $product_gateway = new ProductGateway($database);
         $productController = new ProductController($product_gateway, $sanitize, $user_id, $user_role);
 
@@ -57,18 +58,17 @@ switch ($uri[2]) {
             $urlQuery = $sanitize->unpackQueries($urlQuery);
             $urlQuery = $sanitize->validateQueries($urlQuery, ["products_and_categories", "products_and_tags", "limit"]);
 
-            // No product id => either "get all" or "post one"
+            // No product id => either a "get all" or a "post one"
             $productController->processRequest($_SERVER["REQUEST_METHOD"], null, $urlQuery);
         } 
         else if ($uri[3] !== "images")
         {
-            // Does have an id, and it's not "image" => product resource request
+            // URI does have an id, and it's not "image" => it's a product resource request
             $productController->processRequest($_SERVER["REQUEST_METHOD"], $uri[3], $urlQuery);
         }
         else if ($uri[3] == "images")
         {
-            // Either a POST or a DELETE request on a "products/image" resource
-            // POST request won't have na id, a DELETE request will
+            // Either a POST or a DELETE request on a "products/image" resource, POST won't have na id, DELETE will
             $id = $uri[4] ?? null;
             $productController->processImageRequest($_SERVER["REQUEST_METHOD"], $id);  
         }
@@ -77,16 +77,6 @@ switch ($uri[2]) {
 
 
     case "users" : {
-        // Authentication
-        $user_gateway = new UserGateway($database);
-        $codec = new JWTCodec($config->secret_key);
-        $auth = new Auth($user_gateway, $codec);
-        $sanitize = new Sanitization();
-
-        if ($auth->authenticateAccessToken()) {
-            $user_id = $auth->getUserId();
-            $user_role = $auth->getUserRole();
-        }
 
         $user_gateway = new UserGateway($database);
         $user_controller = new UserController($user_gateway, $sanitize, $user_id, $user_role);
@@ -102,27 +92,15 @@ switch ($uri[2]) {
     
 
     case "orders" : {
-        // Authentication
-        $user_gateway = new UserGateway($database);
-        $codec = new JWTCodec($config->secret_key);
-        $auth = new Auth($user_gateway, $codec);
-        $sanitize = new Sanitization();
 
-        if ($auth->authenticateAccessToken()) {
-            $user_id = $auth->getUserId();
-            $user_role = $auth->getUserRole();
-        }
-
-        if (isset($uri[3])) {
-            if($uri[3] === 'user') {
-                echo "Checking...";
-                echo $urlQuery;
-            }
-        }
+        $order_gateway = new OrderGateway($database);
+        $order_controller = new OrderController($order_gateway, $sanitize, $user_id, $user_role);
 
         // Inspect and transform URL queries
         $urlQuery = $sanitize->unpackQueries($urlQuery);
-        $urlQuery = $sanitize->validateQueries($urlQuery, []);
+        $urlQuery = $sanitize->validateQueries($urlQuery, ["unfinished", "limit"]);
+
+        $order_controller->processRequest($_SERVER["REQUEST_METHOD"], $uri[3] ?? null, $urlQuery);
 
         break;
     }
