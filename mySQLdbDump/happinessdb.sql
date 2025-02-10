@@ -40,7 +40,7 @@ CREATE TABLE `order_items` (
 
 LOCK TABLES `order_items` WRITE;
 /*!40000 ALTER TABLE `order_items` DISABLE KEYS */;
-INSERT INTO `order_items` VALUES (1,7,1,6.00),(1,8,3,242.00),(5,2,1,14.24),(5,3,1,10.00),(5,10,2,88.00);
+INSERT INTO `order_items` VALUES (1,7,1,6.00),(1,8,3,242.00),(7,1,1,11.00),(7,4,7,333.00),(8,9,1,333.00);
 /*!40000 ALTER TABLE `order_items` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -64,7 +64,7 @@ CREATE TABLE `orders` (
   `comment` text CHARACTER SET utf8mb4 COLLATE utf8mb4_croatian_ci,
   PRIMARY KEY (`id`),
   KEY `order_user_fk` (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_croatian_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_croatian_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -73,7 +73,7 @@ CREATE TABLE `orders` (
 
 LOCK TABLES `orders` WRITE;
 /*!40000 ALTER TABLE `orders` DISABLE KEYS */;
-INSERT INTO `orders` VALUES (1,10,'2025-02-07','2025-02-05',0,0,0,0,0,'Kompletna'),(5,10,NULL,NULL,0,0,0,0,0,'Nekompletna');
+INSERT INTO `orders` VALUES (1,10,'2025-02-07','2025-02-05',0,0,0,0,0,'Kompletna'),(7,10,NULL,NULL,0,0,0,0,0,'Nekompletna'),(8,10,'2018-02-13','2019-02-12',0,0,0,0,0,'davna');
 /*!40000 ALTER TABLE `orders` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -344,4 +344,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-02-10  2:51:28
+-- Dump completed on 2025-02-10  3:38:06

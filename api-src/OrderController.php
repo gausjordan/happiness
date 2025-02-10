@@ -34,15 +34,29 @@ class OrderController {
                         echo json_encode(["Message: " => "No incomplete orders available for this user."]);
                         return null;
                     }
+                } else {
+                    $result = $this->gateway->getAllOrdersByUser($id);
+                    if (sizeof($result) != 0) {
+                        echo json_encode($result);
+                        return $result;
+                    } else {
+                        http_response_code(404);
+                        echo json_encode(["Message: " => "No orders made by this user."]);
+                        return null;
+                    }
                 }
                 break;
             case "DELETE":
                 // Prevent sales records deletion unless unfinalized
                 if (!$this->gateway->getUnfinishedOrder($id)) {
+                    http_response_code(404);
                     echo json_encode(["Message: " => "No incomplete orders available for this user."]);
                 } else {
                     if ($this->gateway->deleteUnfinishedOrder($id)) {
                         echo json_encode(["Message: " => "Unfinalized order for user $id deleted."]);
+                    } else {
+                        http_response_code(500);
+                        echo json_encode(["Message: " => "Error deleting an incomplete order."]);
                     }
                 }
                 break;
