@@ -98,7 +98,7 @@ switch ($uri[2]) {
 
         // Inspect and transform URL queries
         $urlQuery = $sanitize->unpackQueries($urlQuery);
-        $urlQuery = $sanitize->validateQueries($urlQuery, ["all", "unfinished", "limit"]);
+        $urlQuery = $sanitize->validateQueries($urlQuery, ["all-by-user", "unfinished", "limit", "order-by"]);
 
         $order_controller->processRequest($_SERVER["REQUEST_METHOD"], $uri[3] ?? null, $urlQuery);
 

@@ -7,12 +7,15 @@ class OrderGateway {
     }
 
     public function getUnfinishedOrder($id) {
+        
+        // echo $id;
+        
         $sql = "
         # Fetch the most recent unfinished order, if there is one
             SELECT order_id, product_id, quantity  FROM `orders`
-            INNER JOIN `user` ON `orders`.`user_id` = `user`.`id`
-            INNER JOIN `order_items` ON `orders`.`id` = `order_items`.`order_id`
-            WHERE `dateOrdered` IS NULL
+            LEFT JOIN `user` ON `orders`.`user_id` = `user`.`id`
+            LEFT JOIN `order_items` ON `orders`.`id` = `order_items`.`order_id`
+            WHERE `orders`.`dateOrdered` IS NULL
             AND
             user_id = :user_id;
         ";
@@ -31,7 +34,8 @@ class OrderGateway {
     
 
     public function getSingleOrderDetailsForUser($id, $user_id, $user_role) {
-            $sql = "
+    
+        $sql = "
             # Fetch one order by id, with all the product details
                 SELECT order_id, product_id, quantity, price_charged, dateOrdered, dateReceived, is_shipped, is_paid, is_returned, is_refunded
                 FROM `orders`
@@ -73,7 +77,16 @@ class OrderGateway {
         return $data;
     }
 
-    
+
+    public function getOrdersOwnerId($id) : int | null {
+        $sql = "SELECT user_id FROM orders WHERE id = :id";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindValue(":id", $id, PDO::PARAM_INT);
+        $stmt->execute();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $result["user_id"] ?? null;
+    }
+
 
     public function getAllOrdersByUser($id) {
         $sql = "
