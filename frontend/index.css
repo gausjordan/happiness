@@ -30,6 +30,7 @@ img[alt] {
 
 /* Top menu; at the top of the page (not the main menu) */
 header.top-menu {
+  user-select: none;
   display: flex;
   box-sizing: border-box;
   justify-content: space-between;
@@ -41,6 +42,13 @@ header.top-menu {
   flex-shrink: 0;
 }
 
+header.top-menu img:active {
+  --background-color: yellow;
+  filter: invert(100%) sepia(100%);
+  color: white;
+  margin: 21px solid pink;
+}
+
 header.top-menu div.block {
   height: 100%;
   display: flex;
@@ -48,6 +56,7 @@ header.top-menu div.block {
 }
 
 header.top-menu div.block a {
+  -webkit-tap-highlight-color: transparent;
   box-sizing: border-box;
   display: flex;
   height: 100%;

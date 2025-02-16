@@ -33,13 +33,13 @@ class OrderController {
             
             case "GET":
 
-                // Checks if there is something in a user's cart, but not yet orderd
-                // There should always be only one incomplete order in the database
-                // '$id' parameter is a corresponding user's id here, NOT the order's id
+                // Checks whether there is a opened 'cart' (order) which is not yet completed
+                // '$id' parameter is a corresponding user's id, NOT the order's id
+                // Also, there should always be only one incomplete order in the database
                 if (isset($urlQuery) && array_key_exists("unfinished", $urlQuery)) {
                     if ($id !== $this->user_id && $this->user_role !== "admin" && $this->user_role !== "employee") {
                         http_response_code(403);
-                        echo json_encode(["Message: " => "Only admins can access another's order."]);
+                        echo json_encode(["Message: " => "Only admins can access another user's order."]);
                         exit;
                     }
                     $result = $this->gateway->getUnfinishedOrder($id);
@@ -52,7 +52,7 @@ class OrderController {
                         return null;
                     }
 
-                // Get a list of all completed orders ever made by user with id = $id
+                // Get a list of all completed orders ever made by a user with id = $id
                 // '$id' parameter is a corresponding user's id, NOT the order's id
                 } else if (isset($urlQuery) && array_key_exists("all-by-user", $urlQuery)) {
 
@@ -74,12 +74,13 @@ class OrderController {
                     }
                 }
                 
-                // If no parameters were given, we get order details by order's id
+                // If no query parameters were given, we get order details by order's id
                 else {
 
                     // A user can only access one's own order
                     if ($this->user_role !== 'admin' && $this->user_role !== 'employee') {
-
+                        
+                        // Find out which user (by id) made the order that we want
                         $ordersOwnerId = $this->gateway->getOrdersOwnerId($id);
 
                         if ($ordersOwnerId !== $this->user_id) {
@@ -105,7 +106,7 @@ class OrderController {
                             return null;
                         }
                         
-                    // Admins and employees get to see anyone's order, plus internal comments, if any
+                    // Admins and employees get to see anyone's order, plus internal comments, if there are any
                     } else if ($this->user_role == 'admin' || $this->user_role !== 'employee') {
                         $result = $this->gateway->getSingleOrderDetailsForAdmin($id, $this->user_id, $this->user_role);
                         if ($result) {
@@ -121,7 +122,8 @@ class OrderController {
                 break;
 
             case "DELETE":
-                // Prevent sales records deletion unless unfinalized
+                // Prevent sales record deletion unless unfinalized, finalized orders should be immutable
+                // '$id' parameter is a corresponding user's id, NOT the order's id
                 if (!$this->gateway->getUnfinishedOrder($id)) {
                     http_response_code(404);
                     echo json_encode(["Message: " => "No incomplete orders available for this user."]);
@@ -142,15 +144,18 @@ class OrderController {
 
     private function processCollectionRequest($method, $id, $urlQuery) {
         
-        if ($this->user_role !== "admin" && $this->user_role !== "employee") {
-            http_response_code(403);
-            echo json_encode(["Message: " => "Valid credentials required."]);
-            exit;
-        }
-
         switch ($method) {
             
             case "GET":
+
+                // Get all of the orders, made by all users, ever. Admins and employees only.
+                // TODO: searching, pagination, sorting and not showing archived orders
+
+                if ($this->user_role !== "admin" && $this->user_role !== "employee") {
+                    http_response_code(403);
+                    echo json_encode(["Message: " => "Valid credentials required."]);
+                    exit;
+                }
 
                 if (isset($urlQuery) && array_key_exists("unfinished", $urlQuery)) {
                     $result = $this->gateway->getUnfinishedOrder($id);
@@ -166,11 +171,27 @@ class OrderController {
 
                 break;
             
-            
+            case "POST":
+
+                $data = (array) json_decode(file_get_contents("php://input"), true);
+                $errors = $this->getValidationErrors($data);
+                
+                if (! empty($errors)) {
+                    http_response_code(422);
+                    echo json_encode(["errors" => $errors]);
+                    break;
+                }
+                
+                
+                break;
+                            
             default:
                 break;
         
         }
+    }
 
+    function getValidationErrors($data) {
+                
     }
 }
