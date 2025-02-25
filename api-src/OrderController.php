@@ -150,24 +150,18 @@ class OrderController {
 
                 // Get all of the orders, made by all users, ever. Admins and employees only.
                 // TODO: searching, pagination, sorting and not showing archived orders
-
+                
                 if ($this->user_role !== "admin" && $this->user_role !== "employee") {
                     http_response_code(403);
-                    echo json_encode(["Message: " => "Valid credentials required."]);
+                    echo json_encode(["Message: " => "Valid high level credentials required."]);
                     exit;
                 }
 
-                if (isset($urlQuery) && array_key_exists("unfinished", $urlQuery)) {
-                    $result = $this->gateway->getUnfinishedOrder($id);
-                    if (sizeof($result) != 0) {
-                        echo json_encode($result);
-                        return $result;
-                    } else {
-                        http_response_code(404);
-                        echo json_encode(["Message: " => "No incomplete orders available for this user."]);
-                        return null;
-                    }
-                }
+                $result = null;
+                
+                $result = $this->gateway->listAllOrders($urlQuery);
+                echo json_encode($result);
+
 
                 break;
             

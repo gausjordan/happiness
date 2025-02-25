@@ -5,7 +5,7 @@ $payload = [
     // "name" => $user["username"],
     "name" => $user["firstName"],
     "role" => $user["description"],
-    "exp" => time() + 1000000000000 // TODO: Change this
+    "exp" => time() + 90000000000000 // TODO: Change this
 ];
 
 $access_token = $codec->encode($payload);
