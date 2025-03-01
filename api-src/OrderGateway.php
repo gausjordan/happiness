@@ -6,18 +6,22 @@ class OrderGateway {
         $this->conn = $database->getConnection();
     }
  
-    // ..#..
+    // TODO: Return more than 0 rows on a blank order
     public function getUnfinishedOrder($id) {
                
         $sql = "
             SELECT `orders`.id AS order_id, `product`.id AS product_id, quantity, title, naslov, price, is_available, is_visible, MIN(`product_images`.url) AS url FROM `orders`
             LEFT JOIN `user` ON `orders`.`user_id` = `user`.`id`
             LEFT JOIN `order_items` ON `orders`.`id` = `order_items`.`order_id`
-            LEFT JOIN `product` ON product_id = `product`.id
-            INNER JOIN `product_images` ON `product`.id = `product_images`.`product_id`
-            WHERE `orders`.`dateOrdered` IS NULL AND is_available = 1 AND is_visible = 1
+            LEFT JOIN `product` ON `order_items`.`product_id` = `product`.id
+            LEFT JOIN `product_images` ON `product`.id = `product_images`.`product_id`
+            WHERE `orders`.`dateOrdered` IS NULL
             AND
             user_id = :user_id
+            AND (CASE 
+        WHEN `product`.id IS NOT NULL THEN `product`.is_available = 1 AND `product`.is_visible = 1
+        ELSE 1
+    END)
             GROUP BY `orders`.id, `product`.id, quantity, title, naslov, price, is_available, is_visible;
         ";
 

@@ -1,22 +1,0 @@
-Script started on 2025-03-01 05:06:46+01:00 [TERM="xterm-256color" TTY="/dev/pts/0" COLUMNS="120" LINES="30"]
-[?2004h]0;arm@Lenovo-Arm: /mnt/d/temp/webshop[01;32marm@Lenovo-Arm[00m:[01;34m/mnt/d/temp/webshop[00m$ ls
-[?2004l[0m[01;32mDockerfile[0m  [34;42mapi-src[0m  [01;32mdocker-compose.yml[0m  [01;32mhappinessdb.sql[0m  [34;42mmySQLdbDump[0m  [34;42mproduct-images[0m  [01;32mtypescript[0m
-[34;42mapi[0m         [34;42mconf[0m     [34;42mfrontend[0m            [34;42mmisc[0m             [34;42mprivate[0m      [01;32mscript[0m
-[?2004h]0;arm@Lenovo-Arm: /mnt/d/temp/webshop[01;32marm@Lenovo-Arm[00m:[01;34m/mnt/d/temp/webshop[00m$ bash script
-[?2004lscript: line 2: $'\r': command not found
-fatal: detected dubious ownership in repository at '/mnt/d/temp/webshop'
-To add an exception for this directory, call:
-
-	git config --global --add safe.directory /mnt/d/temp/webshop
-script: line 9: $'\r': command not found
-/mySQLdbDump/happinessdb.sql
-script: line 12: $'\r': command not found
-script: line 15: $'\r': command not found
-script: line 17: /mySQLdbDump/happinessdb.sql: No such file or directory
-script: line 18: $'\r': command not found
-script: line 26: syntax error near unexpected token `fi'
-script: line 26: `fi'
-[?2004h]0;arm@Lenovo-Arm: /mnt/d/temp/webshop[01;32marm@Lenovo-Arm[00m:[01;34m/mnt/d/temp/webshop[00m$ exit
-[?2004lexit
-
-Script done on 2025-03-01 05:15:53+01:00 [COMMAND_EXIT_CODE="2"]

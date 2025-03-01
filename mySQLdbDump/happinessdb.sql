@@ -64,7 +64,7 @@ CREATE TABLE `orders` (
   `comment` text CHARACTER SET utf8mb4 COLLATE utf8mb4_croatian_ci,
   PRIMARY KEY (`id`),
   KEY `order_user_fk` (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=35 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_croatian_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=42 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_croatian_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -73,7 +73,7 @@ CREATE TABLE `orders` (
 
 LOCK TABLES `orders` WRITE;
 /*!40000 ALTER TABLE `orders` DISABLE KEYS */;
-INSERT INTO `orders` VALUES (1,10,'2025-02-07','2025-02-05',0,0,0,0,1,'Kompletna'),(7,11,'2025-02-01','2019-02-12',0,0,0,0,1,'Nekompletna'),(8,10,'2025-02-01','2019-02-27',0,0,0,0,1,'davna'),(9,34,'2025-02-01','2019-02-12',0,0,0,0,1,'Bozina prva narudžba.'),(10,34,'2025-02-01',NULL,0,0,0,0,1,'Bozina druga narudžba.'),(11,34,'2025-02-01',NULL,0,0,0,0,0,'Bozina nedovršena narudžba.'),(12,10,'2025-02-01','2019-02-27',0,0,0,0,0,'Buff fluff'),(13,10,'2015-02-01','2016-12-01',0,0,0,0,0,'Lala'),(32,34,NULL,NULL,0,0,0,0,0,NULL),(33,34,NULL,NULL,0,0,0,0,0,NULL),(34,10,'2015-02-01','2016-12-01',0,0,0,0,0,'Valunga III: The return');
+INSERT INTO `orders` VALUES (1,10,'2025-02-07','2025-02-05',0,0,0,0,1,'Kompletna'),(7,11,'2025-02-01','2019-02-12',0,0,0,0,1,'Nekompletna'),(8,10,'2025-02-01','2019-02-27',0,0,0,0,1,'davna'),(9,34,'2025-02-01','2019-02-12',0,0,0,0,1,'Bozina prva narudžba.'),(10,34,'2025-02-01',NULL,0,0,0,0,1,'Bozina druga narudžba.'),(11,34,'2025-02-01',NULL,0,0,0,0,0,'Bozina nedovršena narudžba.'),(12,10,'2025-02-01','2019-02-27',0,0,0,0,0,'Buff fluff'),(13,10,'2015-02-01','2016-12-01',0,0,0,0,0,'Lala'),(41,34,NULL,NULL,0,0,0,0,0,NULL);
 /*!40000 ALTER TABLE `orders` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -344,4 +344,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-03-01  4:40:21
+-- Dump completed on 2025-03-01 18:35:38
