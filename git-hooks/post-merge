@@ -1,0 +1,48 @@
+#!/bin/bash
+
+# Set Docker container name or ID where MySQL is running
+DB_CONTAINER_NAME="mysql"
+
+# Set database credentials (modify as necessary)
+DB_HOST="localhost"
+DB_USER="root"
+DB_PASSWORD="rootpassword"
+DB_NAME="happinessdb"
+
+REPO_ROOT_DIR=$(git rev-parse --show-toplevel)
+DB_DUMP_RELATIVE_PATH="mySQLdbDump"
+DB_DUMP_FULL_PATH="$REPO_ROOT_DIR/$DB_DUMP_RELATIVE_PATH"
+DUMP_FILE="$DB_DUMP_FULL_PATH/happinessdb.sql"
+
+# echo "DEBUG:"
+# echo ""
+# echo $REPO_ROOT_DIR
+# echo $DB_DUMP_FULL_PATH
+# echo $DUMP_FILE
+# echo "---------------"
+
+# Ensure the dump file exists
+if [ -f "$DUMP_FILE" ]; then
+  echo "Importing database dump into Docker container..."
+  
+  # NO LONGER NECESSARY
+  # Copy the dump file into the container (if it's not already inside)
+  # docker cp "$DUMP_FILE" $DB_CONTAINER_NAME:/tmp/database_dump.sql
+  
+  # Import the database dump into MySQL inside the container
+  # Attemps to read from the host machine, not the container.
+  # docker exec -i $DB_CONTAINER_NAME mysql -u $DB_USER -p$DB_PASSWORD $DB_NAME < /tmp/database_dump.sql
+  docker exec -i $DB_CONTAINER_NAME mysql -u $DB_USER -p$DB_PASSWORD $DB_NAME < "$DUMP_FILE"
+
+  if [ $? -eq 0 ]; then
+    echo "Database import successful!"
+  else
+    echo "Database import failed!"
+  fi
+
+  # Optionally, remove the dump file from the container after import
+  # docker exec $DB_CONTAINER_NAME rm /tmp/database_dump.sql
+
+else
+  echo "Dump file does not exist: $DUMP_FILE"
+fi

@@ -1,0 +1,26 @@
+#!/bin/bash
+
+# Define the database and dump location
+DB_NAME="happinessdb"
+REPO_ROOT_DIR=$(git rev-parse --show-toplevel)
+DB_DUMP_RELATIVE_PATH="mySQLdbDump"
+DB_DUMP_FULL_PATH="$REPO_ROOT_DIR/$DB_DUMP_RELATIVE_PATH"
+DUMP_FILE="$DB_DUMP_FULL_PATH/happinessdb.sql"
+
+# debug
+echo $DUMP_FILE
+
+# Ensure the dump directory exists
+mkdir -p $DB_DUMP_FULL_PATH
+
+# Create the SQL dump using mysqldump
+docker exec mysql mysqldump -uroot -prootpassword $DB_NAME > $DUMP_FILE
+
+# Check if mysqldump was successful
+if [ $? -eq 0 ]; then
+    # Add the dump file to the staging area
+    git add $DUMP_FILE
+else
+    echo "Error: mysqldump failed."
+    exit 1
+fi
