@@ -79,14 +79,15 @@ if (typeof ProductPage === "undefined") {
         document.getElementById('atc-button').addEventListener("click", async () => {
             let fetchURL = `/api/orders/${ProductPage.getUserId()}?unfinished=1`;
             let order = await fetchData(fetchURL);
-            console.log(order);
+            // console.log(order);
             if (!order) {
                 // Insert new order in the 'orders' table, having a current user id
                 try {
                     const response = await fetchData("/api/orders/", "POST");
+                    console.log("New order created.");
                 }
                 catch {
-                    console.log("Error creating a new order");
+                    console.log("Error creating a new order.");
                 }
 
             } else {
