@@ -136,8 +136,30 @@ class OrderController {
                     }
                 }
                 break;
-            default:
 
+
+            case "POST":
+                $data = (array) json_decode(file_get_contents("php://input"), true);
+                $errors = $this->getValidationErrors($data);
+
+                if ($this->user_role !== "user" && $this->user_role !== "employee" && $this->user_role !== "admin") {
+                    $errors[] = "Placing an order requires a user account.";
+                }
+
+                if (! empty($errors)) {
+                    http_response_code(422);
+                    echo json_encode(["errors" => $errors]);
+                    break;
+                }
+
+                $this->gateway->addItemToAnOrder($id, $this->user_id);
+                http_response_code(201);
+
+                break;
+
+            
+            default:
+                $this->respondMethodNotAllowed("GET, POST, DELETE");
                 break; 
         }
     }
@@ -191,5 +213,10 @@ class OrderController {
 
     function getValidationErrors($data) {
                 
+    }
+
+    private function respondMethodNotAllowed(string $allowedMethods): void {
+        http_response_code(405);
+        header("Allow: $allowedMethods");
     }
 }

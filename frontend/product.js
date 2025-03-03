@@ -77,26 +77,35 @@ if (typeof ProductPage === "undefined") {
         }
 
         document.getElementById('atc-button').addEventListener("click", async () => {
+            
+            let success = false;
             let fetchURL = `/api/orders/${ProductPage.getUserId()}?unfinished=1`;
             let order = await fetchData(fetchURL);
-            // console.log(order);
+            
             if (!order) {
-                // Insert new order in the 'orders' table, having a current user id
                 try {
+                    // Insert new order in the 'orders' table, with a current user's id
                     const response = await fetchData("/api/orders/", "POST");
                     console.log("New order created.");
+                    success = true;
                 }
                 catch {
                     console.log("Error creating a new order.");
                 }
-
             } else {
+                console.log("Incomplete order already exists!");
+                success = true;
+            }
+
+            if (success) {
+                fetchURL = `/api/orders/${ProductPage.getProductId()}`;
                 try {
-                    console.log("Incomplete order already exists!");
-                } catch {
-                    
+                    let response = await fetchData(fetchURL, "POST");
+                    console.log("Item " + ProductPage.getProductId() + " was added.");
                 }
-                
+                catch {
+                    console.log("Error inserting into the orders table.");
+                }
             }
 
         });
@@ -110,8 +119,4 @@ if (typeof ProductPage === "undefined") {
     })();
 
     ProductPage.buildProductPage();
-
 }
-
-
-

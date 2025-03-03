@@ -62,6 +62,38 @@ class OrderGateway {
     }
 
 
+    public function addItemToAnOrder($product_id, $user_id) {
+        
+        $sql = "SELECT `product`.price FROM `product` WHERE `product`.id = :product_id;"; 
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindValue(":product_id", $product_id, PDO::PARAM_INT);
+        $stmt->execute();
+        $current_price = $stmt->fetchColumn();
+
+        $sql = "SELECT `orders`.id FROM `orders` WHERE `orders`.user_id = :user_id AND `orders`.dateOrdered IS NULL;"; 
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindValue(":user_id", $user_id, PDO::PARAM_INT);
+        $stmt->execute();
+        $order_id = $stmt->fetchColumn();
+
+        // Assumption: there IS a row (in the orders table) for this particular user.
+        // Front-end should always check for that. If it doesn't, for whatever reason, quit silently.
+        if ($current_price == null || $order_id == null) {
+            http_response_code(422);
+            exit;
+        }
+
+        $sql = "
+            INSERT INTO `order_items` (order_id, product_id, quantity, price_charged)
+            VALUES ($order_id, :product_id, 1, $current_price)
+            ON DUPLICATE KEY UPDATE quantity = quantity + 1, price_charged = price_charged + $current_price;
+        ";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindValue(":product_id", $product_id, PDO::PARAM_INT);
+        $stmt->execute();
+    }
+
+
     public function getSingleOrderDetailsForAdmin($id, $user_id, $user_role) {
         $sql = "
         # Fetch one order by id, with all the product details

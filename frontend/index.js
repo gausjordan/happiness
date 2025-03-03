@@ -52,7 +52,7 @@ function isTokenExpired(token) {
 
 // Do an API call
 async function fetchData(fetchURL, method="GET") {
-        
+
     let response;
     let data;
 
@@ -61,38 +61,39 @@ async function fetchData(fetchURL, method="GET") {
         await getRefreshToken();
     }
 
+    try { response = await fetch(fetchURL, authRequestObject(method)); }
+    catch { console.log("Initial fetch failed."); }
+
+    if (response.status == 204 || response.status == 201) {
+        data = null;
+        return data;
+    } else if (response.ok) {
+        data = await response.json();
+        return data;
+    }
+    else if (response.status == 401 && data.message == "Token expired.") {
+        
+        // This may happen if a token had just expired mid-transaction in the last second
+        await getRefreshToken();
+        
         response = await fetch(fetchURL, authRequestObject(method));
 
-        if (response.status !== 204) {
-            data = await response.json();    
-        } else {
-            return null;
-        }
-
-        if (response.status == 200 || response.status == 204) {
+        if (response.status == 204 || response.status == 201) {
+            data = null;
+            return data;
+        } else if (response.ok) {
+            data = await response.json();
             return data;
         }
-
-        // This may happen if a token had just expired mid-transaction in the last second
-        else if (response.status == 401 && data.message == "Token expired.") {
-            await getRefreshToken();
-            
-            response = await fetch(fetchURL, authRequestObject());
-            data = await response.json();
-
-            if (response.status == 200 || response.status == 204) {
-                return data;
-            }
-            else {
-                // If a refresh token had also expired, log out
-                localStorage.removeItem("access_token");
-                localStorage.removeItem("refresh_token");
-                navigateTo("/home");
-            }
-        } else {
-            throw new Error("API error");
+        else {
+            // If a refresh token had also expired, log out
+            localStorage.removeItem("access_token");
+            localStorage.removeItem("refresh_token");
+            navigateTo("/home");
         }
-
+    } else {
+        throw new Error("API error");
+    }
 }
 
 // Check if language is already chosen and show a single languages flag only
