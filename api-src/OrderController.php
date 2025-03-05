@@ -63,7 +63,7 @@ class OrderController {
                     }
 
                     $result = $this->gateway->getAllOrdersByUser($id);
-                    
+
                     if (sizeof($result) != 0) {
                         echo json_encode($result);
                         return $result;
@@ -107,8 +107,10 @@ class OrderController {
                         }
                         
                     // Admins and employees get to see anyone's order, plus internal comments, if there are any
-                    } else if ($this->user_role == 'admin' || $this->user_role !== 'employee') {
+                    } else if ($this->user_role == 'admin' || $this->user_role == 'employee') {
+
                         $result = $this->gateway->getSingleOrderDetailsForAdmin($id, $this->user_id, $this->user_role);
+
                         if ($result) {
                             echo json_encode($result);
                             return $result;                        
@@ -181,7 +183,6 @@ class OrderController {
                 
                 $result = $this->gateway->listAllOrders($urlQuery);
                 echo json_encode($result);
-
 
                 break;
             

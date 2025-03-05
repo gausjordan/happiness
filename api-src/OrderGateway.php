@@ -42,12 +42,11 @@ class OrderGateway {
     
         $sql = "
             # Fetch one order by id, with all the product details
-                SELECT order_id, product_id, quantity, price_charged, dateOrdered, dateReceived, is_shipped, is_paid, is_returned, is_refunded
+                SELECT order_id, product_id, quantity, price_charged
                 FROM `orders`
                 INNER JOIN `user` ON `orders`.`user_id` = `user`.`id`
                 INNER JOIN `order_items` ON `orders`.`id` = `order_items`.`order_id`
-                WHERE `dateOrdered` IS NOT NULL
-                AND order_id = :order_id
+                WHERE order_id = :order_id
                 AND user_id = :user_id;
             ";
 
@@ -56,7 +55,11 @@ class OrderGateway {
         $stmt->bindValue(":user_id", $user_id, PDO::PARAM_INT);
         $stmt->execute();
 
-        $data = $stmt->fetch(PDO::FETCH_ASSOC);
+        $data = [];
+
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $data[] = $row;
+        }
 
         return $data;
     }
@@ -95,13 +98,14 @@ class OrderGateway {
 
 
     public function getSingleOrderDetailsForAdmin($id, $user_id, $user_role) {
+
         $sql = "
         # Fetch one order by id, with all the product details
-            SELECT order_id, product_id, quantity, price_charged, dateOrdered, dateReceived, is_shipped, is_paid, is_returned, is_refunded, comment
+            SELECT order_id, product_id, quantity, price_charged
             FROM `orders`
             INNER JOIN `user` ON `orders`.`user_id` = `user`.`id`
             INNER JOIN `order_items` ON `orders`.`id` = `order_items`.`order_id`
-            WHERE `dateOrdered` IS NOT NULL
+            # WHERE `dateOrdered` IS NOT NULL
             AND order_id = :order_id;
         ";
 
@@ -109,8 +113,10 @@ class OrderGateway {
         $stmt->bindValue(":order_id", $id, PDO::PARAM_INT);
         $stmt->execute();
 
-        $data = $stmt->fetch(PDO::FETCH_ASSOC);
-        
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $data[] = $row;
+        }
+
         return $data;
     }
 
@@ -221,11 +227,11 @@ class OrderGateway {
 
         $sql = $sql_base . $visibility . $search . $sql_group_by . $orderByAsc . $orderByDesc . $limit;
 
-        echo $sql;
+        //echo $sql;
 
         $stmt = $this->conn->prepare($sql);
 
-        if (in_array("search", array_keys($urlQuery))) {
+        if (isset($urlQuery) && in_array("search", array_keys($urlQuery))) {
             $bindSearchValue = '%' . $urlQuery["search"] . '%';
             $stmt->bindValue(":search_string1", $bindSearchValue, PDO::PARAM_STR);
             $stmt->bindValue(":search_string2", $bindSearchValue, PDO::PARAM_STR);

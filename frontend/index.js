@@ -117,7 +117,7 @@ adminMenuOptions();
 // Show or hide menu items, depenting on the language selected
 renderMainMenu();
 
-// Translate main menu by hiding irrelevant language
+// Translate main menu -> hide text in irrelevant language
 function renderMainMenu() {
     if (localStorage.getItem('lang') === 'hr') {
         Array.from(document.getElementsByClassName("en")).forEach(e => { e.style.display = "none"; });
