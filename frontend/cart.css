@@ -1,0 +1,47 @@
+
+div#cart-grid {
+    background-color: yellow;
+    display: flex;
+    flex-direction: column;
+    gap: 2em;
+    justify-content: space-between;
+}
+
+div#cart-grid .product-frame {
+    display: flex;
+    background-color: pink;
+    border: dotted blue 2px;
+}
+
+div#cart-grid .product-frame .product-info {
+    background-color: gold;
+    flex-basis: 50%;
+    flex-grow: 1;
+}
+
+div#cart-grid .product-frame .product-info p {
+    background-color: teal;
+    margin: auto;
+    padding: 0;
+    line-height: 1;
+}
+
+div#cart-grid .product-frame img {
+    background-color: purple;
+    height: 4em;
+    width: 4em;
+    object-fit: cover;
+    flex-grow: 0;
+}
+
+div#cart-grid .product-frame .controls {
+    background-color: cyan;
+    object-fit: cover;
+    flex-grow: 1;
+    flex-basis: 50%;
+}
+div#cart-grid .product-frame img {
+    height: 4em;
+    width: 4em;
+    object-fit: cover;
+}

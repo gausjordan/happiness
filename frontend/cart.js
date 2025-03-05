@@ -35,7 +35,16 @@ if (typeof cart === "undefined") {
                     productFrame.setAttribute('class', 'product-frame');
                 let title = document.createElement('p');
                     title.innerHTML = localStorage.getItem("lang") == 'en' ? i.title : i.naslov;
-                productFrame.appendChild(title);
+                let image = document.createElement('img');
+                    image.setAttribute('src', '/product-images/' + i.url);
+                let controls = document.createElement('div');
+                    controls.setAttribute('class', 'controls');
+                let productInfo = document.createElement('div');
+                    productInfo.setAttribute('class', 'product-info');
+                productFrame.appendChild(image);
+                productInfo.appendChild(title);
+                productFrame.appendChild(productInfo);
+                productFrame.appendChild(controls);
                 grid.appendChild(productFrame);
                 console.log(i);
             });
