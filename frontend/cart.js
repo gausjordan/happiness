@@ -33,8 +33,11 @@ if (typeof cart === "undefined") {
             order.forEach(i=> {
                 let productFrame = document.createElement('div');
                     productFrame.setAttribute('class', 'product-frame');
-                let title = document.createElement('p');
+                let title = document.createElement('h1');
                     title.innerHTML = localStorage.getItem("lang") == 'en' ? i.title : i.naslov;
+                let pricePerItem = document.createElement('p');
+                    pricePerItem.setAttribute('class', 'product-info');
+                    pricePerItem.innerHTML = i.price + " €";
                 let image = document.createElement('img');
                     image.setAttribute('src', '/product-images/' + i.url);
                 let controls = document.createElement('div');
@@ -43,6 +46,7 @@ if (typeof cart === "undefined") {
                     productInfo.setAttribute('class', 'product-info');
                 productFrame.appendChild(image);
                 productInfo.appendChild(title);
+                productInfo.appendChild(pricePerItem);
                 productFrame.appendChild(productInfo);
                 productFrame.appendChild(controls);
                 grid.appendChild(productFrame);

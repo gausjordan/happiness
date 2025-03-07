@@ -14,16 +14,28 @@ div#cart-grid .product-frame {
 }
 
 div#cart-grid .product-frame .product-info {
+    display: flex;
     background-color: gold;
     flex-basis: 50%;
     flex-grow: 1;
+    flex-direction: column;
+    justify-content: space-around;
+}
+
+div#cart-grid .product-frame .product-info h1 {
+    display: block;
+    font-size: 1.1em;
+    background-color: teal;
+    line-height: 1;    
+    margin: 5px;
 }
 
 div#cart-grid .product-frame .product-info p {
-    background-color: teal;
-    margin: auto;
-    padding: 0;
+    display: block;
+    font-size: 0.8em;
+    background-color: olivedrab;
     line-height: 1;
+    margin: 5px;
 }
 
 div#cart-grid .product-frame img {
