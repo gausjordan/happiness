@@ -1,59 +1,109 @@
 
+/* Entire content below the title is a flex, even though it's called a grid because it looks like one */
 div#cart-grid {
-    background-color: yellow;
+    /* background-color: yellow; */
     display: flex;
     flex-direction: column;
-    gap: 2em;
+    gap: 1.5em;
     justify-content: space-between;
 }
 
+.hidden {
+    visibility: hidden;
+}
+
+.loaded {
+    visibility: visible;
+}
+
+/* These are rows, each row is one product in a shopping cart */
 div#cart-grid .product-frame {
+    /* background-color: pink; */
+    /* border: dotted blue 2px; */
+    border: dotted black 1px;
     display: flex;
-    background-color: pink;
-    border: dotted blue 2px;
+    flex-direction: row;
+    gap: 0.5em;
 }
 
+/* Each product has a sub-section containing it's name and it's price */
 div#cart-grid .product-frame .product-info {
+    /* background-color: gold; */
     display: flex;
-    background-color: gold;
     flex-basis: 50%;
-    flex-grow: 1;
     flex-direction: column;
-    justify-content: space-around;
+    justify-content:space-evenly;
 }
 
+/* This applies to both: product price and product title */
+div#cart-grid .product-frame .product-info h1, div#cart-grid .product-frame .product-info p {
+    margin: 0;
+}
+
+/* Single products' title */
 div#cart-grid .product-frame .product-info h1 {
-    display: block;
+    /* background-color: antiquewhite; */
     font-size: 1.1em;
-    background-color: teal;
-    line-height: 1;    
-    margin: 5px;
 }
 
+/* Single products' price tag */
 div#cart-grid .product-frame .product-info p {
-    display: block;
+    /* background-color: coral; */
     font-size: 0.8em;
-    background-color: olivedrab;
-    line-height: 1;
-    margin: 5px;
 }
 
-div#cart-grid .product-frame img {
-    background-color: purple;
-    height: 4em;
-    width: 4em;
-    object-fit: cover;
-    flex-grow: 0;
-}
-
+/* For each product in a cart, there's a control section containing it's quantity and a delete button */
 div#cart-grid .product-frame .controls {
-    background-color: cyan;
+    /* background-color: cyan; */
     object-fit: cover;
     flex-grow: 1;
     flex-basis: 50%;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;    
+    gap: 0.5em;
 }
+
+/* A single product image (icon) on a list */
 div#cart-grid .product-frame img {
+    aspect-ratio: 1;
     height: 4em;
-    width: 4em;
+    background-size: contain;
     object-fit: cover;
+}
+
+/* Delete button */
+div#cart-grid .product-frame .controls img {
+    width: 2em;
+    height: 2em;
+    align-self: center;
+    padding: 0.5em;
+}
+
+/* There's a quantity input element and it's corresponding label in a div */
+div#cart-grid .product-frame .controls .quantity-div {
+    display: flex;
+    flex-direction: column;
+    align-self: center;
+}
+
+/* Item quantity input element */
+div#cart-grid .product-frame .controls .quantity-div input {
+    width: 3em;
+}
+
+/* A label for the quantity input element */
+div#cart-grid .controls .quantity-div label {
+    text-align: center;
+    padding: 0.3em;
+}
+
+/* A label for the quantity input element in Croatian */
+html:lang(en) div#cart-grid .controls .quantity-div label::before {
+    content: "qty:";
+}
+
+/* A label for the quantity input element in English */
+html:lang(hr) div#cart-grid .controls .quantity-div label::before {
+    content: "kol.";
 }

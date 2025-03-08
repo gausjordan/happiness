@@ -1,3 +1,21 @@
+Use Skeleton Screens if UX matters most.
+Use visibility: hidden + reserved height if you want simplicity.
+Use content-visibility if you're targeting modern browsers.
+display: none je sranje jer svejedno prouzroci content shifting ako je element dio flowa.
+
+.hide-this {
+    visibility: hidden; /* Content is invisible but layout is preserved */
+    opacity: 0; /* Optional for fade-in effect */
+}
+
+.loaded {
+    visibility: visible;
+    opacity: 1; /* Optional fade-in */
+    transition: opacity 0.3s ease-in;
+}
+
+
+
 EXECUTE COMMAND
 docker run --name="happiness" -d -i -t -p "80:80" -v d/temp/webshop:/app -v d/temp/webshop-db:/var/lib/mysql mattrayner/lamp:latest-1804
 

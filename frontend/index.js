@@ -96,7 +96,7 @@ async function fetchData(fetchURL, method="GET") {
     }
 }
 
-// Check if language is already chosen and show a single languages flag only
+// Check if language is already chosen and show a single language flag only
 if (!localStorage.getItem('lang')) {
     localStorage.setItem('lang', 'hr');
 }
@@ -139,11 +139,12 @@ flag[1].addEventListener("click", () => {
         localStorage.setItem('lang', 'en');
         flag[0].style.opacity = "0";
         flag[1].style.opacity = "1";
-
+        document.documentElement.lang = "en"
     } else {
         localStorage.setItem('lang', 'hr');
         flag[0].style.opacity = "1";
         flag[1].style.opacity = "0";
+        document.documentElement.lang = "hr"
     }    
     renderMainMenu();
     navigateTo(window.location.pathname || "/home");
