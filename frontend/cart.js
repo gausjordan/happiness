@@ -5,17 +5,26 @@ if (typeof cart === "undefined") {
     const cart = (function () {
 
         let userId;
+        let order;
 
         async function buildCart() {
             userId = await cart.getUserId();
             let fetchURL = `/api/orders/${userId}?unfinished=1`;
-            let order = await fetchData(fetchURL);
-            let obj;
+            order = await fetchData(fetchURL);
 
             try { order = await fetchData(fetchURL) }
             catch (e) { console.log("Greska: " + e); return; }
 
-            cart.buildGrid(order);
+            if (order) {
+                // Build item list
+                cart.buildGrid(order);
+                // Calculate pricing total 
+                cart.computeSum(order).then(sum => document.getElementById('total-sum-number').innerHTML = sum + " €");
+                // Unhide the total price (it stays hidden if the cart is empty)
+                document.getElementById('total-price').classList.remove('hidden');
+            } else {
+                document.getElementById('empty-cart').style = "display: inline";
+            }
             
         }
 
@@ -26,6 +35,12 @@ if (typeof cart === "undefined") {
                 return `${payload.sub}`;
             }
             else { navigateTo("/account"); }
+        }
+
+        async function computeSum(order) {
+            return order.reduce( (accumulator, o) => {
+                return Math.round( ((accumulator + (o.price * o.quantity)) * 100) ) / 100
+            }, 0);
         }
 
         async function buildGrid(order) {
@@ -73,11 +88,13 @@ if (typeof cart === "undefined") {
         return {
             buildCart,
             buildGrid,
-            getUserId
+            getUserId,
+            computeSum
         };
 
     })();
 
     cart.buildCart();
+
     
 }

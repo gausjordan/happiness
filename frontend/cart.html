@@ -2,9 +2,17 @@
     if (localStorage.getItem("lang") === 'en') {
         document.title = "Shopping cart";
         document.getElementById('shopping-cart-title').innerHTML = "Shopping cart";
+        document.getElementById('empty-cart').innerHTML = "Your shopping cart is empty.";
+        document.getElementById('order-button-text').innerHTML = "Finalize order";
+        document.getElementById('empty-cart-button-text').innerHTML = "Delete order";
+        document.getElementById('total-sum-label').innerHTML = "Total:";
     } else {
         document.title = "Vaša košarica";
         document.getElementById('shopping-cart-title').innerHTML = "Vaša košarica";
+        document.getElementById('empty-cart').innerHTML = "Vaša košarica je prazna.";
+        document.getElementById('order-button-text').innerHTML = "Dovrši narudžbu";
+        document.getElementById('empty-cart-button-text').innerHTML = "Isprazni košaricu";
+        document.getElementById('total-sum-label').innerHTML = "Ukupno:";
     }
 </script>
 
@@ -16,4 +24,12 @@
 <body>
     <h1 id="shopping-cart-title"></h1>
     <div class="grid" id="cart-grid"></div>
+    <div id="empty-cart" style="display: none"></div>
+    <div id="total-price" class="hidden">
+        <hr>
+        <h2 id="total-sum-label">Ukupno: </h2>
+        <p id="total-sum-number"></p>
+        <div id="order-button"><p id="order-button-text"></p></div>
+        <div id="empty-cart-button"><p id="empty-cart-button-text"></p></div>
+    </div>
 </body>

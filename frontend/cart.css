@@ -2,9 +2,10 @@
 /* Entire content below the title is a flex, even though it's called a grid because it looks like one */
 div#cart-grid {
     /* background-color: yellow; */
+    margin-top: 3em;
     display: flex;
     flex-direction: column;
-    gap: 1.5em;
+    gap: 2em;
     justify-content: space-between;
 }
 
@@ -19,11 +20,18 @@ div#cart-grid {
 /* These are rows, each row is one product in a shopping cart */
 div#cart-grid .product-frame {
     /* background-color: pink; */
-    /* border: dotted blue 2px; */
-    border: dotted black 1px;
     display: flex;
     flex-direction: row;
     gap: 0.5em;
+}
+
+div#cart-grid .product-frame:not(:first-child)::before {
+    content: "";
+    width: calc(100% - 0.75em*2);
+    height: 0px;
+    position: absolute;
+    transform: translateY(-1em);
+    border-top: dotted gray 1px;
 }
 
 /* Each product has a sub-section containing it's name and it's price */
@@ -60,31 +68,35 @@ div#cart-grid .product-frame .controls {
     flex-basis: 50%;
     display: flex;
     flex-direction: row;
-    justify-content: flex-end;    
+    justify-content: flex-end;
     gap: 0.5em;
+    /* -align-items:first baseline; TEST*/
+    align-items: center;
 }
 
 /* A single product image (icon) on a list */
-div#cart-grid .product-frame img {
+div#cart-grid .product-frame > img {
     aspect-ratio: 1;
     height: 4em;
     background-size: contain;
     object-fit: cover;
+    border-radius: 0.5em;
 }
 
 /* Delete button */
 div#cart-grid .product-frame .controls img {
     width: 2em;
     height: 2em;
-    align-self: center;
-    padding: 0.5em;
+    -align-self: center;
+    -padding: 0.5em;
+    -background-color: yellow;
 }
 
 /* There's a quantity input element and it's corresponding label in a div */
 div#cart-grid .product-frame .controls .quantity-div {
     display: flex;
     flex-direction: column;
-    align-self: center;
+    -align-self: center;
 }
 
 /* Item quantity input element */
@@ -94,6 +106,7 @@ div#cart-grid .product-frame .controls .quantity-div input {
 
 /* A label for the quantity input element */
 div#cart-grid .controls .quantity-div label {
+    font-size: 0.75rem;
     text-align: center;
     padding: 0.3em;
 }
@@ -106,4 +119,14 @@ html:lang(en) div#cart-grid .controls .quantity-div label::before {
 /* A label for the quantity input element in English */
 html:lang(hr) div#cart-grid .controls .quantity-div label::before {
     content: "kol.";
+}
+
+/* A total price sum line - label and a number */
+div#total-price {
+    margin-top: 2em;
+}
+
+/* A total price sum line - just the number */
+div#total-price p {
+    font-size: 1.2em;
 }
