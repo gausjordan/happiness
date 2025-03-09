@@ -15,6 +15,10 @@ display: none je sranje jer svejedno prouzroci content shifting ako je element d
 }
 
 
+SMEĆE
+width="800px" height="800px"
+
+
 
 EXECUTE COMMAND
 docker run --name="happiness" -d -i -t -p "80:80" -v d/temp/webshop:/app -v d/temp/webshop-db:/var/lib/mysql mattrayner/lamp:latest-1804

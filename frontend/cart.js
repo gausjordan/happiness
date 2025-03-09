@@ -70,14 +70,22 @@ if (typeof cart === "undefined") {
                     productQuantity.value = i.quantity;
                 let removeFromCart = document.createElement('img');
                     removeFromCart.setAttribute('src', 'frontend/graphics/delete-x.svg');
+                let quantityAlign = document.createElement('div');
+                    quantityAlign.setAttribute('class', 'quantity-align');
+
                 quantityDiv.appendChild(quantityLabel);
                 quantityDiv.appendChild(productQuantity);
+
+                quantityAlign.appendChild(quantityDiv);
+                quantityAlign.appendChild(removeFromCart);
+
+
                 productFrame.appendChild(image);
                 productInfo.appendChild(title);
                 productInfo.appendChild(pricePerItem);
                 productFrame.appendChild(productInfo);
-                controls.appendChild(quantityDiv);
-                controls.appendChild(removeFromCart);
+                controls.appendChild(quantityAlign);
+                // controls.appendChild(removeFromCart);
                 productFrame.appendChild(controls);
                 grid.appendChild(productFrame);
                 console.log(i);

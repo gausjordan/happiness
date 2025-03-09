@@ -22,14 +22,19 @@
 </head>
 
 <body>
+    <link rel="preload" href="/frontend/graphics/delete-active.svg" as="image"></link>
     <h1 id="shopping-cart-title"></h1>
     <div class="grid" id="cart-grid"></div>
     <div id="empty-cart" style="display: none"></div>
     <div id="total-price" class="hidden">
         <hr>
-        <h2 id="total-sum-label">Ukupno: </h2>
-        <p id="total-sum-number"></p>
-        <div id="order-button"><p id="order-button-text"></p></div>
-        <div id="empty-cart-button"><p id="empty-cart-button-text"></p></div>
+        <div id="pricing-sum">
+            <h2 id="total-sum-label">Ukupno: </h2>
+            <p id="total-sum-number"></p>
+        </div>
+        <div id="cart-buttons">
+            <div id="order-button"><p id="order-button-text"></p></div>
+            <div id="empty-cart-button"><p id="empty-cart-button-text"></p></div>
+        </div>
     </div>
 </body>
