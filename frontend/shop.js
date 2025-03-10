@@ -17,7 +17,7 @@ async function buildShop(fetchURL = "/api/products", refreshExisting) {
 
     let obj;
 
-    try { obj = await fetchData(fetchURL) }     
+    try { obj = await fetchData(fetchURL); }
     catch (e) { console.log("Error. " + e) }
 
     if(refreshExisting) {
@@ -253,9 +253,10 @@ function buildGrid(obj) {
     
     let footer = document.getElementsByTagName('footer')[0];
     // console.log(footer);
-    document.getElementById('app');
+    // ?? document.getElementById('app');
     //app.insertBefore(grid, footer);
     app.appendChild(grid, footer);
+    document.querySelector('main#app nav.shop-filter-menu').classList.remove('hidden');
 }
 
 // Simplify appending an element
@@ -318,3 +319,6 @@ function filteringMenuHandler(event) {
 
 filterButtonToggle();
 buildShop();
+
+
+// document.getElementsByClassName('shop-filter-menu')[0].removeAttribute('hidden');

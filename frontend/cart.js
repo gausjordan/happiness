@@ -104,5 +104,22 @@ if (typeof cart === "undefined") {
 
     cart.buildCart();
 
+    document.getElementById("order-button-text").addEventListener("click", (e) => {
+
+    });
+
+    document.getElementById("empty-cart-button-text").addEventListener("click", (e) => {
+        let text = document.documentElement.lang == "en" ?
+        "This will remove all products from your cart. Are you sure?" :
+        "Sadržaj košarice bit će ispražnjen. Jeste li sigurni?";
+
+        document.getElementById('modal').style.display = "block";
+        document.querySelectorAll('body *').forEach(i => {
+                i.classList.add('blurred');
+        });
+        document.getElementById('modal').classList.remove("blurred");
+
+    console.log(text);
+    });
     
 }

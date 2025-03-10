@@ -3,7 +3,7 @@
         document.title = "Shopping cart";
         document.getElementById('shopping-cart-title').innerHTML = "Shopping cart";
         document.getElementById('empty-cart').innerHTML = "Your shopping cart is empty.";
-        document.getElementById('order-button-text').innerHTML = "Finalize order";
+        document.getElementById('order-button-text').innerHTML = "Submit order";
         document.getElementById('empty-cart-button-text').innerHTML = "Delete order";
         document.getElementById('total-sum-label').innerHTML = "Total:";
     } else {
@@ -30,11 +30,12 @@
         <hr>
         <div id="pricing-sum">
             <h2 id="total-sum-label">Ukupno: </h2>
+            <span class="dots"></span>
             <p id="total-sum-number"></p>
         </div>
         <div id="cart-buttons">
-            <div id="order-button"><p id="order-button-text"></p></div>
             <div id="empty-cart-button"><p id="empty-cart-button-text"></p></div>
+            <div id="order-button"><p id="order-button-text"></p></div>
         </div>
     </div>
 </body>

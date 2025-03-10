@@ -1,3 +1,25 @@
+/* The Modal (background) */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 20; /* Sit on top */
+    padding-top: 100px; /* Location of the box */
+    left: 0;
+    top: 0;
+    width: 100svw; /* Full width */
+    height: 100dvh; /* Full height */
+    overflow: hidden; /* Disable scrolling */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.3); /* Black w/ opacity */
+}
+
+.disabled {
+    pointer-events: none;
+}
+
+.blurred {
+    filter: blur(2px);
+}
 
 /* Entire content below the title is a flex, even though it's called a grid because it looks like one */
 div#cart-grid {
@@ -88,7 +110,7 @@ div#cart-grid .product-frame .controls .quantity-align {
     display: flex;
     flex-direction: row;
     align-items: end;
-    gap: 0.5em;
+    gap: 0.75em;
 }
 
 /* Delete button */
@@ -149,7 +171,7 @@ html:lang(hr) div#cart-grid .controls .quantity-align .quantity-div label::befor
     margin: 1.5em 0;
     padding: 1px;
     color: #FFF0;
-    border: 1px solid gray;
+    border: 0px solid gray;
 }
 
 #total-price #pricing-sum {
@@ -157,6 +179,7 @@ html:lang(hr) div#cart-grid .controls .quantity-align .quantity-div label::befor
     align-items: end;
     justify-content: space-between;
 }
+
 #total-price #pricing-sum * {
     margin: 0;
     padding: 0;
@@ -164,17 +187,49 @@ html:lang(hr) div#cart-grid .controls .quantity-align .quantity-div label::befor
     font-size: 1.1em;
     display: flex;
     align-items:flex-end;
-}
-#total-price #total-sum-label::after {
-    content: " ......................................"; /* Dots */
-    white-space: nowrap; /* Prevent dots from wrapping */
-    overflow: hidden; /* Hide overflow dots */
-    flex-grow: 1; /* Allow dots to fill the space */
-    margin: 0 10px; /* Add spacing around the dots */
+    justify-content: space-between;
 }
 
+#total-price #total-sum-label {
+    white-space: nowrap;
+}
 
+#total-price #pricing-sum .dots {
+    flex: 1;
+    position: relative;
+    bottom: 0.15em;
+    border-bottom: 1px dotted black;
+    height: 1em;
+    margin: 0 10px;
+}
 
+#total-price #total-sum-number {
+    white-space: nowrap;
+}
 
+#total-price #cart-buttons {
+    margin-top: 3em;
+    display: flex;
+    justify-content: space-around;
+    gap: 1.25em;
+}
 
+#total-price #cart-buttons p {
+    display: block;
+    padding: 1em 1.5em;
+    margin: 0;
+    display: flex;
+    user-select: none;
+    text-align: center;
+    border-radius: 0.5em;
+    border: 2px solid;
+    border-color: #a8a8a888;
+}
+
+#total-price #cart-buttons #empty-cart-button p {
+    background-color: #e7bdbd;
+}
+
+#total-price #cart-buttons #order-button p {
+    background-color: #bde7c0;
 }
