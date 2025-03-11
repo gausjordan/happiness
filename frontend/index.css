@@ -2,6 +2,85 @@
   --menu-animation-speed: 0.3s;
 }
 
+/* The Modal (background) */
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 20; /* Sit on top */
+  width: 100svw; /* Full width */
+  height: 100dvh; /* Full height */
+  overflow: auto; /* Enable scrolling */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.3); /* Black w/ opacity */
+  align-items: flex-start;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal #modal-dialog-box {
+  display: flex;
+  height: initial;
+  position: unset;
+  flex-direction: column;
+  width: 70%;
+  max-width: 60em;
+  background-color: white;
+  padding: 1.5em;
+  box-shadow: 3px 3px 12px gray;
+  border-radius: 0.2em;
+}
+
+.modal #modal-buttons {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  margin-top: 2em;
+  gap: 1em;
+}
+
+.modal #modal-buttons div {
+  display: flex;
+  background-color: silver;
+  padding: 0.5em 1em;
+  flex-grow: 1;
+  flex-shrink: 0;
+  justify-content: center;
+}
+
+.modal #modal-buttons div:last-of-type {
+   background-color: rgb(72, 72, 107);
+   color: white;
+}
+
+.modal #modal-dialog-box p {
+  display: flex;
+  margin: 0;
+  padding: 0;
+  line-height: 125%;
+}
+
+.modal #text {
+
+}
+
+.modal #buttons {
+  
+}
+
+.modal {
+
+}
+
+.disabled {
+  pointer-events: none;
+}
+
+.blurred {
+  filter: blur(3px);
+  overflow: hidden;
+}
+
 body {
   font-family: Arial, sans-serif;
   margin: 0;

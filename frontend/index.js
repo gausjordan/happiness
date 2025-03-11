@@ -254,8 +254,12 @@ const navigateTo = async (path, doNotPushState = false) => {
 
 window.addEventListener("popstate", (event) => {
     const path = window.location.pathname + window.location.search;
-    if (path)
+    if (path) {
         navigateTo(path);
+        // Reset blur/dim effect (maybe we navigated back/forward while modal was opened)
+        document.getElementById('modal').style.display = "none";
+        document.querySelectorAll('*').forEach(i => i.classList.remove('blurred'));
+    }
 });
 
 
@@ -415,6 +419,33 @@ function addMenuOptions(croatianText, englishText, path) {
         usersMenu.appendChild(listItem);
     let list = document.getElementById("nav-links");
         list.appendChild(usersMenu);
+}
+
+/* Blurs everything and pops up a dialog window */
+function openModal(text, buttons) {
+    document.getElementById('modal').style.display = "flex";
+    document.querySelectorAll(' body *:not(#app):not(#modal):not(#modal *) ').forEach(i => {
+        i.classList.add('blurred');
+    });
+    document.getElementById('modal').querySelector('p').innerHTML = text;
+    console.log(buttons);
+    let outputChoice = null;
+    if (buttons) {
+        buttons.forEach(b => {
+            let button = document.createElement('div');
+                button.innerHTML = b;
+                document.getElementById('modal-buttons').appendChild(button);
+                button.addEventListener("click", () => {
+                    alert(b);
+                });
+                
+            });
+    }  
+}
+
+/* Un-blurs everything and closes dialog window */
+function removeModal() {
+    document.querySelectorAll('div #modal-buttons *').forEach(i => i.remove());
 }
 
 // Initialize the app on first load
