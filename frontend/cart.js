@@ -115,13 +115,26 @@ if (typeof cart === "undefined") {
                     "Isprazniti košaricu i poništiti narudžbu?";
         
         let usersChoice = await openModal(text, buttons);
-        if (usersChoice == "Da") {
-            alert("Košarica se briše");
+        if (usersChoice == "Da" || usersChoice == "Yes") {
+            
         } else {
-            alert("Odustajanje");
+            
         }
     });
-
+    
+    document.getElementById("order-button-text").addEventListener("click", async () => {
+        let buttons = document.documentElement.lang == "en" ? ["No", "Yes"] : ["Ne", "Da"];
+        let text = document.documentElement.lang == "en" ?
+                    "Place order?" :
+                    "Dovršiti narudžbu?" ;
+        
+        let usersChoice = await openModal(text, buttons);
+        if (usersChoice == "Da" || usersChoice == "Yes") {
+            
+        } else {
+            
+        }
+    });
 
 
    
