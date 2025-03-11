@@ -422,30 +422,30 @@ function addMenuOptions(croatianText, englishText, path) {
 }
 
 /* Blurs everything and pops up a dialog window */
-function openModal(text, buttons) {
+async function openModal(text, buttons) {
     document.getElementById('modal').style.display = "flex";
     document.querySelectorAll(' body *:not(#app):not(#modal):not(#modal *) ').forEach(i => {
         i.classList.add('blurred');
     });
     document.getElementById('modal').querySelector('p').innerHTML = text;
-    console.log(buttons);
-    let outputChoice = null;
-    if (buttons) {
-        buttons.forEach(b => {
-            let button = document.createElement('div');
+    
+    return new Promise(resolve => {
+        if (buttons) {
+            buttons.forEach(async b => {
+                let button = document.createElement('div');
                 button.innerHTML = b;
                 document.getElementById('modal-buttons').appendChild(button);
-                button.addEventListener("click", () => {
-                    alert(b);
-                });
-                
+                button.addEventListener("click", async () => { removeModal(); resolve(b); });
             });
-    }  
+        }
+    })
 }
 
 /* Un-blurs everything and closes dialog window */
 function removeModal() {
     document.querySelectorAll('div #modal-buttons *').forEach(i => i.remove());
+    document.querySelectorAll('.blurred').forEach(i => i.classList.remove('blurred'));
+    document.getElementById('modal').style.display = "none";
 }
 
 // Initialize the app on first load

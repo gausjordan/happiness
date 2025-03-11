@@ -88,7 +88,7 @@ if (typeof cart === "undefined") {
                 // controls.appendChild(removeFromCart);
                 productFrame.appendChild(controls);
                 grid.appendChild(productFrame);
-                console.log(i);
+                // console.log(i);
             });
             //console.log(grid);
         }
@@ -108,13 +108,18 @@ if (typeof cart === "undefined") {
 
     });
 
-    document.getElementById("empty-cart-button-text").addEventListener("click", () => {
+    document.getElementById("empty-cart-button-text").addEventListener("click", async () => {
         let buttons = document.documentElement.lang == "en" ? ["No", "Yes"] : ["Ne", "Da"];
         let text = document.documentElement.lang == "en" ?
                     "Empty this cart and cancel your order?" :
                     "Isprazniti košaricu i poništiti narudžbu?";
-        let choice = openModal(text, buttons);
-        console.log(choice);
+        
+        let usersChoice = await openModal(text, buttons);
+        if (usersChoice == "Da") {
+            alert("Košarica se briše");
+        } else {
+            alert("Odustajanje");
+        }
     });
 
 
