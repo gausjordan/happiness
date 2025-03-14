@@ -21,7 +21,7 @@ div#cart-grid .product-frame {
     /* background-color: pink; */
     display: flex;
     flex-direction: row;
-    gap: 0.5em;
+    gap: 1em;
 }
 
 div#cart-grid .product-frame:not(:first-child)::before {
@@ -43,14 +43,16 @@ div#cart-grid .product-frame .product-info {
 }
 
 /* This applies to both: product price and product title */
-div#cart-grid .product-frame .product-info h1, div#cart-grid .product-frame .product-info p {
+div#cart-grid .product-frame .product-info a, div#cart-grid .product-frame .product-info p {
     margin: 0;
 }
 
-/* Single products' title */
-div#cart-grid .product-frame .product-info h1 {
+/* Single products' clickable title */
+div#cart-grid .product-frame .product-info a {
     /* background-color: antiquewhite; */
     font-size: 1.1em;
+    font-weight: bold;
+    text-decoration: none;
 }
 
 /* Single products' price tag */
@@ -73,7 +75,7 @@ div#cart-grid .product-frame .controls {
     /* background-color: cyan; */
     object-fit: cover;
     flex-grow: 1;
-    flex-basis: 50%;
+    /* flex-basis: 50%; */
     display: flex;
     flex-direction: row;
     justify-content: flex-end;

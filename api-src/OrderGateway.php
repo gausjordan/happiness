@@ -164,6 +164,15 @@ class OrderGateway {
         return $stmt->rowCount();
     }
 
+    public function deleteOrderItem($id, $item) {
+        $sql = "DELETE FROM order_items WHERE `order_id` = :order_id AND `product_id` = :product_id";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindValue(":order_id", $id, PDO::PARAM_INT);
+        $stmt->bindValue(":product_id", $item, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->rowCount();
+    }
+
 
     public function createNewOrder($id) {
         $sql = "INSERT INTO orders (user_id) VALUES (:id);";

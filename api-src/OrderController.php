@@ -124,21 +124,44 @@ class OrderController {
                 break;
 
             case "DELETE":
-                // Prevent sales record deletion unless unfinalized, finalized orders should be immutable
-                // '$id' parameter is a corresponding user's id, NOT the order's id
-                if (!$this->gateway->getUnfinishedOrder($id)) {
-                    http_response_code(404);
-                    echo json_encode(["Message: " => "No incomplete orders available for this user."]);
-                } else {
-                    if ($this->gateway->deleteUnfinishedOrder($id)) {
-                        echo json_encode(["Message: " => "Unfinalized order for user $id deleted."]);
+
+                // This executes if a user only wishes to delete a single row (item) if his order
+                if (isset($urlQuery) && array_key_exists("delete-item", $urlQuery)) {
+                    
+                    // Find out which user (by id) made the order that we want
+                    $ordersOwnerId = $this->gateway->getOrdersOwnerId($id);
+                    if($this->user_id == $ordersOwnerId || $this->user_role == "employe" || $this->user_role == "admin") {
+                        $item = $urlQuery["delete-item"];
+                        $rows = $this->gateway->deleteOrderItem($id, $item);
+                        if ($rows > 0) {
+                            echo json_encode(["Message: " => "Item id $item removed from order id $id. There were $rows rows affected."]);
+                        } else {
+                            echo json_encode(["Message: " => "Nothing got deleted."]);
+                        }
                     } else {
-                        http_response_code(500);
-                        echo json_encode(["Message: " => "Error deleting an incomplete order."]);
+                        http_response_code(403);
+                        echo json_encode(["Message: " => "Only admins and cart owners can delete order items."]);
+                        exit;
+                    }
+                
+                } else {
+                    // This executes if no parameter queries are given and deletes unfinalized orders
+                    // Prevent sales record deletion unless unfinalized, finalized orders should be immutable
+                    // '$id' parameter is a corresponding user's id, NOT the order's id
+                    if (!$this->gateway->getUnfinishedOrder($id)) {
+                        http_response_code(404);
+                        echo json_encode(["Message: " => "No incomplete orders available for this user."]);
+                    } else {
+                        if ($this->gateway->deleteUnfinishedOrder($id)) {
+                            echo json_encode(["Message: " => "Unfinalized order for user $id deleted."]);
+                        } else {
+                            http_response_code(500);
+                            echo json_encode(["Message: " => "Error deleting an incomplete order."]);
+                        }
                     }
                 }
-                break;
 
+                break;
 
             case "POST":
                 $data = (array) json_decode(file_get_contents("php://input"), true);

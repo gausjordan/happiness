@@ -40,7 +40,7 @@ CREATE TABLE `order_items` (
 
 LOCK TABLES `order_items` WRITE;
 /*!40000 ALTER TABLE `order_items` DISABLE KEYS */;
-INSERT INTO `order_items` VALUES (1,7,1,6.00),(1,8,3,242.00),(7,1,1,11.00),(7,4,7,333.00),(8,9,1,333.00),(9,12,1,2.00),(9,13,1,16.00),(9,14,2,5.00),(10,9,66,0.01),(10,10,1,4.01),(10,11,1,25.01),(11,1,10,5.00),(11,2,1,12.34),(12,7,1,2.22),(12,8,2,99.00),(12,9,1,9.00),(13,4,1,0.44),(13,5,1,2.66),(13,6,1,22.22),(13,7,5,11.11),(85,1,1,41.00),(85,2,1,55.41),(85,6,3,210.00),(85,8,6,534.00),(85,13,1,85.00);
+INSERT INTO `order_items` VALUES (1,7,1,6.00),(1,8,3,242.00),(7,1,1,11.00),(7,4,7,333.00),(8,9,1,333.00),(9,12,1,2.00),(9,13,1,16.00),(9,14,2,5.00),(10,9,66,0.01),(10,10,1,4.01),(10,11,1,25.01),(11,1,10,5.00),(11,2,1,12.34),(12,7,1,2.22),(12,8,2,99.00),(12,9,1,9.00),(13,4,1,0.44),(13,5,1,2.66),(13,6,1,22.22),(13,7,5,11.11),(85,3,1,62.00),(85,7,1,83.00),(85,8,6,534.00),(85,13,1,85.00);
 /*!40000 ALTER TABLE `order_items` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -306,7 +306,7 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES (9,'admin','Admin','Kazafmuradadminović','admin@lolzfords.lol','0951234567','Fulfinumska ulica','24',54947,'Ćepikućke kotline','Istarski kanton','$2y$10$/oacbl8rjA7xA4CojMdkGuW49gsoin3is.Of0MAsCmFxIeJsdnqJi',4),(10,'user','Juzimir','Korisniković','korisnik@usel.es','0911234567','Lješnjačkih brigada','87',10000,'Zagreb','Hrvatska','$2y$10$qXvldyVAe4Zg5v2JBBVmUOP2iwMQZSdQcTqTxR0osiNp02FnQ.YzS',2),(11,'employee','Šljakana','Radnik','dradnik~1@oldschool.srce.hr','097654321','Huplanova','11d',12555,'Balvanovo','Hrvatska','$2y$10$4GWLV8VaPCOwYtgXiJyt0OkHgiA6LzOnocIw7zGfD/ZM4i5unx8Y2',3),(34,'bozo','Bosanac','Opet-adminović','bozo@lolzords.lol','8888888888','Fulfinumska ulica','04',23237,'Pufkovljanec Gornji','Zagorje','$2y$10$LJGhswtVRYxSXyUbg8GUeetIuO3wQMRpfvDqsd8D/BpJnCapqwIri',3);
+INSERT INTO `user` VALUES (9,'admin','Admin','Kazafmuradadminović','admin@lolzfords.lol','0951234567','Fulfinumska ulica','24',54947,'Ćepikućke kotline','Istarski kanton','$2y$10$/oacbl8rjA7xA4CojMdkGuW49gsoin3is.Of0MAsCmFxIeJsdnqJi',4),(10,'user','Juzimir','Korisniković','korisnik@usel.es','0911234567','Lješnjačkih brigada','87',10000,'Zagreb','Hrvatska','$2y$10$qXvldyVAe4Zg5v2JBBVmUOP2iwMQZSdQcTqTxR0osiNp02FnQ.YzS',2),(11,'employee','Šljakana','Radnik','dradnik~1@oldschool.srce.hr','097654321','Huplanova','11d',12555,'Balvanovo','Hrvatska','$2y$10$4GWLV8VaPCOwYtgXiJyt0OkHgiA6LzOnocIw7zGfD/ZM4i5unx8Y2',3),(34,'bozo','Bosanac','Opet-adminović','bozo@lolzords.lol','8888888888','Fulfinumska ulica','04',23237,'Pufkovljanec Gornji','Zagorje','$2y$10$LJGhswtVRYxSXyUbg8GUeetIuO3wQMRpfvDqsd8D/BpJnCapqwIri',2);
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -344,4 +344,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-03-11  2:36:06
+-- Dump completed on 2025-03-14  0:38:07

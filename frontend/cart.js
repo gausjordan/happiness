@@ -48,8 +48,9 @@ if (typeof cart === "undefined") {
             order.forEach(i=> {
                 let productFrame = document.createElement('div');
                     productFrame.setAttribute('class', 'product-frame');
-                let title = document.createElement('h1');
+                let title = document.createElement('a');
                     title.innerHTML = localStorage.getItem("lang") == 'en' ? i.title : i.naslov;
+                    title.setAttribute("href", "/product/" + i.product_id);
                 let pricePerItem = document.createElement('p');
                     pricePerItem.innerHTML = i.price + " €";
                 let image = document.createElement('img');
@@ -79,7 +80,6 @@ if (typeof cart === "undefined") {
                 quantityAlign.appendChild(quantityDiv);
                 quantityAlign.appendChild(removeFromCart);
 
-
                 productFrame.appendChild(image);
                 productInfo.appendChild(title);
                 productInfo.appendChild(pricePerItem);
@@ -89,6 +89,30 @@ if (typeof cart === "undefined") {
                 productFrame.appendChild(controls);
                 grid.appendChild(productFrame);
                 // console.log(i);
+                
+                title.addEventListener("click", (e) => {
+                    e.preventDefault();
+                    navigateTo("/product/" + i.product_id);
+                }, { once : true});
+
+                image.addEventListener("click", (e) => {
+                    e.preventDefault();
+                    navigateTo("/product/" + i.product_id);
+                }, { once : true});
+
+                removeFromCart.addEventListener("click", (e) => {
+                    e.preventDefault();
+                    // /api/orders/10?delete-item=3
+                    try {
+                        fetchData("/api/orders/" + i.order_id + "?delete-item=" + i.product_id, "DELETE").then(navigateTo("/cart"));
+                    } catch {
+                        console.log("Error deleting an order item.");
+                    }
+
+                    
+                }, { once : true});
+
+                
             });
             //console.log(grid);
         }
