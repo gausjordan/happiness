@@ -123,8 +123,51 @@ class OrderController {
                 }
                 break;
 
-            case "DELETE":
+            case "PATCH":
 
+                // Find out which user (by id) made the order that we want
+                $ordersOwnerId = $this->gateway->getOrdersOwnerId($id);
+                if($this->user_id == $ordersOwnerId || $this->user_role == "employe" || $this->user_role == "admin") {
+
+                    // Fetch existing order data
+                    $oldOrder = $this->gateway->getSingleOrderMetadata($id);
+                    
+                    if ($oldOrder) {
+                        $status = $this->gateway->updateSingleOrderMetadata($oldOrder);
+                    } else {
+                        http_response_code(404);
+                        echo json_encode(["Message: " => "Order id $id does not exist. Error updating."]);
+                        return null;
+                    }
+
+                    $input = (array) json_decode(file_get_contents("php://input"), true);
+
+                    if (!$input) {
+                        http_response_code(403);
+                        echo json_encode(["Message: " => "Invalid input (or none provided at all). Nothing to update."]);
+                        exit;
+                    }
+
+                    var_dump($input);
+                    
+                    
+                    
+
+                    // $rows = $this->gateway->deleteOrderItem($id, $item);
+                    // if ($rows > 0) {
+                    //     echo json_encode(["Message: " => "Item id $item removed from order id $id. There were $rows rows affected."]);
+                    // } else {
+                    //     echo json_encode(["Message: " => "Nothing got deleted."]);
+                    // }
+                } else {
+                    http_response_code(403);
+                    echo json_encode(["Message: " => "Only admins and cart owners can update orders."]);
+                    exit;
+                }
+
+                break;
+
+            case "DELETE":
                 // This executes if a user only wishes to delete a single row (item) if his order
                 if (isset($urlQuery) && array_key_exists("delete-item", $urlQuery)) {
                     
@@ -145,7 +188,7 @@ class OrderController {
                     }
                 
                 } else {
-                    // This executes if no parameter queries are given and deletes unfinalized orders
+                    // This executes if no parameter queries are given and deletes an unfinalized order
                     // Prevent sales record deletion unless unfinalized, finalized orders should be immutable
                     // '$id' parameter is a corresponding user's id, NOT the order's id
                     if (!$this->gateway->getUnfinishedOrder($id)) {

@@ -120,6 +120,34 @@ class OrderGateway {
         return $data;
     }
 
+    public function getSingleOrderMetadata($id) : array | null {
+        $sql = "SELECT * FROM orders WHERE id = :id";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindValue(":id", $id, PDO::PARAM_INT);
+        $stmt->execute();
+
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $data[] = $row;
+        }
+
+        return $data ?? null;
+    }
+
+    public function updateSingleOrderMetadata($oldOrder) {
+        $id = $oldOrder[0]["id"];
+        $user_id = $oldOrder[0]["user_id"];
+        $dateOrdered = $oldOrder[0]["dateOrdered"];
+        $dateReceived  = $oldOrder[0]["dateReceived"];
+        $is_shipped = $oldOrder[0]["is_shipped"];
+        $is_paid = $oldOrder[0]["is_paid"];
+        $is_returned = $oldOrder[0]["is_returned"];
+        $is_refunded = $oldOrder[0]["is_refunded"];
+        $is_archived = $oldOrder[0]["is_archived"];
+
+        
+        
+    }
+
 
     public function getOrdersOwnerId($id) : int | null {
         $sql = "SELECT user_id FROM orders WHERE id = :id";

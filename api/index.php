@@ -92,7 +92,7 @@ switch ($uri[2]) {
     
 
     case "orders" : {
-
+        
         $order_gateway = new OrderGateway($database);
         $order_controller = new OrderController($order_gateway, $sanitize, $user_id, $user_role);
 
