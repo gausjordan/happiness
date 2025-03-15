@@ -131,14 +131,6 @@ class OrderController {
 
                     // Fetch existing order data
                     $oldOrder = $this->gateway->getSingleOrderMetadata($id);
-                    
-                    if ($oldOrder) {
-                        $status = $this->gateway->updateSingleOrderMetadata($oldOrder);
-                    } else {
-                        http_response_code(404);
-                        echo json_encode(["Message: " => "Order id $id does not exist. Error updating."]);
-                        return null;
-                    }
 
                     $input = (array) json_decode(file_get_contents("php://input"), true);
 
@@ -148,8 +140,20 @@ class OrderController {
                         exit;
                     }
 
-                    var_dump($input);
+                    foreach (array_keys($input) as $i) {
+                        echo "Testing... $i\n";
+                        if (array_key_exists($i, $oldOrder[0])) {
+                            echo "Key $i exists. Win\n";
+                        }
+                    }
                     
+                    if ($oldOrder) {
+                        $status = $this->gateway->updateSingleOrderMetadata($oldOrder);
+                    } else {
+                        http_response_code(404);
+                        echo json_encode(["Message: " => "Order id $id does not exist. Error updating."]);
+                        return null;
+                    }
                     
                     
 
