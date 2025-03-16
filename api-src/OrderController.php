@@ -125,49 +125,21 @@ class OrderController {
 
             case "PATCH":
 
-                // Find out which user (by id) made the order that we want
-                $ordersOwnerId = $this->gateway->getOrdersOwnerId($id);
-                if($this->user_id == $ordersOwnerId || $this->user_role == "employe" || $this->user_role == "admin") {
+                // Fetch existing order data
+                $oldOrder = $this->gateway->getSingleOrderMetadata($id);
+                $input = (array) json_decode(file_get_contents("php://input"), true);
 
-                    // Fetch existing order data
-                    $oldOrder = $this->gateway->getSingleOrderMetadata($id);
-
-                    $input = (array) json_decode(file_get_contents("php://input"), true);
-
-                    if (!$input) {
-                        http_response_code(403);
-                        echo json_encode(["Message: " => "Invalid input (or none provided at all). Nothing to update."]);
-                        exit;
-                    }
-
-                    foreach (array_keys($input) as $i) {
-                        echo "Testing... $i\n";
-                        if (array_key_exists($i, $oldOrder[0])) {
-                            echo "Key $i exists. Win\n";
-                        }
-                    }
-                    
-                    if ($oldOrder) {
-                        $status = $this->gateway->updateSingleOrderMetadata($oldOrder);
-                    } else {
-                        http_response_code(404);
-                        echo json_encode(["Message: " => "Order id $id does not exist. Error updating."]);
-                        return null;
-                    }
-                    
-                    
-
-                    // $rows = $this->gateway->deleteOrderItem($id, $item);
-                    // if ($rows > 0) {
-                    //     echo json_encode(["Message: " => "Item id $item removed from order id $id. There were $rows rows affected."]);
-                    // } else {
-                    //     echo json_encode(["Message: " => "Nothing got deleted."]);
-                    // }
-                } else {
-                    http_response_code(403);
-                    echo json_encode(["Message: " => "Only admins and cart owners can update orders."]);
+                // Check for errors
+                if ($this->getUpdateValidationErrors($input, $oldOrder, $id) !== 0) {
                     exit;
                 }
+
+                if ($status = $this->gateway->updateSingleOrderMetadata($oldOrder, $input)) {
+                    echo json_encode(["Message: " => "Update successful. $status row affected."]);
+                } else {
+                    echo json_encode(["Message: " => "Nothing got updated."]);
+                }
+                
 
                 break;
 
@@ -281,6 +253,43 @@ class OrderController {
         
         }
     }
+
+    function getUpdateValidationErrors($input, $oldOrder, $id) {
+
+        // Find out which user (by id) made the order that we want
+        $ordersOwnerId = $this->gateway->getOrdersOwnerId($id);
+
+        if (!($this->user_id == $ordersOwnerId || $this->user_role == "employe" || $this->user_role == "admin")) {
+            http_response_code(403);
+            echo json_encode(["Message: " => "Only admins and cart owners can update orders."]);
+            exit;
+        }
+        
+        if (!$input) {
+            http_response_code(403);
+            echo json_encode(["Message: " => "Invalid or non-existent input. Update failed."]);
+            return 1;
+        }
+
+        if (!$oldOrder) {
+            http_response_code(404);
+            echo json_encode(["Message: " => "Order id does not exist. Error updating."]);
+            return 1;
+        }
+
+        // All input array keys must match those in the existing data
+        $invalidKeys[] = null;
+        foreach (array_keys($input) as $i) {
+            if (!array_key_exists($i, $oldOrder[0])) {
+                http_response_code(403);
+                echo json_encode(["Message: " => "Invalid input. Update failed."]);
+                return 1;
+            }
+        }
+
+        return 0;
+    }
+
 
     function getValidationErrors($data) {
                 

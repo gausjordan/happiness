@@ -133,19 +133,51 @@ class OrderGateway {
         return $data ?? null;
     }
 
-    public function updateSingleOrderMetadata($oldOrder) {
+    public function updateSingleOrderMetadata($oldOrder, $newData) {
         $id = $oldOrder[0]["id"];
-        $user_id = $oldOrder[0]["user_id"];
-        $dateOrdered = $oldOrder[0]["dateOrdered"];
-        $dateReceived  = $oldOrder[0]["dateReceived"];
         $is_shipped = $oldOrder[0]["is_shipped"];
         $is_paid = $oldOrder[0]["is_paid"];
         $is_returned = $oldOrder[0]["is_returned"];
         $is_refunded = $oldOrder[0]["is_refunded"];
         $is_archived = $oldOrder[0]["is_archived"];
+        $dateOrdered = $oldOrder[0]["dateOrdered"];
+        $dateReceived  = $oldOrder[0]["dateReceived"];
 
-        
-        
+        $sql = "UPDATE
+                    orders
+                SET
+                    dateOrdered = :dateOrdered,
+                    dateReceived = :dateReceived,
+                    is_shipped = :is_shipped,
+                    is_paid = :is_paid,
+                    is_returned = :is_returned,
+                    is_refunded = :is_refunded,
+                    is_archived = :is_archived
+                WHERE
+                    id = :id;";
+
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindValue(":id", $id, PDO::PARAM_INT);
+
+        // If there is a date key - to be updated to 'null'
+        if (array_key_exists("dateOrdered", $newData) && $newData["dateOrdered"] == null) {
+            $stmt->bindValue(":dateOrdered", null, PDO::NULL_NATURAL);
+        } else {
+            $stmt->bindValue(":dateOrdered", $newData["dateOrdered"] ?? $dateOrdered, PDO::PARAM_STR);
+        }
+        if (array_key_exists("dateReceived", $newData) && $newData["dateReceived"] == null) {
+            $stmt->bindValue(":dateReceived", null, PDO::NULL_NATURAL);
+        } else {
+            $stmt->bindValue(":dateReceived", $newData["dateReceived"] ?? $dateReceived, PDO::PARAM_STR);
+        }
+
+        $stmt->bindValue(":is_shipped", $newData["is_shipped"] ?? $is_shipped, PDO::PARAM_INT);
+        $stmt->bindValue(":is_paid", $newData["is_paid"] ?? $is_paid, PDO::PARAM_INT);
+        $stmt->bindValue(":is_returned", $newData["is_returned"] ?? $is_returned, PDO::PARAM_INT);
+        $stmt->bindValue(":is_refunded", $newData["is_refunded"] ?? $is_refunded, PDO::PARAM_INT);
+        $stmt->bindValue(":is_archived", $newData["is_archived"] ?? $is_archived, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->rowCount();
     }
 
 

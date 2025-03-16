@@ -51,7 +51,7 @@ function isTokenExpired(token) {
 }
 
 // Do an API call
-async function fetchData(fetchURL, method="GET") {
+async function fetchData(fetchURL, method="GET", body) {
 
     let response;
     let data;
@@ -61,7 +61,12 @@ async function fetchData(fetchURL, method="GET") {
         await getRefreshToken();
     }
 
-    try { response = await fetch(fetchURL, authRequestObject(method)); }
+    try { 
+        let authObject = authRequestObject(method);
+        let bodyString = { body: JSON.stringify(body) };
+        let bodyObject = body ? {...authObject, ...bodyString } : authObject;
+        response = await fetch(fetchURL, bodyObject);
+    }
     catch { console.log("Initial fetch failed."); }
 
     if (response.status == 204 || response.status == 201) {
@@ -76,7 +81,10 @@ async function fetchData(fetchURL, method="GET") {
         // This may happen if a token had just expired mid-transaction in the last second
         await getRefreshToken();
         
-        response = await fetch(fetchURL, authRequestObject(method));
+        let authObject = authRequestObject(method);
+        let bodyString = { body: JSON.stringify(body) };
+        let bodyObject = body ? {...authObject, ...bodyString } : authObject;
+        response = await fetch(fetchURL, bodyObject);
 
         if (response.status == 204 || response.status == 201) {
             data = null;

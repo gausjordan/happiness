@@ -28,6 +28,10 @@ if (typeof cart === "undefined") {
             
         }
 
+        async function getOrder() {
+            return order;
+        }
+
         async function getUserId() {
             let token = localStorage.getItem("access_token");
             if (token) {
@@ -122,7 +126,8 @@ if (typeof cart === "undefined") {
             buildCart,
             buildGrid,
             getUserId,
-            computeSum
+            computeSum,
+            getOrder
         };
 
     })();
@@ -155,7 +160,12 @@ if (typeof cart === "undefined") {
         
         let usersChoice = await openModal(text, buttons);
         if (usersChoice == "Da" || usersChoice == "Yes") {
+            let data = await cart.getOrder();
+            let orderId = data[0].order_id;
             
+            let dummyBody = { dateOrdered : "2222-12-11",  "dateReceived" : "2000-10-01" }
+
+            fetchData("/api/orders/" + orderId, "PATCH", dummyBody ).then(navigateTo("/home")); // TODO BROKEN
         } else {
             
         }
