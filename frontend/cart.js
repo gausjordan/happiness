@@ -137,7 +137,7 @@ if (typeof cart === "undefined") {
                         // fetchData("/api/orders/" + i.order_id + "?delete-item=" + i.product_id, "DELETE").then(navigateTo("/cart"));
                         
                         oldVal = newVal;
-
+                        console.log("Success.");
                         return [oldVal, newVal];
 
                     } catch {
