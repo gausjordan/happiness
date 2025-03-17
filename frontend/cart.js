@@ -125,12 +125,6 @@ if (typeof cart === "undefined") {
                     e.target.dataset.oldValue = process[0];
                 });
                 
-                productQuantity.addEventListener("keyup", function(event) {
-                    if (event.key === "Enter") {
-                        console.log("Enter");
-                    }
-                });
-
                 function changeValue(oldVal, newVal) {
                     try {
                         
