@@ -73,6 +73,7 @@ if (typeof cart === "undefined") {
                     productQuantity.setAttribute('max', 20);
                     productQuantity.setAttribute('id', 'product-quantity');
                     productQuantity.value = i.quantity;
+                    productQuantity.setAttribute('data-old-value', i.quantity);
                 let removeFromCart = document.createElement('img');
                     removeFromCart.setAttribute('src', 'frontend/graphics/delete-x.svg');
                 let quantityAlign = document.createElement('div');
@@ -111,15 +112,52 @@ if (typeof cart === "undefined") {
                         fetchData("/api/orders/" + i.order_id + "?delete-item=" + i.product_id, "DELETE").then(navigateTo("/cart"));
                     } catch {
                         console.log("Error deleting an order item.");
-                        navigateTo("/cart");
                     }
-
-                    
                 }, { once : true});
 
+                productQuantity.addEventListener("focus", (e) => {
+                    e.target.dataset.oldValue = i.quantity;
+                });
+
+                productQuantity.addEventListener("change", (e) => {
+                    let process = changeValue(parseInt(e.target.dataset.oldValue), e.target.value);
+                    e.target.value = process[1];
+                    e.target.dataset.oldValue = process[0];
+                });
+                
+                productQuantity.addEventListener("keyup", function(event) {
+                    if (event.key === "Enter") {
+                        console.log("Enter");
+                    }
+                });
+
+                function changeValue(oldVal, newVal) {
+                    try {
+                        
+                        if (Math.random() > 0.5) {
+                            console.log("OP! Fail");
+                            throw Error;
+                        }
+                        
+                        // let currentDate = new Date().toISOString().split('T')[0];
+                        // fetchData("/api/orders/" + i.order_id + "?delete-item=" + i.product_id, "DELETE").then(navigateTo("/cart"));
+                        
+                        oldVal = newVal;
+
+                        return [oldVal, newVal];
+
+                    } catch {
+                        newVal = oldVal;
+                        console.log("Error changing a quantity.");
+                        return [oldVal, newVal];
+                    }
+
+                }
+                
                 
             });
-            //console.log(grid);
+            
+
         }
 
         return {
@@ -165,12 +203,11 @@ if (typeof cart === "undefined") {
             
             let dummyBody = { dateOrdered : "2222-12-11",  "dateReceived" : "2000-10-01" }
 
-            fetchData("/api/orders/" + orderId, "PATCH", dummyBody ).then(navigateTo("/home")); // TODO BROKEN
+            fetchData("/api/orders/" + orderId, "PATCH", dummyBody ).then(navigateTo("/home"));
         } else {
-            
+
         }
     });
-
 
    
 }
