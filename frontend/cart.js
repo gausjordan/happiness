@@ -115,26 +115,22 @@ if (typeof cart === "undefined") {
                     }
                 }, { once : true});
 
-                productQuantity.addEventListener("focus", (e) => {
-                    e.target.dataset.oldValue = i.quantity;
-                });
-
                 productQuantity.addEventListener("change", (e) => {
-                    let process = changeValue(parseInt(e.target.dataset.oldValue), e.target.value);
+                    if (e.target.value >= 20) {
+                        e.target.value = 20;
+                    } else if (e.target.value < 1) {
+                        e.target.value = 1;
+                    }
+                    let process = changeValue(parseInt(e.target.dataset.oldValue), e.target.value, i.product_id);
                     e.target.value = process[1];
                     e.target.dataset.oldValue = process[0];
                 });
                 
-                function changeValue(oldVal, newVal) {
+                function changeValue(oldVal, newVal, productId) {
                     try {
-                        
-                        if (Math.random() > 0.5) {
-                            console.log("OP! Fail");
-                            throw Error;
-                        }
-                        
                         // let currentDate = new Date().toISOString().split('T')[0];
-                        // fetchData("/api/orders/" + i.order_id + "?delete-item=" + i.product_id, "DELETE").then(navigateTo("/cart"));
+
+                        fetchData("/api/orders/" + i.order_id + "?quantity=" + newVal + "&order_item_id=" + productId, "PATCH");
                         
                         oldVal = newVal;
                         console.log("Success.");

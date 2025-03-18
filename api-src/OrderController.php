@@ -125,19 +125,63 @@ class OrderController {
 
             case "PATCH":
 
-                // Fetch existing order data
-                $oldOrder = $this->gateway->getSingleOrderMetadata($id);
-                $input = (array) json_decode(file_get_contents("php://input"), true);
+                // Update a single item's quantity if it exist in the latest order (cart)
+                if (isset($urlQuery) && array_key_exists("quantity", $urlQuery) && array_key_exists("order_item_id", $urlQuery)) {
 
-                // Check for errors
-                if ($this->getUpdateValidationErrors($input, $oldOrder, $id) !== 0) {
+                    $order_item_id = $urlQuery["order_item_id"];
+                    $quantity = $urlQuery["quantity"];
+
+
+                    // Find out which user (by id) made the order that we want
+                    $ordersOwnerId = $this->gateway->getOrdersOwnerId($id);
+
+                    if (isset($ordersOwnerId) && $ordersOwnerId !== $this->user_id) {
+                        http_response_code(403);
+                        echo json_encode(["Message: " => "Only cart owners get to change their quantities."]);
+                        exit;
+                    }
+
+                    if ( $ordersOwnerId === null ) {
+                        http_response_code(404);
+                        echo json_encode(["Message: " => "Order id $id was not found."]);
+                        return null;
+                    }
+                    
+                    $current = $this->gateway->getSingleUnfinishedOrdersItem($id, $this->user_id, $order_item_id);
+
+                    if (!$current) {
+                        http_response_code(404);
+                        echo json_encode(["Message: " => "Item id $order_item_id is not in a cart id $id, or the cart is already ordered."]);
+                        exit;
+                    }
+                    
+                    $result = $this->gateway->updateItemQuantity($current, $quantity);
+
+                    if ($result > 0) {
+                        echo json_encode(["Message: " => "Quantity changed."]);
+                    } else {
+                        echo json_encode(["Message: " => "Quantity was not unchanged."]);
+                    }
                     exit;
+
                 }
 
-                if ($status = $this->gateway->updateSingleOrderMetadata($oldOrder, $input)) {
-                    echo json_encode(["Message: " => "Update successful. $status row affected."]);
-                } else {
-                    echo json_encode(["Message: " => "Nothing got updated."]);
+                if (!isset($urlQuery)) {
+                    // Updating a single order's metadata
+                    // Fetch existing order data
+                    $oldOrder = $this->gateway->getSingleOrderMetadata($id);
+                    $input = (array) json_decode(file_get_contents("php://input"), true);
+
+                    // Check for errors
+                    if ($this->getUpdateValidationErrors($input, $oldOrder, $id) !== 0) {
+                        exit;
+                    }
+
+                    if ($status = $this->gateway->updateSingleOrderMetadata($oldOrder, $input)) {
+                        echo json_encode(["Message: " => "Update successful. $status row affected."]);
+                    } else {
+                        echo json_encode(["Message: " => "Nothing got updated."]);
+                    }
                 }
                 
 

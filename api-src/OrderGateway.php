@@ -65,7 +65,38 @@ class OrderGateway {
     }
 
 
+    public function getSingleUnfinishedOrdersItem($order_id, $user_id, $order_item_id) {
+    
+        $sql = "
+                SELECT order_id, product_id, quantity, price_charged
+                FROM `orders`
+                INNER JOIN `user` ON `orders`.`user_id` = `user`.`id`
+                INNER JOIN `order_items` ON `orders`.`id` = `order_items`.`order_id`
+                WHERE order_id = :order_id
+                AND user_id = :user_id
+                AND product_id = :order_item_id
+                AND orders.`dateOrdered` IS NULL;
+            ";
+
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindValue(":order_id", $order_id, PDO::PARAM_INT);
+        $stmt->bindValue(":user_id", $user_id, PDO::PARAM_INT);
+        $stmt->bindValue(":order_item_id", $order_item_id, PDO::PARAM_INT);
+        $stmt->execute();
+
+        $data = [];
+
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $data[] = $row;
+        }
+
+        return $data;
+    }
+
+
     public function addItemToAnOrder($product_id, $user_id) {
+        
+        $this->conn->beginTransaction();
         
         $sql = "SELECT `product`.price FROM `product` WHERE `product`.id = :product_id;"; 
         $stmt = $this->conn->prepare($sql);
@@ -94,6 +125,42 @@ class OrderGateway {
         $stmt = $this->conn->prepare($sql);
         $stmt->bindValue(":product_id", $product_id, PDO::PARAM_INT);
         $stmt->execute();
+
+        $this->conn->commit();
+    }
+
+
+    public function updateItemQuantity($current, $quantity) {
+
+        $this->conn->beginTransaction();
+        
+            $sql = "SELECT `product`.price FROM `product` WHERE `product`.id = :product_id;"; 
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bindValue(":product_id", $current[0]["product_id"], PDO::PARAM_INT);
+            $stmt->execute();
+            $current_price = $stmt->fetchColumn();
+
+            if ($current_price == null) {
+                http_response_code(422);
+                exit;
+            }
+
+            $sql = "
+                UPDATE `order_items`
+                SET quantity = :quantity, price_charged = :subtotal_price
+                WHERE order_id = :order_id
+                AND product_id = :product_id;
+            ";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bindValue(":product_id", $current[0]["product_id"], PDO::PARAM_INT);
+            $stmt->bindValue(":order_id", $current[0]["order_id"], PDO::PARAM_INT);
+            $stmt->bindValue(":quantity", $quantity, PDO::PARAM_INT);
+            $stmt->bindValue(":subtotal_price", ($quantity * $current_price), PDO::PARAM_STR);
+            $stmt->execute();
+
+        $this->conn->commit();
+
+        return $stmt->rowCount();
     }
 
 
@@ -117,7 +184,7 @@ class OrderGateway {
             $data[] = $row;
         }
 
-        return $data;
+        return $data ?? null;
     }
 
     public function getSingleOrderMetadata($id) : array | null {
