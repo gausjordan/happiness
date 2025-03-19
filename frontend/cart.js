@@ -10,10 +10,7 @@ if (typeof cart === "undefined") {
         async function buildCart() {
             userId = await cart.getUserId();
             let fetchURL = `/api/orders/${userId}?unfinished=1`;
-            order = await fetchData(fetchURL);
-
-            try { order = await fetchData(fetchURL) }
-            catch (e) { console.log("Greska: " + e); return; }
+            order = await fetchOrder(fetchURL);
 
             if (order) {
                 // Build item list
@@ -26,6 +23,13 @@ if (typeof cart === "undefined") {
                 document.getElementById('empty-cart').style = "display: inline";
             }
             
+        }
+
+        async function fetchOrder(fetchURL) {
+            let order = await fetchData(fetchURL);
+            try { order = await fetchData(fetchURL) }
+            catch (e) { console.log("Greska: " + e); return; }
+            return order;
         }
 
         async function getOrder() {
@@ -52,6 +56,7 @@ if (typeof cart === "undefined") {
             order.forEach(i=> {
                 let productFrame = document.createElement('div');
                     productFrame.setAttribute('class', 'product-frame');
+                    productFrame.setAttribute('product-id', i.product_id);
                 let title = document.createElement('a');
                     title.innerHTML = localStorage.getItem("lang") == 'en' ? i.title : i.naslov;
                     title.setAttribute("href", "/product/" + i.product_id);
@@ -115,39 +120,40 @@ if (typeof cart === "undefined") {
                     }
                 }, { once : true});
 
-                productQuantity.addEventListener("change", (e) => {
+                productQuantity.addEventListener("change", async (e) => {
                     if (e.target.value >= 20) {
                         e.target.value = 20;
                     } else if (e.target.value < 1) {
                         e.target.value = 1;
                     }
-                    let process = changeValue(parseInt(e.target.dataset.oldValue), e.target.value, i.product_id);
-                    e.target.value = process[1];
-                    e.target.dataset.oldValue = process[0];
+                    try {
+                        let process = await changeValue(parseInt(e.target.dataset.oldValue), e.target.value, i.product_id);
+                        e.target.value = process[1];
+                        e.target.dataset.oldValue = process[0];
+                        // let product_id = e.target.parentElement.parentElement.parentElement.parentElement.attributes["product-id"].value;
+                        // console.log(order);
+                        let fetchURL = `/api/orders/${userId}?unfinished=1`;
+                        let newSum = await cart.fetchOrder(fetchURL).then(order => computeSum(order));
+                        document.getElementById('total-sum-number').innerHTML = newSum + " €";
+                        
+                    } catch {
+                        console.log("Error updating a quantity.");
+                    }
                 });
                 
-                function changeValue(oldVal, newVal, productId) {
+                async function changeValue(oldVal, newVal, productId) {
                     try {
-                        // let currentDate = new Date().toISOString().split('T')[0];
-
-                        fetchData("/api/orders/" + i.order_id + "?quantity=" + newVal + "&order_item_id=" + productId, "PATCH");
-                        
+                        await fetchData("/api/orders/" + i.order_id + "?quantity=" + newVal + "&order_item_id=" + productId, "PATCH");
                         oldVal = newVal;
                         console.log("Success.");
                         return [oldVal, newVal];
-
                     } catch {
                         newVal = oldVal;
                         console.log("Error changing a quantity.");
                         return [oldVal, newVal];
                     }
-
                 }
-                
-                
             });
-            
-
         }
 
         return {
@@ -155,7 +161,8 @@ if (typeof cart === "undefined") {
             buildGrid,
             getUserId,
             computeSum,
-            getOrder
+            getOrder,
+            fetchOrder
         };
 
     })();
@@ -191,9 +198,9 @@ if (typeof cart === "undefined") {
             let data = await cart.getOrder();
             let orderId = data[0].order_id;
             
-            let dummyBody = { dateOrdered : "2222-12-11",  "dateReceived" : "2000-10-01" }
+            let requestBody = { dateOrdered : new Date().toISOString().split('T')[0] }
 
-            fetchData("/api/orders/" + orderId, "PATCH", dummyBody ).then(navigateTo("/home"));
+            fetchData("/api/orders/" + orderId, "PATCH", requestBody).then(navigateTo("/home"));
         } else {
 
         }
