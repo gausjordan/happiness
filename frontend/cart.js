@@ -1,13 +1,19 @@
 'use strict';
 
+
 if (typeof cart === "undefined") {
 
+    
     const cart = (function () {
-
+        
         let userId;
         let order;
+        // let controller = new AbortController(); // AbortController instance
 
         async function buildCart() {
+            // controller.abort(); // Abort any previous fetch requests
+            // controller = new AbortController(); // Create a new controller for the new request
+
             userId = await cart.getUserId();
             let fetchURL = `/api/orders/${userId}?unfinished=1`;
             order = await fetchOrder(fetchURL);
@@ -19,10 +25,10 @@ if (typeof cart === "undefined") {
                 cart.computeSum(order).then(sum => document.getElementById('total-sum-number').innerHTML = sum + " €");
                 // Unhide the total price (it stays hidden if the cart is empty)
                 document.getElementById('total-price').classList.remove('hidden');
+                console.log(order);
             } else {
                 document.getElementById('empty-cart').style = "display: inline";
             }
-            
         }
 
         async function fetchOrder(fetchURL) {
@@ -167,7 +173,12 @@ if (typeof cart === "undefined") {
 
     })();
 
-    cart.buildCart();
+    
+    (async function () {
+        await cart.buildCart();
+        console.log("Gotovo!");
+    })();
+
 
     document.getElementById("order-button-text").addEventListener("click", (e) => {
 
@@ -205,6 +216,8 @@ if (typeof cart === "undefined") {
 
         }
     });
+
+    document.getElementById('app').addEventListener("load", () => alert("DONE"));
 
    
 }
