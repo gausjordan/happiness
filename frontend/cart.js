@@ -1,31 +1,25 @@
 'use strict';
 
-
 if (typeof cart === "undefined") {
 
-    
     const cart = (function () {
         
         let userId;
         let order;
-        // let controller = new AbortController(); // AbortController instance
 
         async function buildCart() {
-            // controller.abort(); // Abort any previous fetch requests
-            // controller = new AbortController(); // Create a new controller for the new request
-
+            
             userId = await cart.getUserId();
             let fetchURL = `/api/orders/${userId}?unfinished=1`;
             order = await fetchOrder(fetchURL);
 
             if (order) {
                 // Build item list
-                cart.buildGrid(order);
+                await cart.buildGrid(order);
                 // Calculate pricing total 
-                cart.computeSum(order).then(sum => document.getElementById('total-sum-number').innerHTML = sum + " €");
+                await cart.computeSum(order).then(sum => document.getElementById('total-sum-number').innerHTML = sum + " €");
                 // Unhide the total price (it stays hidden if the cart is empty)
                 document.getElementById('total-price').classList.remove('hidden');
-                console.log(order);
             } else {
                 document.getElementById('empty-cart').style = "display: inline";
             }
@@ -58,6 +52,10 @@ if (typeof cart === "undefined") {
         }
 
         async function buildGrid(order) {
+            
+            // Prevent showing duplicates if reloaded mid-loading
+            document.getElementById('cart-grid').innerHTML = "";
+
             let grid = document.getElementById('cart-grid');
             order.forEach(i=> {
                 let productFrame = document.createElement('div');
@@ -173,12 +171,7 @@ if (typeof cart === "undefined") {
 
     })();
 
-    
-    (async function () {
-        await cart.buildCart();
-        console.log("Gotovo!");
-    })();
-
+    cart.buildCart();
 
     document.getElementById("order-button-text").addEventListener("click", (e) => {
 
@@ -192,7 +185,12 @@ if (typeof cart === "undefined") {
         
         let usersChoice = await openModal(text, buttons);
         if (usersChoice == "Da" || usersChoice == "Yes") {
-            
+            try {
+                let userId = JSON.parse(atob(localStorage.getItem('access_token').split('.')[1])).sub;
+                fetchData("/api/orders/" + userId, "DELETE").then(navigateTo("/cart"));
+            } catch {
+                console.log("Error deleting a cart.");
+            }
         } else {
             
         }
@@ -216,8 +214,6 @@ if (typeof cart === "undefined") {
 
         }
     });
-
-    document.getElementById('app').addEventListener("load", () => alert("DONE"));
-
-   
 }
+
+

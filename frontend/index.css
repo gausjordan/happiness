@@ -46,6 +46,8 @@
   flex-grow: 1;
   flex-shrink: 0;
   justify-content: center;
+  cursor: pointer;
+  user-select: none;
 }
 
 .modal #modal-buttons div:last-of-type {

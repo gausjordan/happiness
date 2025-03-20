@@ -273,9 +273,11 @@ window.addEventListener("popstate", (event) => {
 
 // Inject, execute and remove scripts appended from the fetched HTML content
 function executeScripts(container) {
+
     const existingDynamicScripts = document.head.querySelectorAll('script[data-dynamic="true"]');
     existingDynamicScripts.forEach(script => script.remove());
     const scripts = container.querySelectorAll('script');
+    
     scripts.forEach(script => {
         const newScript = document.createElement('script');
         newScript.setAttribute('data-dynamic', 'true');
@@ -286,7 +288,12 @@ function executeScripts(container) {
 
             // Add an event listener to remove the script after it's loaded and executed
             newScript.onload = () => {
-                newScript.parentNode.removeChild(newScript);
+                try {
+                    newScript.parentNode.removeChild(newScript);
+                }
+                catch {
+                    // All good, this only happens if a user spam-clicks the cart button
+                }
             };
         } else {
             // If no src, just add the script content
