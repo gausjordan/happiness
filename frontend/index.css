@@ -74,6 +74,22 @@
 
 }
 
+
+#search-input-bar {
+  z-index: 1;
+  position: relative;
+  padding: 0.3em;
+  margin: 0;
+  align-items: center;
+}
+
+#search-input-bar input {
+  position: relative;
+  box-sizing: border-box;
+  width: 100%; 
+  height: 100%;
+}
+
 .disabled {
   pointer-events: none;
 }

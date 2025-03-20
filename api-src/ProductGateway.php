@@ -15,6 +15,7 @@ class ProductGateway {
         $products_and_categories = null;
         $products_and_tags = null;
         $limit = null;
+        $search = null;
 
         // Use PHP's variable variables to assign all of them
         if ($urlQuery) {
@@ -27,7 +28,7 @@ class ProductGateway {
         if ($count) { $limit = "0,1000"; }
 
         // Future SQL query may or may not need the WHERE clause (whether there is at least one variable present)
-        if ($products_and_categories || $products_and_tags || $hideHiddenProducts) {
+        if ($products_and_categories || $products_and_tags || $hideHiddenProducts || $search) {
             $injectWhere = "WHERE ";
         } else {
             $injectWhere = "";
@@ -36,6 +37,7 @@ class ProductGateway {
         // Also, literal "AND" keyword(s) may be required
         $injectAndNo1 = $products_and_categories ? " AND " : "";
         $injectAndNo2 = $products_and_tags || $products_and_categories ? " AND " : "";
+        $injectAndNo3 = $products_and_tags || $products_and_categories || $hideHiddenProducts ? " AND " : "";
 
         $sql = "SELECT " .
             ($count ? "COUNT(DISTINCT product.id) AS productCount " : 
@@ -65,12 +67,17 @@ class ProductGateway {
             ($products_and_categories ? "FIND_IN_SET(`products_and_categories`.category_id, :prod_n_categ) " : "") .
             ($products_and_tags ? $injectAndNo1 . "FIND_IN_SET(`products_and_tags`.`tag_id`, :prod_n_tags)" : "") .
             ($hideHiddenProducts ? $injectAndNo2 . "`is_visible` = 1" : "") .
+            ($search ? $injectAndNo3 . " title LIKE :search1 OR naslov LIKE :search2 " : "") .
             ($count ? "" : " GROUP BY product.id, product.title ") .
             ($limit ? " LIMIT :limit_from,:limit_size;" : " LIMIT 0, 200;");
+
+            //echo $sql;
 
             $statement = $this->conn->prepare($sql);
             $products_and_categories ? $statement->bindValue(":prod_n_categ", $products_and_categories, PDO::PARAM_STR) : "";
             $products_and_tags ? $statement->bindValue(":prod_n_tags", $products_and_tags, PDO::PARAM_STR) : "";
+            $search ? $statement->bindValue(":search1", "%" . $search . "%", PDO::PARAM_STR) : "";
+            $search ? $statement->bindValue(":search2", "%" . $search . "%", PDO::PARAM_STR) : "";
             $limit ? $statement->bindValue(":limit_from", $limit[0], PDO::PARAM_INT) : "";
             $limit ? $statement->bindValue(":limit_size", $limit[2], PDO::PARAM_INT) : "";
             $statement->execute();

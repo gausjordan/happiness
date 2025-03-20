@@ -13,7 +13,8 @@ if (typeof cart === "undefined") {
             let fetchURL = `/api/orders/${userId}?unfinished=1`;
             order = await fetchOrder(fetchURL);
 
-            if (order) {
+            // quantity is null means user had manually deleted the last item in a cart
+            if (order && order[0]["quantity"] !== null) {
                 // Build item list
                 await cart.buildGrid(order);
                 // Calculate pricing total 
