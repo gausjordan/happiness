@@ -76,18 +76,66 @@
 
 
 #search-input-bar {
+  box-sizing: border-box;
   z-index: 1;
-  position: relative;
+  position: absolute;
+  height: 100%;
+  animation: fold-out linear 0.3s;
+  animation-fill-mode: forwards;
   padding: 0.3em;
   margin: 0;
+  left: 3em;
   align-items: center;
+}
+@keyframes fold-out {
+  from {
+    width: calc(0em);
+  }
+  to {
+    width: calc(100% - 7em);
+  }
 }
 
 #search-input-bar input {
   position: relative;
+  font-size: 1.1em;
   box-sizing: border-box;
-  width: 100%; 
   height: 100%;
+  animation: fold-out-input linear 0.3s;
+  animation-fill-mode: forwards;
+}
+@keyframes fold-out-input {
+  from {
+    width: calc(100%);
+    padding-right: 0em;
+    padding-left: 0em;
+  }
+  to {
+    width: calc(100% - 1em);
+    padding-right: 1.5em;
+    padding-left: 0.5em;
+  }
+}
+
+#search-input-bar p {
+  position: absolute;
+  z-index: 2;
+  right: 2.5em;
+  top: 0.35em;
+  font-size: 0.75em;
+  animation: fold-out-x-cancel linear 0.3s;
+  animation-fill-mode: forwards;
+}
+@keyframes fold-out-x-cancel {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
 .disabled {
@@ -117,6 +165,7 @@ main#app {
 
 .hidden {
   display: none;
+  background-color: yellow;
 }
 
 /* Alt-text for images, transparent */

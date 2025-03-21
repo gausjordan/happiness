@@ -360,6 +360,22 @@ document.addEventListener("touchstart", (event) => {
     }
 });
 
+// Search sub-menu input toggle
+document.querySelector('header div.block.left *').addEventListener("click", (e) => {
+    e.preventDefault();
+    // let g = e.target.parentNode.parentNode.setAttribute("hidden", "");
+    let searchBar = document.getElementById('search-input-bar');
+    if (searchBar.getAttribute("hidden") !== null) {
+        Array.from(searchBar.children).forEach(c => c.removeAttribute("hidden", ""));
+        searchBar.removeAttribute("hidden", "");
+        searchBar.querySelector('input').focus();
+    } else {
+        searchBar.setAttribute("hidden", "");
+        Array.from(searchBar.children).forEach(c => c.setAttribute("hidden", ""));
+    }
+});
+
+
 // Hide/show main menu items depending on the role by setting boolean attributes
 function adminMenuOptions() {
     let token = localStorage.getItem("access_token");

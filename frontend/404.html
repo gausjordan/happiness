@@ -2,17 +2,22 @@
 
 <script>
     if (localStorage.getItem("lang") === 'en') {
-        document.title = "Page not found.";
-        document.querySelector("h1").textContent = "404";
-        document.querySelector("p").textContent = "Page not found.";
+        document.title = "Page not found";
+        document.querySelector("#app h1").textContent = "404";
+        document.querySelector("#app p").textContent = "Page not found.";
+    }
+    if (localStorage.getItem("lang") === 'hr') {
+        document.title = "Stranica nije pronađena";
+        document.querySelector("#app h1").textContent = "404";
+        document.querySelector("#app p").textContent = "Stranica nije pronađena.";
     }
 </script>
 
 <head>
-    <title>Stranica nije pronađena.</title>
+    <title></title>
 </head>
 
 <body>
-    <h1>404</h1>
-    <p>Stranica nije pronađena.</p>
+    <h1></h1>
+    <p></p>
 </body>
