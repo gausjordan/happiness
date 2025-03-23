@@ -80,9 +80,9 @@
   z-index: 1;
   position: absolute;
   height: 100%;
-  animation: fold-out linear 0.3s;
+  animation: fold-out linear 0.2s;
   animation-fill-mode: forwards;
-  padding: 0.3em;
+  padding: 0.5em;
   margin: 0;
   left: 3em;
   align-items: center;
@@ -98,10 +98,10 @@
 
 #search-input-bar input {
   position: relative;
-  font-size: 1.1em;
+  font-size: 1em;
   box-sizing: border-box;
   height: 100%;
-  animation: fold-out-input linear 0.3s;
+  animation: fold-out-input linear 0.2s;
   animation-fill-mode: forwards;
 }
 @keyframes fold-out-input {
@@ -112,7 +112,7 @@
   }
   to {
     width: calc(100% - 1em);
-    padding-right: 1.5em;
+    padding-right: 1.75em;
     padding-left: 0.5em;
   }
 }
@@ -123,7 +123,7 @@
   right: 2.5em;
   top: 0.35em;
   font-size: 0.75em;
-  animation: fold-out-x-cancel linear 0.3s;
+  animation: fold-out-x-cancel linear 0.2s;
   animation-fill-mode: forwards;
 }
 @keyframes fold-out-x-cancel {

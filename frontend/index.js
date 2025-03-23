@@ -360,19 +360,79 @@ document.addEventListener("touchstart", (event) => {
     }
 });
 
-// Search sub-menu input toggle
+// Search option sub-menu input toggle
 document.querySelector('header div.block.left *').addEventListener("click", (e) => {
     e.preventDefault();
-    // let g = e.target.parentNode.parentNode.setAttribute("hidden", "");
+    e.stopPropagation();
+
     let searchBar = document.getElementById('search-input-bar');
+    let searchIcon = document.querySelector('div.block.left a img');
+
     if (searchBar.getAttribute("hidden") !== null) {
-        Array.from(searchBar.children).forEach(c => c.removeAttribute("hidden", ""));
-        searchBar.removeAttribute("hidden", "");
-        searchBar.querySelector('input').focus();
+        openSearchBar(searchBar, searchIcon);
+        document.body.addEventListener("click", (e) => {
+            if (!(searchBar.contains(e.target) || searchIcon.contains(e.target))) {
+                closeSearchBar(searchBar);
+                e.stopPropagation();
+                e.preventDefault();
+            }
+        }, { capture: true, once: true })
+
     } else {
-        searchBar.setAttribute("hidden", "");
-        Array.from(searchBar.children).forEach(c => c.setAttribute("hidden", ""));
+        closeSearchBar(searchBar);
     }
+}, true);
+
+// This executes when the search icon is clicked. Opens up a user input field and sets some listeners
+async function openSearchBar(searchBar, searchIcon) {
+    // This will hide the search bar, the "erase search string" button and their common wrapper
+    Array.from(searchBar.children).forEach(c => c.removeAttribute("hidden", ""));
+    searchBar.removeAttribute("hidden", "");
+    let input = searchBar.querySelector('input');
+    input.focus();
+
+    const waitInterval = 2000;
+    let waiting = false;    // No search requests can be made while we're waiting
+    let locked = false;     // Prevents creating more than one additional request per interval
+    let somethingWasLeftOut = false;
+
+    // Limits the number of search requests to one every "waitInterval" milliseconds as the user types.
+    // Last 'n' search string changes may be lost, since the event listener only fires on value change.
+    // If changes were made while 'waiting' was true, 'somethingWasLeftOut' flag gets raised.
+    input.addEventListener("input", (e) => {
+        if (input.value.length > 3) {
+            if (waiting === false) {
+                waiting = true;
+                locked = false;
+                setTimeout(() => { waiting = false }, waitInterval);
+                sendSearchRequest(input);
+            } else if (waiting === true) {
+                if (somethingWasLeftOut && !locked) {
+                    locked = true;
+                    setTimeout(() => { sendSearchRequest(input) }, waitInterval);
+                }
+                somethingWasLeftOut = true;
+            }
+        }
+    });
+}
+
+async function sendSearchRequest(input) {
+    console.log( await fetchData("/api/products?search=" + encodeURIComponent(input.value), "GET") );
+}
+
+
+function closeSearchBar(searchBar) {
+    Array.from(searchBar.children).forEach(c => c.setAttribute("hidden", ""));
+    searchBar.setAttribute("hidden", "");
+}
+
+
+
+document.getElementById("search-cancel-x").addEventListener("click", (e) => {
+    let searchBar = document.getElementById('search-input-bar');
+    searchBar.children[0].value = "";
+    searchBar.querySelector('input').focus();
 });
 
 
