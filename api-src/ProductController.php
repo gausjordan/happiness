@@ -46,7 +46,7 @@ class ProductController {
 
             // Admins and employees can edit
             case "PATCH":
-                if ($this->user_role === "admin" || $this->user_role === "employee") {
+                if (!($this->user_role === "admin" || $this->user_role === "employee")) {
                     http_response_code(401);
                     echo json_encode(["message: " => "Administrative account required."]);
                     break;
@@ -115,9 +115,11 @@ class ProductController {
                         // Get all the required data (obeying given limits)
                         "products" => $this->gateway->getAll($this->user_id, false, $urlQuery),
                         // Count how many items meet the given conditions had there been no limit set
+
                         "metadata" => $this->gateway->getAll($this->user_id, false, $urlQuery, true),
                         "tags" => $this->gateway->getTags(),
                         "categories" => $this->gateway->getCategories()
+                        
                     ]);
                     break;
                 } else {

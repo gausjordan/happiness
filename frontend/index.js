@@ -400,7 +400,7 @@ async function openSearchBar(searchBar, searchIcon) {
     // Last 'n' search string changes may be lost, since the event listener only fires on value change.
     // If changes were made while 'waiting' was true, 'somethingWasLeftOut' flag gets raised.
     input.addEventListener("input", (e) => {
-        if (input.value.length > 3) {
+        if (input.value.length > 0) {
             if (waiting === false) {
                 waiting = true;
                 locked = false;
@@ -410,6 +410,7 @@ async function openSearchBar(searchBar, searchIcon) {
                 if (somethingWasLeftOut && !locked) {
                     locked = true;
                     setTimeout(() => { sendSearchRequest(input) }, waitInterval);
+                    somethingWasLeftOut = false;
                 }
                 somethingWasLeftOut = true;
             }
@@ -418,7 +419,18 @@ async function openSearchBar(searchBar, searchIcon) {
 }
 
 async function sendSearchRequest(input) {
-    console.log( await fetchData("/api/products?search=" + encodeURIComponent(input.value), "GET") );
+    let result = await fetchData("/api/products?search=" + encodeURIComponent(input.value) + "&lang=" + localStorage.getItem('lang'), "GET");
+    let display = document.getElementById('search-results');
+    display.innerHTML = "";
+
+    if (result.products.length > 0) {
+        result.products.forEach(r => {
+            let link = document.createElement("a");
+            localStorage.lang == 'hr' ? link.innerText = r.naslov : link.innerText = r.title;
+            display.appendChild(link);
+        });
+    }
+    
 }
 
 

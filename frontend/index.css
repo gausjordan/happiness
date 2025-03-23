@@ -138,6 +138,24 @@
   }
 }
 
+#search-results {
+  box-sizing: border-box;
+  font-size: 1em;
+  color: black;
+  -display: flex;
+  position: relative;
+  background-color: white;
+  -margin: 0.5em -0.5em 0.5em 0.5em;
+  width: calc(100% - 1em);
+}
+
+#search-results a {
+  display: block;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
 .disabled {
   pointer-events: none;
 }

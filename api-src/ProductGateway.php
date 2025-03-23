@@ -16,12 +16,23 @@ class ProductGateway {
         $products_and_tags = null;
         $limit = null;
         $search = null;
+        $order = null;
+        $direction = null;
+        $lang = 'en';
 
         // Use PHP's variable variables to assign all of them
         if ($urlQuery) {
             foreach ($urlQuery as $key => $value) {
                 $$key = $value;
             }
+        }
+
+        // Quick & dirty sanitization
+        if ($order && !in_array($order, ["title", "naslov", "description", "opis", "dateAdded", "price"])) {
+            exit;
+        }
+        if ($direction && !in_array($direction, ["asc", "desc"])) {
+            exit;
         }
 
         // In counting mode, ignore the limit
@@ -51,7 +62,8 @@ class ProductGateway {
                 GROUP_CONCAT(DISTINCT product_images.url ORDER BY product_images.id SEPARATOR ', ') as url,
                 product.price,
                 product.is_available,
-                product.is_visible ") . 
+                product.is_visible,
+                dateAdded ") . 
             "FROM `product`
             LEFT JOIN `products_and_categories`
             ON `product`.`id` = `products_and_categories`.`product_id`
@@ -67,17 +79,29 @@ class ProductGateway {
             ($products_and_categories ? "FIND_IN_SET(`products_and_categories`.category_id, :prod_n_categ) " : "") .
             ($products_and_tags ? $injectAndNo1 . "FIND_IN_SET(`products_and_tags`.`tag_id`, :prod_n_tags)" : "") .
             ($hideHiddenProducts ? $injectAndNo2 . "`is_visible` = 1" : "") .
-            ($search ? $injectAndNo3 . " title LIKE :search1 OR naslov LIKE :search2 " : "") .
+            (
+                $search ? $injectAndNo3 . " " . ($lang == 'en' ? "title" : "naslov") . " " . "LIKE :search1 OR " . ($lang == 'en' ? "description" : "opis") . " LIKE :search2 "
+                : ""
+            ) .
+
             ($count ? "" : " GROUP BY product.id, product.title ") .
+            
+            (($order && !$search) ? " ORDER BY " . $order . " " : "" ) . (($order && $direction && !$search)  ? $direction . " " : "") .
+
+            ($search ? "ORDER BY CASE WHEN " . ($lang == 'en' ? "title" : "naslov") . " LIKE :search3 THEN 1 ELSE 2 END, " . ($lang == 'en' ? "title" : "naslov") . " " : "") . 
+                
             ($limit ? " LIMIT :limit_from,:limit_size;" : " LIMIT 0, 200;");
 
-            //echo $sql;
+            // echo $sql;
 
             $statement = $this->conn->prepare($sql);
             $products_and_categories ? $statement->bindValue(":prod_n_categ", $products_and_categories, PDO::PARAM_STR) : "";
             $products_and_tags ? $statement->bindValue(":prod_n_tags", $products_and_tags, PDO::PARAM_STR) : "";
+            
             $search ? $statement->bindValue(":search1", "%" . $search . "%", PDO::PARAM_STR) : "";
             $search ? $statement->bindValue(":search2", "%" . $search . "%", PDO::PARAM_STR) : "";
+            $search ? $statement->bindValue(":search3", "%" . $search . "%", PDO::PARAM_STR) : "";
+                       
             $limit ? $statement->bindValue(":limit_from", $limit[0], PDO::PARAM_INT) : "";
             $limit ? $statement->bindValue(":limit_size", $limit[2], PDO::PARAM_INT) : "";
             $statement->execute();
@@ -120,8 +144,8 @@ class ProductGateway {
         $this->conn->beginTransaction();
 
         $sql = "
-            INSERT INTO product (title, naslov, description, opis, price, is_available, is_visible)
-            VALUES (:title, :naslov, :description, :opis, :price, :is_available, :is_visible);
+            INSERT INTO product (title, naslov, description, opis, price, is_available, is_visible, dateAdded)
+            VALUES (:title, :naslov, :description, :opis, :price, :is_available, :is_visible, :date_added);
         ";
 
         $statement = $this->conn->prepare($sql);
@@ -132,6 +156,7 @@ class ProductGateway {
         $statement->bindValue(":price", $data["price"] ?? 0, PDO::PARAM_STR);
         $statement->bindValue(":is_available", (bool) ($data["is_available"] ?? false), PDO::PARAM_BOOL);
         $statement->bindValue(":is_visible", (bool) ($data["is_visible"] ?? false), PDO::PARAM_BOOL);
+        $statement->bindValue(":date_added", ($data["dateAdded"] ?? null), PDO::PARAM_STR);
         $statement->execute();
 
         $createdId = $this->conn->lastInsertId();
@@ -219,7 +244,8 @@ class ProductGateway {
                 GROUP_CONCAT(DISTINCT product_images.url ORDER BY product_images.id SEPARATOR ', ') as url,
                 product.price,
                 product.is_available,
-                product.is_visible
+                product.is_visible,
+                dateAdded
             FROM `product`
             LEFT JOIN `products_and_categories`
             ON `product`.`id` = `products_and_categories`.`product_id`
@@ -264,7 +290,8 @@ class ProductGateway {
                     opis = :opis,
                     price = :price,
                     is_available = :is_available,
-                    is_visible = :is_visible
+                    is_visible = :is_visible,
+                    dateAdded = :date_added
             WHERE product.id = :id;
         ";
         $statement = $this->conn->prepare($sql);
@@ -276,6 +303,7 @@ class ProductGateway {
         $statement->bindValue(":price", $new["price"] ?? $old["price"], PDO::PARAM_STR);
         $statement->bindValue(":is_available", $new["is_available"] ?? $old["is_available"], PDO::PARAM_BOOL);
         $statement->bindValue(":is_visible", $new["is_visible"] ?? $old["is_visible"], PDO::PARAM_BOOL);
+        $statement->bindValue(":date_added", ($new["dateAdded"] ?? $old["dateAdded"]), PDO::PARAM_STR);
         $statement->execute();
         $productsRowCount = $statement->rowCount();
         
