@@ -372,6 +372,7 @@ document.querySelector('header div.block.left *').addEventListener("click", (e) 
         openSearchBar(searchBar, searchIcon);
         document.body.addEventListener("click", clickAnywhereToCloseSearchBar, { capture: true });
     } else {
+        console.log("Removing listener...");
         document.body.removeEventListener("click", clickAnywhereToCloseSearchBar, { capture: true });
         closeSearchBar(searchBar);
     }
@@ -379,6 +380,7 @@ document.querySelector('header div.block.left *').addEventListener("click", (e) 
     function clickAnywhereToCloseSearchBar (e) {
         if (!(searchBar.contains(e.target) || searchIcon.contains(e.target))) {
             closeSearchBar(searchBar);
+            document.body.removeEventListener("click", clickAnywhereToCloseSearchBar, { capture: true });
             e.stopPropagation();
             e.preventDefault();
         }
@@ -427,6 +429,11 @@ async function openSearchBar(searchBar, searchIcon) {
     });
 }
 
+function closeSearchBar(searchBar) {
+    Array.from(searchBar.children).forEach(c => c.setAttribute("hidden", ""));
+    searchBar.setAttribute("hidden", "");
+}
+
 async function sendSearchRequest(input) {
     let result = await fetchData("/api/products?search=" + encodeURIComponent(input.value) + "&lang=" + localStorage.getItem('lang'), "GET");
     let display = document.getElementById('search-results');
@@ -446,13 +453,6 @@ async function sendSearchRequest(input) {
     }
     
 }
-
-
-function closeSearchBar(searchBar) {
-    Array.from(searchBar.children).forEach(c => c.setAttribute("hidden", ""));
-    searchBar.setAttribute("hidden", "");
-}
-
 
 
 document.getElementById("search-cancel-x").addEventListener("click", (e) => {
