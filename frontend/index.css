@@ -146,7 +146,8 @@
   position: relative;
   background-color: white;
   -margin: 0.5em -0.5em 0.5em 0.5em;
-  width: calc(100% - 1em);
+  width: calc(100% + 2em);
+  padding: 0.5em;
 }
 
 #search-results a {

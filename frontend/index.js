@@ -360,7 +360,7 @@ document.addEventListener("touchstart", (event) => {
     }
 });
 
-// Search option sub-menu input toggle
+// Searching feature input toggle
 document.querySelector('header div.block.left *').addEventListener("click", (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -370,23 +370,29 @@ document.querySelector('header div.block.left *').addEventListener("click", (e) 
 
     if (searchBar.getAttribute("hidden") !== null) {
         openSearchBar(searchBar, searchIcon);
-        document.body.addEventListener("click", (e) => {
-            if (!(searchBar.contains(e.target) || searchIcon.contains(e.target))) {
-                closeSearchBar(searchBar);
-                e.stopPropagation();
-                e.preventDefault();
-            }
-        }, { capture: true, once: true })
-
+        document.body.addEventListener("click", clickAnywhereToCloseSearchBar, { capture: true });
     } else {
+        document.body.removeEventListener("click", clickAnywhereToCloseSearchBar, { capture: true });
         closeSearchBar(searchBar);
+    }
+
+    function clickAnywhereToCloseSearchBar (e) {
+        if (!(searchBar.contains(e.target) || searchIcon.contains(e.target))) {
+            closeSearchBar(searchBar);
+            e.stopPropagation();
+            e.preventDefault();
+        }
     }
 }, true);
 
 // This executes when the search icon is clicked. Opens up a user input field and sets some listeners
 async function openSearchBar(searchBar, searchIcon) {
-    // This will hide the search bar, the "erase search string" button and their common wrapper
-    Array.from(searchBar.children).forEach(c => c.removeAttribute("hidden", ""));
+    // This will (un)hide the search bar, the "erase search string" button and their common wrapper
+    Array.from(searchBar.children).forEach(c => {
+        if (c.id !== 'search-results') {
+            c.removeAttribute("hidden", "");
+        }
+    });
     searchBar.removeAttribute("hidden", "");
     let input = searchBar.querySelector('input');
     input.focus();
@@ -400,7 +406,7 @@ async function openSearchBar(searchBar, searchIcon) {
     // Last 'n' search string changes may be lost, since the event listener only fires on value change.
     // If changes were made while 'waiting' was true, 'somethingWasLeftOut' flag gets raised.
     input.addEventListener("input", (e) => {
-        if (input.value.length > 0) {
+        if (input.value.length > 1) {
             if (waiting === false) {
                 waiting = true;
                 locked = false;
@@ -415,6 +421,9 @@ async function openSearchBar(searchBar, searchIcon) {
                 somethingWasLeftOut = true;
             }
         }
+        else {
+            document.getElementById('search-results').setAttribute("hidden", "");
+        }
     });
 }
 
@@ -422,13 +431,18 @@ async function sendSearchRequest(input) {
     let result = await fetchData("/api/products?search=" + encodeURIComponent(input.value) + "&lang=" + localStorage.getItem('lang'), "GET");
     let display = document.getElementById('search-results');
     display.innerHTML = "";
-
+    
     if (result.products.length > 0) {
         result.products.forEach(r => {
             let link = document.createElement("a");
+            link.href = "product/" + r.id;
             localStorage.lang == 'hr' ? link.innerText = r.naslov : link.innerText = r.title;
             display.appendChild(link);
+            display.removeAttribute("hidden");
         });
+    }
+    else {
+        display.setAttribute("hidden", "");
     }
     
 }
@@ -444,6 +458,8 @@ function closeSearchBar(searchBar) {
 document.getElementById("search-cancel-x").addEventListener("click", (e) => {
     let searchBar = document.getElementById('search-input-bar');
     searchBar.children[0].value = "";
+    document.getElementById('search-results').setAttribute("hidden", "");
+    document.getElementById('search-results').innerHTML = "";
     searchBar.querySelector('input').focus();
 });
 
