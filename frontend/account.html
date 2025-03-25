@@ -1,8 +1,27 @@
-<script>
-    if (localStorage.getItem("lang") == 'en') {
+    <script>
+        if (localStorage.getItem("lang") == 'en') {
+            document.querySelector("div#user-details h1").innerHTML = "User settings";
+            document.querySelector("div#user-details button").innerHTML = "Logout";
+            document.querySelector("div#register-form h1").innerHTML = "Sign up";
+            document.querySelector("div#new-user p").innerHTML = `New user? Register <a href="/register" id="link-to-registration">here</a>.`;
+            document.getElementById('title').innerHTML = "Login";
+            document.querySelector("#username-div label").innerHTML = `Username`;
+            document.querySelector("#password-div label").innerHTML = `Password`;
+            document.querySelector("#login-form input[type=submit]").value = `Login`;
+        }
 
-    }
-</script>
+        if (typeof link != null) {
+            let link = document.querySelector("div#new-user p a");
+        
+            link.addEventListener("click", (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                navigateTo("/register");
+            });
+        
+        }
+
+    </script>
 
 <head>
     <link rel="stylesheet" href="/frontend/account.css" rel="preload" as="style"></link>
@@ -25,18 +44,19 @@
             <input type="submit" value="Prijava" onclick="login(event)">
         </form>
         <div id="brza-prijava">
-            <button id="user" onclick="document.getElementById('username').value = 'user'; document.getElementById('password').value = 'user'">User</button>
-            <button id="employee" onclick="document.getElementById('username').value = 'employee'; document.getElementById('password').value = 'employee'">Employee</button>
-            <button id="admin" onclick="document.getElementById('username').value = 'admin'; document.getElementById('password').value = 'admin'">Admin</button>
+            <button id="user" onclick="document.getElementById('username').value = 'user'; document.getElementById('password').value = 'user'">user 'user'</button>
+            <button id="user" onclick="document.getElementById('username').value = 'bozo'; document.getElementById('password').value = 'bozo'">user 'bozo'</button>
+            <button id="employee" onclick="document.getElementById('username').value = 'employee'; document.getElementById('password').value = 'employee'">employee</button>
+            <button id="admin" onclick="document.getElementById('username').value = 'admin'; document.getElementById('password').value = 'admin'">admin</button>
         </div>
-        <div id="novi-korisnik">
-            <p>Ukoliko još nemate korisnički račun, izradite ga <a href="#">ovdje</a>.</p>
+        <div id="new-user">
+            <p>Ukoliko još nemate korisnički račun, izradite ga <a href="/register" id="link-to-registration">ovdje</a>.</p>
         </div>
     </div>
 
     <div id="user-details" style="display: none">
         <h1>Korisničke postavke</h1>
-        <button type="button" onclick="logout()">Logout</button>
+        <button type="button" onclick="logout()">Odjava</button>
     </div>
 
     <div id="register-form" style="display: none">
@@ -44,4 +64,5 @@
     </div>
 
 
-
+</body>
+    

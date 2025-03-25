@@ -195,6 +195,7 @@ const routes = {
     "/product": '/frontend/product.html',
     "/products-admin": '/frontend/products-admin.html',
     "/account": '/frontend/account.html',
+    "/register": '/frontend/register.html',
     "/404": '/frontend/404.html'
 };
 
@@ -435,7 +436,7 @@ function closeSearchBar(searchBar) {
 }
 
 async function sendSearchRequest(input) {
-    let result = await fetchData("/api/products?search=" + encodeURIComponent(input.value) + "&lang=" + localStorage.getItem('lang'), "GET");
+    let result = await fetchData("/api/products?search=" + encodeURIComponent(input.value) + "&lang=" + localStorage.getItem('lang') + "&limit=0,15", "GET");
     let display = document.getElementById('search-results');
     display.innerHTML = "";
     

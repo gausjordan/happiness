@@ -114,6 +114,7 @@ class ProductController {
                     echo json_encode([
                         // Get all the required data (obeying given limits)
                         "products" => $this->gateway->getAll($this->user_id, false, $urlQuery),
+                        
                         // Count how many items meet the given conditions had there been no limit set
 
                         "metadata" => $this->gateway->getAll($this->user_id, false, $urlQuery, true),

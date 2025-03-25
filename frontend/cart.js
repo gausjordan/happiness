@@ -174,11 +174,7 @@ if (typeof cart === "undefined") {
 
     cart.buildCart();
 
-    document.getElementById("order-button-text").addEventListener("click", (e) => {
-
-    });
-
-    document.getElementById("empty-cart-button-text").addEventListener("click", async () => {
+    const emptyCartFunction = async () => {
         let buttons = document.documentElement.lang == "en" ? ["No", "Yes"] : ["Ne", "Da"];
         let text = document.documentElement.lang == "en" ?
                     "Empty this cart and cancel your order?" :
@@ -195,7 +191,11 @@ if (typeof cart === "undefined") {
         } else {
             
         }
-    });
+    }
+
+    if (localStorage.getItem('access_token')) {
+        document.getElementById("empty-cart-button-text").addEventListener("click", emptyCartFunction);
+    }
     
     document.getElementById("order-button-text").addEventListener("click", async () => {
         let buttons = document.documentElement.lang == "en" ? ["No", "Yes"] : ["Ne", "Da"];

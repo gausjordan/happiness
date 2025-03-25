@@ -36,7 +36,7 @@ class ProductGateway {
         }
 
         // In counting mode, ignore the limit
-        if ($count) { $limit = "0,1000"; }
+        if ($count) { $limit = "0,5000"; }
 
         // Future SQL query may or may not need the WHERE clause (whether there is at least one variable present)
         if ($products_and_categories || $products_and_tags || $hideHiddenProducts || $search) {
@@ -92,7 +92,11 @@ class ProductGateway {
                 
             ($limit ? " LIMIT :limit_from,:limit_size;" : " LIMIT 0, 200;");
 
-            // echo $sql;
+            //echo $sql;
+
+            if ($limit) {
+                $limit = explode(",", $limit);
+            }
 
             $statement = $this->conn->prepare($sql);
             $products_and_categories ? $statement->bindValue(":prod_n_categ", $products_and_categories, PDO::PARAM_STR) : "";
@@ -103,7 +107,7 @@ class ProductGateway {
             $search ? $statement->bindValue(":search3", "%" . $search . "%", PDO::PARAM_STR) : "";
                        
             $limit ? $statement->bindValue(":limit_from", $limit[0], PDO::PARAM_INT) : "";
-            $limit ? $statement->bindValue(":limit_size", $limit[2], PDO::PARAM_INT) : "";
+            $limit ? $statement->bindValue(":limit_size", $limit[1], PDO::PARAM_INT) : "";
             $statement->execute();
 
             if ($count) {
