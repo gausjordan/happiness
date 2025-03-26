@@ -365,16 +365,16 @@ document.addEventListener("touchstart", (event) => {
 document.querySelector('header div.block.left *').addEventListener("click", (e) => {
     e.preventDefault();
     e.stopPropagation();
-
     let searchBar = document.getElementById('search-input-bar');
     let searchIcon = document.querySelector('div.block.left a img');
 
     if (searchBar.getAttribute("hidden") !== null) {
         openSearchBar(searchBar, searchIcon);
         document.body.addEventListener("click", clickAnywhereToCloseSearchBar, { capture: true });
+        document.body.addEventListener("keydown", pressEscapeToCloseSearchBar, { capture: true });
     } else {
-        console.log("Removing listener...");
         document.body.removeEventListener("click", clickAnywhereToCloseSearchBar, { capture: true });
+        document.body.removeEventListener("keydown", pressEscapeToCloseSearchBar, { capture: true });
         closeSearchBar(searchBar);
     }
 
@@ -382,10 +382,20 @@ document.querySelector('header div.block.left *').addEventListener("click", (e) 
         if (!(searchBar.contains(e.target) || searchIcon.contains(e.target))) {
             closeSearchBar(searchBar);
             document.body.removeEventListener("click", clickAnywhereToCloseSearchBar, { capture: true });
+            document.body.removeEventListener("keydown", pressEscapeToCloseSearchBar, { capture: true });
             e.stopPropagation();
             e.preventDefault();
         }
     }
+
+    function pressEscapeToCloseSearchBar (e) {
+        if (e.key === "Escape") {
+            closeSearchBar(searchBar);
+            document.body.removeEventListener("click", clickAnywhereToCloseSearchBar, { capture: true });
+            document.body.removeEventListener("keydown", pressEscapeToCloseSearchBar, { capture: true });
+        }
+    }
+
 }, true);
 
 // This executes when the search icon is clicked. Opens up a user input field and sets some listeners
