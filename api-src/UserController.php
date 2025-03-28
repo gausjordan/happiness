@@ -16,7 +16,7 @@ class UserController {
 
     public function processRequest(string $method, ?string $id, ?array $urlQuery): void {
         
-        if ($this->user_role !== "admin") {
+        if ($this->user_role !== "admin" && $method !== 'POST') {
             echo(json_encode([ "message" => "Admin account required." ]));
             exit;
         }
@@ -146,8 +146,8 @@ class UserController {
             "addressNumber",
             "postalCode",
             "city",
-            "country",
-            "role"
+            "country"
+            // "role" (freshly created user can only be a regular user; otherwise a guest could spawn an admin account!)
         ];
 
         $regex = '/^[a-zA-Z0-9\s\-\'\.\,ŠšĐđČčĆćŽž\?\!_\*\"\#]+$/';
@@ -170,7 +170,7 @@ class UserController {
                     $errors[] = "Invalid user role designation.";
                 }
             } else {
-                $errors[] = "User's role is required.";
+                $isDoingAnUpdate ? $errors[] = "User's role is required." : "";
             }
         
             if (array_key_exists("email", $data)) {

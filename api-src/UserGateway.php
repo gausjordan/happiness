@@ -29,7 +29,7 @@ class UserGateway {
 
     public function createUser(array $data) : string | null {
 
-        $sql = "INSERT INTO user (username, firstName, lastName, email, phone, addressStreet, addressNumber, postalCode, city, country, role, password_hash) VALUES (:username, :firstName, :lastName, :email, :phone, :addressStreet, :addressNumber, :postalCode, :city, :country, :role, :password_hash)";
+        $sql = "INSERT INTO user (username, firstName, lastName, email, phone, addressStreet, addressNumber, postalCode, city, country, role, password_hash) VALUES (:username, :firstName, :lastName, :email, :phone, :addressStreet, :addressNumber, :postalCode, :city, :country, 2, :password_hash)";
         
         $stmt = $this->conn->prepare($sql);
         $stmt->bindValue(":username", $data["username"], PDO::PARAM_STR);
@@ -42,7 +42,6 @@ class UserGateway {
         $stmt->bindValue(":postalCode", $data["postalCode"], PDO::PARAM_INT);
         $stmt->bindValue(":city", $data["city"], PDO::PARAM_STR);
         $stmt->bindValue(":country", $data["country"], PDO::PARAM_STR);
-        $stmt->bindValue(":role", $data["role"], PDO::PARAM_STR);
         $stmt->bindValue(":password_hash", password_hash($data["password"], PASSWORD_DEFAULT), PDO::PARAM_STR);
         $stmt->execute();
         

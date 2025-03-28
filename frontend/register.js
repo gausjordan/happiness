@@ -7000,7 +7000,7 @@ document.getElementById('password1').addEventListener("input", equalPasswords);
 document.getElementById('password2').addEventListener("input", equalPasswords);
 
 
-function submitAction(e) {
+async function submitAction(e) {
     e.preventDefault();
     const form = e.target;
 
@@ -7010,7 +7010,26 @@ function submitAction(e) {
         document.getElementById('form').removeEventListener("submit", submitAction);
         document.getElementById('password1').removeEventListener("input", equalPasswords);
         document.getElementById('password2').removeEventListener("input", equalPasswords);
-        alert("All good.");
+        
+        await fetch("/api/users", {
+            method: 'POST',
+            body: 
+                JSON.stringify({
+                    username : document.getElementById('username').value,
+                    firstName: document.getElementById('firstname').value,
+                    lastName: document.getElementById('lastname').value,
+                    email: document.getElementById('email').value,
+                    phone: document.getElementById('phone').value,
+                    addressStreet: document.getElementById('street').value,
+                    addressNumber: document.getElementById('addressnumber').value,
+                    postalCode: document.getElementById('postalcode').value,
+                    city: document.getElementById('city').value,
+                    country: document.getElementById('state').value,
+                    password : document.getElementById('password1').value
+                })
+            }
+        );
+        
     }
 }
 
@@ -7026,3 +7045,16 @@ function equalPasswords(e) {
         p2.setCustomValidity("");
     }
 }
+
+// document.getElementById('username').value = "kikson69";
+// document.getElementById('firstname').value = "Krešimir";
+// document.getElementById('lastname').value = "Soček";
+// document.getElementById('email').value = "ksocek@mit.edu";
+// document.getElementById('phone').value = "12345678";
+// document.getElementById('street').value = "Mikulićka";
+// document.getElementById('addressnumber').value = "12";
+// document.getElementById('city').value = "Fajerovac";
+// document.getElementById('postalcode').value = "48268";
+// document.getElementById('state').value = "Koprivničko-križevačka";
+// document.getElementById('password1').value = "48268";
+// document.getElementById('password2').value = "48268";

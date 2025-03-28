@@ -86,6 +86,9 @@ async function fetchData(fetchURL, method="GET", body) {
         let bodyObject = body ? {...authObject, ...bodyString } : authObject;
         response = await fetch(fetchURL, bodyObject);
 
+        console.log("Waaaa");
+        console.log(bodyObject);
+
         if (response.status == 204 || response.status == 201) {
             data = null;
             return data;

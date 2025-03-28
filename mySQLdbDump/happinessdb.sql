@@ -298,7 +298,7 @@ CREATE TABLE `user` (
   KEY `username_index` (`username`),
   KEY `role` (`role`),
   CONSTRAINT `user_ibfk_1` FOREIGN KEY (`role`) REFERENCES `user_roles` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=35 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_croatian_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=41 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_croatian_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -345,4 +345,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-03-26  2:29:38
+-- Dump completed on 2025-03-28  1:32:53
