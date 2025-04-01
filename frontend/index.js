@@ -78,16 +78,13 @@ async function fetchData(fetchURL, method="GET", body) {
     }
     else if (response.status == 401 && data.message == "Token expired.") {
         
-        // This may happen if a token had just expired mid-transaction in the last second
+        // This may happen if a token had just expired mid-transaction within the very last seconds
         await getRefreshToken();
         
         let authObject = authRequestObject(method);
         let bodyString = { body: JSON.stringify(body) };
         let bodyObject = body ? {...authObject, ...bodyString } : authObject;
         response = await fetch(fetchURL, bodyObject);
-
-        console.log("Waaaa");
-        console.log(bodyObject);
 
         if (response.status == 204 || response.status == 201) {
             data = null;
@@ -97,13 +94,13 @@ async function fetchData(fetchURL, method="GET", body) {
             return data;
         }
         else {
-            // If a refresh token had also expired, log out
+            // If a refresh token also expired, just log out
             localStorage.removeItem("access_token");
             localStorage.removeItem("refresh_token");
             navigateTo("/home");
         }
     } else {
-        throw new Error("API error");
+        throw new Error("API connection error");
     }
 }
 
@@ -199,7 +196,8 @@ const routes = {
     "/products-admin": '/frontend/products-admin.html',
     "/account": '/frontend/account.html',
     "/register": '/frontend/register.html',
-    "/404": '/frontend/404.html'
+    "/404": '/frontend/404.html',
+    "/orders" : '/frontend/orders.html'
 };
 
 // Re-route from 'view cart' to login if logged off
