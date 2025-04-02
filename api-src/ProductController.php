@@ -109,30 +109,54 @@ class ProductController {
         switch ($method) {
 
             case "GET":
+
                 // Employees and administrators can view hidden products (true)
                 if ($this->user_role === "admin" || $this->user_role === "employee") {
-                    echo json_encode([
-                        // Get all the required data (obeying given limits)
-                        "products" => $this->gateway->getAll($this->user_id, false, $urlQuery),
-                        
-                        // Count how many items meet the given conditions had there been no limit set
+                    
+                    // Fetching items only
+                    if ($urlQuery === null || ($urlQuery && !array_key_exists("structure", $urlQuery))) {
 
-                        "metadata" => $this->gateway->getAll($this->user_id, false, $urlQuery, true),
-                        "tags" => $this->gateway->getTags(),
-                        "categories" => $this->gateway->getCategories()
-                        
-                    ]);
+                        echo json_encode([
+                            // Get all the required data (obeying given limits)
+                            "products" => $this->gateway->getAll($this->user_id, false, $urlQuery),
+                            
+                            // Count how many items meet the given conditions had there been no limit set
+                            "metadata" => $this->gateway->getAll($this->user_id, false, $urlQuery, true),
+                        ]);
+                    }
+                    
+                    else {
+
+                        // Fetching data structure (all of the categories and all of the tags)
+                        echo json_encode([
+                            "tags" => $this->gateway->getTags(),
+                            "categories" => $this->gateway->getCategories()
+                        ]);
+                    }
+
                     break;
+
+                // Guests and users can not
                 } else {
-                    // Guests and users can not
-                    echo json_encode([
-                        // Get all the required data (obeying given limits) & hide hidden items
-                        "products" => $this->gateway->getAll($this->user_id, true, $urlQuery),
-                        // Count how many visible items meet the given conditions had there been no limit set 
-                        "metadata" => $this->gateway->getAll($this->user_id, true, $urlQuery, true),
-                        "tags" => $this->gateway->getTags(),
-                        "categories" => $this->gateway->getCategories()
-                    ]);
+                    
+                    // Fetching items only
+                    if ($urlQuery === null || ($urlQuery && !array_key_exists("structure", $urlQuery))) {
+                        echo json_encode([
+                            // Get all the required data (obeying given limits) & hide hidden items
+                            "products" => $this->gateway->getAll($this->user_id, true, $urlQuery),
+                            // Count how many visible items meet the given conditions had there been no limit set 
+                            "metadata" => $this->gateway->getAll($this->user_id, true, $urlQuery, true),
+                        ]);
+                    }
+                    else
+                    {
+                        // Fetching data structure (all of the categories and all of the tags)
+                        echo json_encode([
+                            "tags" => $this->gateway->getTags(),
+                            "categories" => $this->gateway->getCategories()
+                        ]);
+                    }
+
                     break;
                 }
 

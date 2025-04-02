@@ -15,9 +15,15 @@ async function buildShop(fetchURL = "/api/products", refreshExisting) {
     let app = document.getElementById('app');
         app.setAttribute("hidden", "");
 
+    let url = new URL(window.location);
+    
+    //console.log(url.searchParams.get("fuck"));
+
     let obj;
 
-    try { obj = await fetchData(fetchURL); }
+    try { obj = await fetchData(fetchURL);
+
+    }
     catch (e) { console.log("Error. " + e) }
 
     if(refreshExisting) {
@@ -38,7 +44,46 @@ async function buildShop(fetchURL = "/api/products", refreshExisting) {
         .then( () => { document.getElementsByTagName('footer')[0].removeAttribute("hidden")})
 }
 
+function extractMetaDataFromItems(obj) {
+    
+    // Lazy way to ensure uniqueness
+    let collectedTags = new Set();
+    let array = [];
 
+    obj.products.forEach(product => {
+        product.tag.forEach(tag => {
+            collectedTags.add(tag[0] + ";" + tag[1] + ";" + tag[2]);
+        });
+    });
+
+    collectedTags.forEach(t => {
+        array.push(
+            {
+                "tag_id" : t.split(";")[0],
+                "tagname_hr" : t.split(";")[1],
+                "tagname_en" : t.split(";")[2]
+            }
+        );
+    })
+
+    return { tags: array };
+
+    // return {
+    //     tags: [
+    //         {
+    //             "tag_id": 1,
+    //             "tagname_hr": "Čelik-pelik",
+    //             "tagname_en": "Steel-mill"
+    //         },
+    //         {
+    //             "tag_id": 2,
+    //             "tagname_hr": "Drven peder",
+    //             "tagname_en": "Woody-wood"
+    //         }
+    //         ]
+    // };
+    
+}
 
 function populateFilterMenu(obj) {
     let ulRef = document.getElementById("shop-filtering-menu");
@@ -51,34 +96,36 @@ function populateFilterMenu(obj) {
     let svgtick = null;
     let separator = document.createElement('div');
         separator.setAttribute("class", "separator");
+    let metaobj = extractMetaDataFromItems(obj);
 
-    obj.categories.forEach((c) => {
-        li = document.createElement('li');
-        label = insertElements('label', null, {
-            "class" : "container",
-            "for" : 'catId' + c.category_id,
-        });
+    /* Commented out because categories have been moved to the main menu */
+    // obj.categories.forEach((c) => {
+    //     li = document.createElement('li');
+    //     label = insertElements('label', null, {
+    //         "class" : "container",
+    //         "for" : 'catId' + c.category_id,
+    //     });
 
-        valueText = document.createElement('p');
-        valueText.innerHTML = lang === 'en' ? c.categoryname_en : c.categoryname_hr;
-        label.appendChild(valueText);
+    //     valueText = document.createElement('p');
+    //     valueText.innerHTML = lang === 'en' ? c.categoryname_en : c.categoryname_hr;
+    //     label.appendChild(valueText);
 
-        input = insertElements('input', null, {
-            "type" : "checkbox",
-            "id" : 'catId' + c.category_id,
-            "value" : c.category_id
-        });
-        svgtick = template.content.querySelector('svg').cloneNode(true);
+    //     input = insertElements('input', null, {
+    //         "type" : "checkbox",
+    //         "id" : 'catId' + c.category_id,
+    //         "value" : c.category_id
+    //     });
+    //     svgtick = template.content.querySelector('svg').cloneNode(true);
         
-        label.appendChild(input);
-        label.appendChild(svgtick);
-        li.appendChild(label);
-        ulRef.appendChild(li);
-    });
+    //     label.appendChild(input);
+    //     label.appendChild(svgtick);
+    //     li.appendChild(label);
+    //     ulRef.appendChild(li);
+    // });
 
-    ulRef.appendChild(separator.cloneNode(true));
+    // ulRef.appendChild(separator.cloneNode(true));
 
-    obj.tags.forEach((c) => {
+    metaobj.tags.forEach((c) => {
         li = document.createElement('li');
         label = insertElements('label', null, {
             "class" : "container",

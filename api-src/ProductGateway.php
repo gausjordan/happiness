@@ -49,6 +49,9 @@ class ProductGateway {
         $injectAndNo1 = $products_and_categories ? " AND " : "";
         $injectAndNo2 = $products_and_tags || $products_and_categories ? " AND " : "";
         $injectAndNo3 = $products_and_tags || $products_and_categories || $hideHiddenProducts ? " AND " : "";
+        
+        // COALESCE(GROUP_CONCAT(DISTINCT product_tags.tag ORDER BY products_and_tags.id SEPARATOR ', '), \"None\") as tag,
+        //          GROUP_CONCAT(DISTINCT product_tags.tag ORDER BY products_and_tags.id SEPARATOR ', ') as tag,
 
         $sql = "SELECT " .
             ($count ? "COUNT(DISTINCT product.id) AS productCount " : 
@@ -58,7 +61,9 @@ class ProductGateway {
                 COALESCE(product.description, \"No description.\") as description,
                 COALESCE(product.opis, \"Nema opisa proizvoda.\") as opis,
                 COALESCE(GROUP_CONCAT(DISTINCT product_categories.category ORDER BY products_and_categories.id SEPARATOR ', '), \"None\") as category,
-                COALESCE(GROUP_CONCAT(DISTINCT product_tags.tag ORDER BY products_and_tags.id SEPARATOR ', '), \"None\") as tag,
+        
+                GROUP_CONCAT(DISTINCT CONCAT(product_tags.id, '|', product_tags.tag, '|', product_tags.tag_english) ORDER BY products_and_tags.id SEPARATOR ', ') as tag,
+                
                 GROUP_CONCAT(DISTINCT product_images.url ORDER BY product_images.id SEPARATOR ', ') as url,
                 product.price,
                 product.is_available,
@@ -118,7 +123,11 @@ class ProductGateway {
                 $row["is_visible"] = (bool) $row["is_visible"];
                 $row["is_available"] = (bool) $row["is_available"];
                 $row["price"] = (float) $row["price"];
-                $row["tag"] = $row["tag"] == null ? [] : explode(", ", $row["tag"]);
+
+                $row["tag"] = $row["tag"] == null ? [] : array_map(function($t) {
+                    return explode("|", $t); 
+                }, explode(", ", $row["tag"]));
+
                 $row["url"] = $row["url"] == null ? [] : explode(", ", $row["url"]);
                 $row["category"] = $row["category"] == null ? [] : explode(", ", $row["category"]);
                 $data[] = $row;
@@ -244,7 +253,9 @@ class ProductGateway {
                 COALESCE(product.description, \"No description.\") as description,
                 COALESCE(product.opis, \"Nema opisa proizvoda.\") as opis,
                 COALESCE(GROUP_CONCAT(DISTINCT product_categories.category ORDER BY products_and_categories.id SEPARATOR ', '), \"None\") as category,
-                COALESCE(GROUP_CONCAT(DISTINCT product_tags.tag ORDER BY products_and_tags.id SEPARATOR ', '), \"None\") as tag,
+
+                GROUP_CONCAT(DISTINCT CONCAT(product_tags.id, '|', product_tags.tag, '|', product_tags.tag_english) ORDER BY products_and_tags.id SEPARATOR ', ') as tag,
+
                 GROUP_CONCAT(DISTINCT product_images.url ORDER BY product_images.id SEPARATOR ', ') as url,
                 product.price,
                 product.is_available,
@@ -275,7 +286,9 @@ class ProductGateway {
             $row["is_visible"] = (bool) $row["is_visible"];
             $row["is_available"] = (bool) $row["is_available"];
             $row["price"] = (float) $row["price"];
-            $row["tag"] = $row["tag"] == null ? [] : explode(", ", $row["tag"]);
+            $row["tag"] = $row["tag"] == null ? [] : array_map(function($t) {
+                return explode("|", $t); 
+            }, explode(", ", $row["tag"]));
             $row["url"] = $row["url"] == null ? [] : explode(", ", $row["url"]);
             $row["category"] = $row["category"] == null ? [] : explode(", ", $row["category"]);
             $data[] = $row;

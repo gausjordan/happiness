@@ -56,7 +56,7 @@ switch ($uri[2]) {
         {
             // Inspect and transform URL queries
             $urlQuery = $sanitize->unpackQueries($urlQuery);
-            $urlQuery = $sanitize->validateQueries($urlQuery, ["search", "order", "direction", "lang", "products_and_categories", "products_and_tags", "limit"]);
+            $urlQuery = $sanitize->validateQueries($urlQuery, ["search", "order", "direction", "lang", "products_and_categories", "products_and_tags", "limit", "structure"]);
 
             // No product id => either a "get all" or a "post one"
             $productController->processRequest($_SERVER["REQUEST_METHOD"], null, $urlQuery);
