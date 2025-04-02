@@ -398,6 +398,8 @@ nav.mainmenu a {
   color: #fff;
   text-decoration: none;
   font-size: 1.1em;
+  display: flex;
+  flex-direction: column;
 }
 
 nav.mainmenu .nav-links {
@@ -413,7 +415,10 @@ nav.mainmenu .nav-links [hidden] {
 nav.mainmenu .nav-links li {
   padding: 0.75em;
   margin: 0.05em;
-  display: block;
+  -display: block;
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
   border-bottom: 1px solid #cccccc44;
 }
 
@@ -424,6 +429,18 @@ nav.mainmenu .nav-links li:hover {
 nav.mainmenu .nav-links a[last-visible-item] li {
   border-radius: 0 0em 1em 0;
 }
+
+nav.mainmenu .nav-links li span {
+  display: flex;
+  justify-content: space-between;
+}
+
+/* nav.mainmenu .nav-links li span div {
+  font-weight: bolder;
+  font-stretch: expanded;
+  transform: scaleX(1.8);
+  background-color: silver;
+} */
 
 
 body {

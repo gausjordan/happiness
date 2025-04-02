@@ -129,10 +129,10 @@ renderMainMenu();
 function renderMainMenu() {
     if (localStorage.getItem('lang') === 'hr') {
         Array.from(document.getElementsByClassName("en")).forEach(e => { e.style.display = "none"; });
-        Array.from(document.getElementsByClassName("hr")).forEach(e => { e.style.display = "block"; });
+        Array.from(document.getElementsByClassName("hr")).forEach(e => { e.style.display = "flex"; });
     } else {
         Array.from(document.getElementsByClassName("hr")).forEach(e => { e.style.display = "none"; });
-        Array.from(document.getElementsByClassName("en")).forEach(e => { e.style.display = "block"; });
+        Array.from(document.getElementsByClassName("en")).forEach(e => { e.style.display = "flex"; });
     }
 }
 
