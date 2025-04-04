@@ -119,22 +119,37 @@ for (let flag of flags) {
 }
 
 
-// Show administrative options to the main menu, when required
-adminMenuOptions();
 
-// Show or hide menu items, depenting on the language selected
-renderMainMenu();
 
-// Translate main menu -> hide text in irrelevant language
-function renderMainMenu() {
-    if (localStorage.getItem('lang') === 'hr') {
-        Array.from(document.getElementsByClassName("en")).forEach(e => { e.style.display = "none"; });
-        Array.from(document.getElementsByClassName("hr")).forEach(e => { e.style.display = "flex"; });
-    } else {
-        Array.from(document.getElementsByClassName("hr")).forEach(e => { e.style.display = "none"; });
-        Array.from(document.getElementsByClassName("en")).forEach(e => { e.style.display = "flex"; });
+// Prevent menu from being animated immediately on load
+// Disable all interactive elements while the menu is shown
+document.getElementById('menu-toggle').addEventListener('change', (e) => {
+
+    document.querySelector('nav.mainmenu ul').classList.add('unsealed');
+
+    function closeMainMenu(e) {
+        if (e.target === document.documentElement) {
+            document.body.classList.remove('disable-pointer-events');
+            mainMenu.classList.remove('menu');
+            hamburgerIcon.classList.remove('menu');
+            document.removeEventListener("click", closeMainMenu);
+            document.getElementById('menu-toggle').checked = false;
+        }
     }
-}
+   
+    let hamburgerIcon = document.getElementById('menu-icon');
+    let mainMenu = document.getElementById('nav-links');
+
+    if (e.target.checked === true) {
+        document.body.classList.add('disable-pointer-events');
+        mainMenu.classList.add('menu');
+        hamburgerIcon.classList.add('menu');
+        document.addEventListener("click", closeMainMenu);
+    } else {
+        closeMainMenu(e);
+    }
+});
+
 
 
 // Language selector icon funcionality
@@ -154,21 +169,10 @@ flag[1].addEventListener("click", () => {
         flag[1].style.opacity = "0";
         document.documentElement.lang = "hr"
     }    
-    renderMainMenu();
+    //renderMainMenu();
     navigateTo(window.location.pathname || "/home");
 });
 
-
-// Prevent main menu from being pre-opened on load
-const cbxTemp = document.querySelector('nav input[type="checkbox"]');
-const menuTemp = document.querySelector('nav ul');
-cbxTemp.addEventListener('change', () => {
-    if (!cbxTemp.checked) {
-        menuTemp.style.animationName = 'main-menu-slide-out';
-    } else {
-        menuTemp.style.animationName = 'main-menu-slide-in';
-    }
-});
 
 // SVG splashscreen loader
 const svgElements = [
@@ -218,9 +222,28 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 });
 
+// Override "shop" menu item behavior
+document.querySelector('#nav-links a[href="/shop"]').addEventListener("click", (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    let subItems = document.querySelectorAll('#nav-links div.submenu');
+    
+    if (subItems[0].classList.contains("folded")) {
+        subItems[0].classList.remove("folded");        
+        subItems[0].style.maxHeight = subItems[0].scrollHeight + "px";
+    } else {
+        subItems[0].style.maxHeight = "0px";
+        subItems[0].classList.add("folded");
+    }
+});
+
 
 // Navigation handling
 const navigateTo = async (path, doNotPushState = false) => {
+
+    // Close the main menu if it fails to close itself due to some glitch
+    document.getElementById('menu-toggle').checked = false;
 
     // Manage browser history
     if (!doNotPushState) {
@@ -340,28 +363,6 @@ async function loadPage(target) {
 }
 
 
-// Close the opened menu if anything else gets clicked
-document.addEventListener("click", (event) => anyThingButTheMainMenu(event));
-document.addEventListener("contextmenu", (event) => anyThingButTheMainMenu(event));
-function anyThingButTheMainMenu(event) {
-    if (document.getElementById("menu-toggle").checked
-        && event.target.getAttribute('id') !== 'menu-toggle'
-        && event.target.getAttribute('id') !== 'menu-icon'
-        && event.target.getAttribute('id') !== 'nav-links') {
-        document.getElementById("menu-toggle").click();
-    }
-}
-
-// Close the menu if the next touch target is neither the menu, nor the menu icon
-document.addEventListener("touchstart", (event) => {
-    const menuToggle = document.getElementById("menu-toggle");
-    const menuIcon = document.getElementById("menu-icon");
-    const navLinks = document.getElementById("nav-links");
-    if (menuToggle.checked && !navLinks.contains(event.target) && event.target !== menuIcon) {
-        menuToggle.click();
-    }
-});
-
 // Searching feature input toggle
 document.querySelector('header div.block.left *').addEventListener("click", (e) => {
     e.preventDefault();
@@ -466,7 +467,6 @@ async function sendSearchRequest(input) {
     
 }
 
-
 document.getElementById("search-cancel-x").addEventListener("click", (e) => {
     let searchBar = document.getElementById('search-input-bar');
     searchBar.children[0].value = "";
@@ -476,81 +476,7 @@ document.getElementById("search-cancel-x").addEventListener("click", (e) => {
 });
 
 
-// Hide/show main menu items depending on the role by setting boolean attributes
-function adminMenuOptions() {
-    let token = localStorage.getItem("access_token");
-    if (token) {
-        let payload = JSON.parse(atob(token.split('.')[1]));
-        
-        if (payload["role"] === "admin") {
-            let employeeOptions = document.querySelectorAll('[employee]');
-                employeeOptions.forEach(i => i.removeAttribute("hidden"));
-            let adminOptions = document.querySelectorAll('[admin]');
-                adminOptions.forEach(i => i.removeAttribute("hidden"));
-        }
-        else if (payload["role"] === "employee") {
-            let employeeOptions = document.querySelectorAll('[employee]');
-                employeeOptions.forEach(i => i.removeAttribute("hidden"));
-        }
-        else {
-            hideAdminMenuOptions();
-        }
-    } else {
-        hideAdminMenuOptions();
-    }
-    tagLastVisibleMenuItem();
-}
 
-function hideAdminMenuOptions() {
-    document.querySelectorAll('[employee]').forEach(i => {
-        if (!i.hasAttribute("hidden", "")) {
-           i.setAttribute("hidden", "");
-        }
-   });
-   document.querySelectorAll('[admin]').forEach(i => {
-       if (!i.hasAttribute("hidden", "")) {
-          i.setAttribute("hidden", "");
-       }
-  });
-}
-
-// CSS needs this: find the last visible menu item (for the current user) and tag it
-function tagLastVisibleMenuItem() {
-    let items = document.querySelectorAll('nav ul#nav-links a');
-
-    // Clear previous tags, if any
-    items.forEach(i => i.removeAttribute("last-visible-item"));
-
-    for (let i = items.length-1; i >= 0; i--) {
-        if (items[i].hasAttribute("hidden")) {
-            continue;
-        }
-        else {
-            items[i].setAttribute("last-visible-item", "");
-            break;
-        }
-    }
-}
-
-// Add options to the main menu. [Unused, for future use]
-function addMenuOptions(croatianText, englishText, path) {
-    let spanHr = document.createElement("span");
-        spanHr.setAttribute("class", "hr");
-        spanHr.textContent = croatianText;
-    let spanEn = document.createElement("span");
-        spanEn.setAttribute("class", "en");
-        spanEn.textContent = englishText;
-    let listItem = document.createElement("li");
-        listItem.appendChild(spanHr);
-        listItem.appendChild(spanEn);
-    let usersMenu = document.createElement("a");
-        usersMenu.setAttribute("href", path);
-        usersMenu.setAttribute("data-link", "");
-        usersMenu.setAttribute("admin", "");
-        usersMenu.appendChild(listItem);
-    let list = document.getElementById("nav-links");
-        list.appendChild(usersMenu);
-}
 
 /* Blurs everything and pops up a dialog window */
 async function openModal(text, buttons) {
@@ -586,3 +512,139 @@ if (window.location.pathname === '/') {
 
 // Entry point
 navigateTo(window.location.pathname + window.location.search, true);
+
+
+
+
+
+
+/* commented out before completely revamping the main menu
+// Prevent main menu from being pre-opened on load
+const cbxTemp = document.querySelector('nav input[type="checkbox"]');
+const menuTemp = document.querySelector('nav ul');
+cbxTemp.addEventListener('change', () => {
+    if (!cbxTemp.checked) {
+        menuTemp.style.animationName = 'main-menu-slide-out';
+    } else {
+        menuTemp.style.animationName = 'main-menu-slide-in';
+    }
+});
+*/
+
+
+// Close the opened menu if anything else gets clicked
+// document.addEventListener("click", (event) => anyThingButTheMainMenu(event));
+// document.addEventListener("contextmenu", (event) => anyThingButTheMainMenu(event));
+// function anyThingButTheMainMenu(event) {
+//     if (document.getElementById("menu-toggle").checked
+//         && event.target.getAttribute('id') !== 'menu-toggle'
+//         && event.target.getAttribute('id') !== 'menu-icon'
+//         && event.target.getAttribute('id') !== 'nav-links') {
+//         document.getElementById("menu-toggle").click();
+//     }
+// }
+
+// Close the menu if the next touch target is neither the menu, nor the menu icon
+// document.addEventListener("touchstart", (event) => {
+//     const menuToggle = document.getElementById("menu-toggle");
+//     const menuIcon = document.getElementById("menu-icon");
+//     const navLinks = document.getElementById("nav-links");
+//     if (menuToggle.checked && !navLinks.contains(event.target) && event.target !== menuIcon) {
+//         menuToggle.click();
+//     }
+// });
+
+// Show administrative options to the main menu, when required
+// adminMenuOptions();
+
+// Show or hide menu items, depenting on the language selected
+// renderMainMenu();
+
+
+// Hide/show main menu items depending on the role by setting boolean attributes
+// function adminMenuOptions() {
+//     let token = localStorage.getItem("access_token");
+//     if (token) {
+//         let payload = JSON.parse(atob(token.split('.')[1]));
+        
+//         if (payload["role"] === "admin") {
+//             let employeeOptions = document.querySelectorAll('[employee]');
+//                 employeeOptions.forEach(i => i.removeAttribute("hidden"));
+//             let adminOptions = document.querySelectorAll('[admin]');
+//                 adminOptions.forEach(i => i.removeAttribute("hidden"));
+//         }
+//         else if (payload["role"] === "employee") {
+//             let employeeOptions = document.querySelectorAll('[employee]');
+//                 employeeOptions.forEach(i => i.removeAttribute("hidden"));
+//         }
+//         else {
+//             hideAdminMenuOptions();
+//         }
+//     } else {
+//         hideAdminMenuOptions();
+//     }
+//     tagLastVisibleMenuItem();
+// }
+
+// function hideAdminMenuOptions() {
+//     document.querySelectorAll('[employee]').forEach(i => {
+//         if (!i.hasAttribute("hidden", "")) {
+//            i.setAttribute("hidden", "");
+//         }
+//    });
+//    document.querySelectorAll('[admin]').forEach(i => {
+//        if (!i.hasAttribute("hidden", "")) {
+//           i.setAttribute("hidden", "");
+//        }
+//   });
+// }
+
+// CSS needs this: find the last visible menu item (for the current user) and tag it
+// function tagLastVisibleMenuItem() {
+//     let items = document.querySelectorAll('nav ul#nav-links a');
+
+//     // Clear previous tags, if any
+//     items.forEach(i => i.removeAttribute("last-visible-item"));
+
+//     for (let i = items.length-1; i >= 0; i--) {
+//         if (items[i].hasAttribute("hidden")) {
+//             continue;
+//         }
+//         else {
+//             items[i].setAttribute("last-visible-item", "");
+//             break;
+//         }
+//     }
+// }
+
+
+// Add options to the main menu. [Unused, for future use]
+// function addMenuOptions(croatianText, englishText, path) {
+//     let spanHr = document.createElement("span");
+//         spanHr.setAttribute("class", "hr");
+//         spanHr.textContent = croatianText;
+//     let spanEn = document.createElement("span");
+//         spanEn.setAttribute("class", "en");
+//         spanEn.textContent = englishText;
+//     let listItem = document.createElement("li");
+//         listItem.appendChild(spanHr);
+//         listItem.appendChild(spanEn);
+//     let usersMenu = document.createElement("a");
+//         usersMenu.setAttribute("href", path);
+//         usersMenu.setAttribute("data-link", "");
+//         usersMenu.setAttribute("admin", "");
+//         usersMenu.appendChild(listItem);
+//     let list = document.getElementById("nav-links");
+//         list.appendChild(usersMenu);
+// }
+
+// Translate main menu -> hide text in irrelevant language
+// function renderMainMenu() {
+//     if (localStorage.getItem('lang') === 'hr') {
+//         Array.from(document.getElementsByClassName("en")).forEach(e => { e.style.display = "none"; });
+//         Array.from(document.getElementsByClassName("hr")).forEach(e => { e.style.display = "flex"; });
+//     } else {
+//         Array.from(document.getElementsByClassName("hr")).forEach(e => { e.style.display = "none"; });
+//         Array.from(document.getElementsByClassName("en")).forEach(e => { e.style.display = "flex"; });
+//     }
+// }

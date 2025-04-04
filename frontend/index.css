@@ -2,6 +2,14 @@
   --menu-animation-speed: 0.3s;
 }
 
+body.disable-pointer-events {
+  pointer-events: none;
+}
+
+body.disable-pointer-events .menu, body.disable-pointer-events .menu * {
+  pointer-events: auto;
+}
+
 /* The Modal (background) */
 .modal {
   display: none; /* Hidden by default */
@@ -62,19 +70,6 @@
   line-height: 125%;
 }
 
-.modal #text {
-
-}
-
-.modal #buttons {
-  
-}
-
-.modal {
-
-}
-
-
 #search-input-bar {
   box-sizing: border-box;
   z-index: 10;
@@ -124,6 +119,7 @@
   font-size: 0.75em;
   animation: fold-out-x-cancel linear 0.2s;
   animation-fill-mode: forwards;
+  cursor: pointer;
 }
 @keyframes fold-out-x-cancel {
   0% {
@@ -186,7 +182,7 @@ body {
 main#app {
   display: block;
   box-sizing: border-box;
-  margin: 0.75em 0.75em 0em 0.75em;
+  -margin: 0.75em 0.75em 0em 0.75em;
   flex: 1;
 }
 
@@ -246,18 +242,6 @@ header.top-menu div.block.middle {
   transform: translateX(-50%);
 }
 
-
-/* Hambuger menu icon container */
-nav.mainmenu #menu-icon {
-  user-select: none;
-  position: absolute;
-  display: inline;
-  font-size: 2em;
-  cursor: pointer;
-  z-index: 9;
-  padding: 0em 0.2em;
-}
-
 /* Language selector flag */
 nav.mainmenu img {
   user-select: none;
@@ -273,12 +257,25 @@ nav.mainmenu img {
   opacity: 0;
 }
 
+/* Hambuger menu icon container */
+nav.mainmenu #menu-icon {
+  user-select: none;
+  position: absolute;
+  display: inline;
+  font-size: 2em;
+  cursor: pointer;
+  z-index: 9;
+  padding: 0em 0.2em;
+}
+
+
 /* Prevent elements from highlighting up blue on tap event */
 nav.mainmenu img:active {
   outline: none;
   outline-style:none;
   -webkit-tap-highlight-color:transparent;
 }
+
 nav.mainmenu #menu-icon:active {
   outline: none;
   outline-style: none;
@@ -288,16 +285,6 @@ nav.mainmenu #menu-icon img:active {
   outline: none;
   outline-style: none;
   -webkit-tap-highlight-color: transparent;
-}
-
-/* Language selector flag HR */
-nav.mainmenu img#hr {
-  object-position: 50% 0;
-}
-
-/* Language selector flag US */
-nav.mainmenu img#us {
-  object-position: 0 0;
 }
 
 /* Always-invisible toggle helper */
@@ -310,7 +297,7 @@ nav.mainmenu input[type="checkbox"] {
 nav.mainmenu input[type="checkbox"].animate:checked ~ ul {
   transform: translateX(0%);
   animation: var(--menu-animation-speed) ease-out;
-  animation-name: main-menu-slide-int;
+  animation-name: main-menu-slide-in;
   animation-fill-mode: forwards;
 }
 @keyframes main-menu-slide-in {
@@ -322,10 +309,10 @@ nav.mainmenu input[type="checkbox"].animate:checked ~ ul {
   }
 }
 
-/* On-close main menu animation w/ animation prevention onLoad */
-nav.mainmenu input[type="checkbox"].animate:not(:checked) ~ ul {
+/* On-close main menu animation */
+nav.mainmenu input[type="checkbox"].animate:not(:checked) ~ ul.unsealed {
   animation: var(--menu-animation-speed) ease-out;
-  animation-name: this-placeholder-gets-modified-by-JS;
+  animation-name: main-menu-slide-out;
   animation-fill-mode: forwards;
 }
 @keyframes main-menu-slide-out {
@@ -399,34 +386,54 @@ nav.mainmenu a {
   text-decoration: none;
   font-size: 1.1em;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: stretch;  
+  border-bottom: 1px solid #cccccc44;
 }
 
+/* Individual items, outermost parent object */
 nav.mainmenu .nav-links {
   list-style: none;
   user-select: none;
   padding: 0;
-}
-
-nav.mainmenu .nav-links [hidden] {
-  display: none;
+  z-index: 2;
 }
 
 nav.mainmenu .nav-links li {
   padding: 0.75em;
   margin: 0.05em;
-  -display: block;
-  display: flex;
-  justify-content: space-between;
-  flex-direction: column;
-  border-bottom: 1px solid #cccccc44;
+  flex-grow: 8;
 }
 
-nav.mainmenu .nav-links li:hover {
+/* Expand down arrow, "unfold" symbol */
+nav.mainmenu .nav-links div.expand-arrow {
+  align-items: stretch;
+  border-top: 0.4em solid currentColor;
+  border-left: 0.4em solid transparent;
+  border-right: 0.4em solid transparent;
+  margin: 0.4em;
+  align-self: center;
+}
+
+nav.mainmenu .submenu {
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height 0.3s ease;
+}
+
+nav.mainmenu .nav-links div > div.folded {
+  max-height: 0px;
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+}
+
+
+nav.mainmenu .nav-links a:hover {
   background-color: #7a7a7a;
 }
 
-nav.mainmenu .nav-links a[last-visible-item] li {
+/* The menu is curved at the bottom, follow this shape */
+nav.mainmenu .nav-links:hover > div:last-child a {
   border-radius: 0 0em 1em 0;
 }
 
@@ -435,18 +442,13 @@ nav.mainmenu .nav-links li span {
   justify-content: space-between;
 }
 
-/* nav.mainmenu .nav-links li span div {
-  font-weight: bolder;
-  font-stretch: expanded;
-  transform: scaleX(1.8);
-  background-color: silver;
-} */
-
 
 body {
+  position: relative;
   display: flex;
   flex-direction: column;
   height: 100dvh;
+  z-index: 3;
 }
 
 
@@ -462,3 +464,6 @@ footer {
   justify-content: center;  
   margin-top: 3em;
 }
+
+
+

@@ -67,22 +67,6 @@ function extractMetaDataFromItems(obj) {
     })
 
     return { tags: array };
-
-    // return {
-    //     tags: [
-    //         {
-    //             "tag_id": 1,
-    //             "tagname_hr": "Čelik-pelik",
-    //             "tagname_en": "Steel-mill"
-    //         },
-    //         {
-    //             "tag_id": 2,
-    //             "tagname_hr": "Drven peder",
-    //             "tagname_en": "Woody-wood"
-    //         }
-    //         ]
-    // };
-    
 }
 
 function populateFilterMenu(obj) {
@@ -97,33 +81,6 @@ function populateFilterMenu(obj) {
     let separator = document.createElement('div');
         separator.setAttribute("class", "separator");
     let metaobj = extractMetaDataFromItems(obj);
-
-    /* Commented out because categories have been moved to the main menu */
-    // obj.categories.forEach((c) => {
-    //     li = document.createElement('li');
-    //     label = insertElements('label', null, {
-    //         "class" : "container",
-    //         "for" : 'catId' + c.category_id,
-    //     });
-
-    //     valueText = document.createElement('p');
-    //     valueText.innerHTML = lang === 'en' ? c.categoryname_en : c.categoryname_hr;
-    //     label.appendChild(valueText);
-
-    //     input = insertElements('input', null, {
-    //         "type" : "checkbox",
-    //         "id" : 'catId' + c.category_id,
-    //         "value" : c.category_id
-    //     });
-    //     svgtick = template.content.querySelector('svg').cloneNode(true);
-        
-    //     label.appendChild(input);
-    //     label.appendChild(svgtick);
-    //     li.appendChild(label);
-    //     ulRef.appendChild(li);
-    // });
-
-    // ulRef.appendChild(separator.cloneNode(true));
 
     metaobj.tags.forEach((c) => {
         li = document.createElement('li');
@@ -184,7 +141,7 @@ function populateFilterMenu(obj) {
         // And remove a no-longer-needed listener
         document.documentElement.removeEventListener("click", filteringMenuHandler, true);
         // Re-enable clicking action
-        document.body.classList.remove("menu-active");
+        document.body.classList.remove("disable-pointer-events");
 
     });
 
@@ -299,9 +256,6 @@ function buildGrid(obj) {
     });
     
     let footer = document.getElementsByTagName('footer')[0];
-    // console.log(footer);
-    // ?? document.getElementById('app');
-    //app.insertBefore(grid, footer);
     app.appendChild(grid, footer);
     document.querySelector('main#app nav.shop-filter-menu').classList.remove('hidden');
 }
@@ -329,7 +283,7 @@ function filterButtonToggle() {
             // Listen for any clicks outside of the menu in order to close it
             document.documentElement.addEventListener("click", filteringMenuHandler, true);
             // Prevent mouse cursor from turning "clickable" outside of the menu
-            document.body.classList.add("menu-active");
+            document.body.classList.add("disable-pointer-events");
         } else {
             // Menu was already open - close it
             // TODO - apply settings
@@ -355,17 +309,13 @@ function filteringMenuHandler(event) {
     // If a click occured anywhere outside of the menu
     else {
         // Prevent a click event from doing anything else
-        document.body.classList.remove("menu-active");
+        document.body.classList.remove("disable-pointer-events");
         // Close the menu
         menu.removeAttribute("active");
         // Remove a no-longer-needed listener
         document.documentElement.removeEventListener("click", filteringMenuHandler, true);
-        // TODO - Apply settings
     }
 }
 
 filterButtonToggle();
 buildShop();
-
-
-// document.getElementsByClassName('shop-filter-menu')[0].removeAttribute('hidden');

@@ -66,23 +66,57 @@
       <img src="/frontend/graphics/flag-uk.svg" class="lang-flag" id="en"></img>
       <img src="/frontend/graphics/flag-hr.svg" class="lang-flag" id="hr"></img>
       <ul class="nav-links" id="nav-links">
-        <a href="/home" data-link>
-          <li>
-            <span class="hr">Naslovna stranica</span>
-            <span class="en">Home page</span>
-          </li>
-        </a>
-        <a href="/shop" data-link>
-          <li>
-            <span class="hr">Proizvodi</span>
-            <span class="en">Products</span>
-          </li>
-        </a>
-        <a href="/about" data-link>
-          <li>
-            <span class="hr">O nama</span>
-            <span class="en">About us</span>
-          </li>
+        
+        <div>
+          <a href="/home" data-link>
+            <li>
+              <span class="hr">Naslovna stranica</span>
+              <!-- <span class="en">Home page</span> -->
+            </li>
+          </a>
+        </div>
+
+        <div>
+          <a href="/shop">
+            <li>
+              <span class="hr">Trgovina</span>
+              <!-- <span class="en">Products</span> -->
+            </li>
+            <div class="expand-arrow">
+            </div>
+          </a>
+              <div class="submenu folded">
+                <a href="/fuck1" data-link>
+                  <li>
+                    <span class="hr">Fuck me submenu tralala 1</span>
+                    <!-- <span class="en">About us</span> -->
+                  </li>
+                </a>
+                <a href="/fuck2" data-link>
+                  <li>
+                    <span class="hr">Fuck me submenu 2</span>
+                    <!-- <span class="en">About us</span> -->
+                  </li>
+                </a>
+                <a href="/fuck3" data-link>
+                  <li>
+                    <span class="hr">Fuck me submenu 3</span>
+                    <!-- <span class="en">About us</span> -->
+                  </li>
+                </a>
+              </div>
+        </div>
+
+        <div>
+          <a href="/about" data-link sub-item>
+            <li>
+              <span class="hr">O nama</span>
+              <!-- <span class="en">About us</span> -->
+            </li>
+          </a>
+        </div>
+
+        <!--
         </a>
         <a href="/products-admin" data-link employee hidden>
           <li>
@@ -90,7 +124,7 @@
             <span class="en">Inventory</span>
           </li>
         </a>
-        <a href="/orders" data-link employee hidden>
+         <a href="/orders" data-link employee hidden>
           <li>
             <span class="hr">Narudžbe</span>
             <span class="en">Orders</span>
@@ -101,7 +135,9 @@
             <span class="hr">Korisnici</span>
             <span class="en">Users</span>
           </li>
-        </a>
+        </a> -->
+
+
       </ul>
     </nav>
     <main id="app">
