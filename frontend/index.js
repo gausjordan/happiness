@@ -227,14 +227,18 @@ document.querySelector('#nav-links a[href="/shop"]').addEventListener("click", (
     e.preventDefault();
     e.stopPropagation();
 
-    let subItems = document.querySelectorAll('#nav-links div.submenu');
+    let subItems = document.querySelector('#nav-links div.submenu');
+
+    let arrowsymbol = document.querySelector('#nav-links .expand-arrow');
     
-    if (subItems[0].classList.contains("folded")) {
-        subItems[0].classList.remove("folded");        
-        subItems[0].style.maxHeight = subItems[0].scrollHeight + "px";
+    if (subItems.classList.contains("folded")) {
+        arrowsymbol.classList.add('open');
+        subItems.classList.remove("folded");        
+        subItems.style.maxHeight = subItems.scrollHeight + "px";
     } else {
-        subItems[0].style.maxHeight = "0px";
-        subItems[0].classList.add("folded");
+        arrowsymbol.classList.remove('open');
+        subItems.style.maxHeight = "0px";
+        subItems.classList.add("folded");
     }
 });
 
@@ -509,6 +513,20 @@ function removeModal() {
 if (window.location.pathname === '/') {
     displaySplashScreen();
 }
+
+let structure = (async function getDataStructure() {
+    let menu = document.querySelector('.mainmenu');// .menu-toggle');
+    let categories = await fetchData("api/products?structure=1");
+    return { categories };
+})();
+
+async function buildMainMenu(categories) {
+    categories.forEach(c => console.log(c));
+};
+
+structure.then((c) => buildMainMenu(c.categories.categories));
+
+//getDataStructure().then((c) => console.log(c));
 
 // Entry point
 navigateTo(window.location.pathname + window.location.search, true);

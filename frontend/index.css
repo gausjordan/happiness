@@ -2,10 +2,19 @@
   --menu-animation-speed: 0.3s;
 }
 
+/* Prevent elements from highlighting up blue on tap event */
+.no-highlight :active {
+  outline: none;
+  outline-style:none;
+  user-select: none;
+  -webkit-tap-highlight-color:transparent;
+  tap-highlight-color: transparent;
+}
+
+/* Nothing else works while a pop-up menu is open */
 body.disable-pointer-events {
   pointer-events: none;
 }
-
 body.disable-pointer-events .menu, body.disable-pointer-events .menu * {
   pointer-events: auto;
 }
@@ -156,6 +165,10 @@ body.disable-pointer-events .menu, body.disable-pointer-events .menu * {
   overflow: hidden;
 }
 
+#search-results a:hover {
+  background-color: #cfcfcf;
+}
+
 #search-results a:not(a:first-child) {
   z-index: 10;
   border-top: 1px solid rgb(185, 185, 185);
@@ -268,13 +281,6 @@ nav.mainmenu #menu-icon {
   padding: 0em 0.2em;
 }
 
-
-/* Prevent elements from highlighting up blue on tap event */
-nav.mainmenu img:active {
-  outline: none;
-  outline-style:none;
-  -webkit-tap-highlight-color:transparent;
-}
 
 nav.mainmenu #menu-icon:active {
   outline: none;
@@ -414,12 +420,24 @@ nav.mainmenu .nav-links div.expand-arrow {
   border-right: 0.4em solid transparent;
   margin: 0.4em;
   align-self: center;
+  transition: transform 0.5s;
+  transform: rotate(0deg);
+}
+
+nav.mainmenu .nav-links div.expand-arrow.open {
+  transition: transform 0.5s;
+  transform: rotate(90deg);
 }
 
 nav.mainmenu .submenu {
   overflow: hidden;
   max-height: 0;
   transition: max-height 0.3s ease;
+}
+
+nav.mainmenu .submenu a {
+  background-color:#606060;
+  padding-left: 1.5em;
 }
 
 nav.mainmenu .nav-links div > div.folded {
