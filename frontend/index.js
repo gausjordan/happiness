@@ -104,7 +104,7 @@ async function fetchData(fetchURL, method="GET", body) {
     }
 }
 
-// Check if language is already chosen and show a single language flag only
+// Check if language is already chosen and display only one flag icon
 if (!localStorage.getItem('lang')) {
     localStorage.setItem('lang', 'hr');
 }
@@ -119,34 +119,30 @@ for (let flag of flags) {
 }
 
 
-
-
-// Prevent menu from being animated immediately on load
 // Disable all interactive elements while the menu is shown
 document.getElementById('menu-toggle').addEventListener('change', (e) => {
 
+    // Prevent menu from being CSS animated immediately on load
+    // Enable "close" animation once the menu is opened for the first time
     document.querySelector('nav.mainmenu ul').classList.add('unsealed');
 
-    function closeMainMenu(e) {
-        if (e.target === document.documentElement) {
-            document.body.classList.remove('disable-pointer-events');
-            mainMenu.classList.remove('menu');
-            hamburgerIcon.classList.remove('menu');
-            document.removeEventListener("click", closeMainMenu);
-            document.getElementById('menu-toggle').checked = false;
-        }
-    }
-   
     let hamburgerIcon = document.getElementById('menu-icon');
     let mainMenu = document.getElementById('nav-links');
 
-    if (e.target.checked === true) {
-        document.body.classList.add('disable-pointer-events');
-        mainMenu.classList.add('menu');
-        hamburgerIcon.classList.add('menu');
-        document.addEventListener("click", closeMainMenu);
-    } else {
-        closeMainMenu(e);
+    document.body.classList.add('disable-pointer-events');
+    mainMenu.classList.add('menu');
+    hamburgerIcon.classList.add('menu');
+    
+    document.addEventListener("click", closeMainMenu);
+
+    function closeMainMenu(e) {
+        e.stopPropagation();
+        e.preventDefault();
+        document.body.classList.remove('disable-pointer-events');
+        mainMenu.classList.remove('menu');
+        hamburgerIcon.classList.remove('menu');
+        document.getElementById('menu-toggle').checked = false;
+        document.removeEventListener("click", closeMainMenu);
     }
 });
 
@@ -379,18 +375,19 @@ document.querySelector('header div.block.left *').addEventListener("click", (e) 
         document.body.addEventListener("click", clickAnywhereToCloseSearchBar, { capture: true });
         document.body.addEventListener("keydown", pressEscapeToCloseSearchBar, { capture: true });
     } else {
+        closeSearchBar(searchBar);
         document.body.removeEventListener("click", clickAnywhereToCloseSearchBar, { capture: true });
         document.body.removeEventListener("keydown", pressEscapeToCloseSearchBar, { capture: true });
-        closeSearchBar(searchBar);
     }
 
     function clickAnywhereToCloseSearchBar (e) {
-        if (!(searchBar.contains(e.target) || searchIcon.contains(e.target))) {
+        //if (!(searchBar.contains(e.target) || searchIcon.contains(e.target))) {
+        if (!(searchBar.contains(e.target))) {
+            e.stopPropagation();
+            e.preventDefault();
             closeSearchBar(searchBar);
             document.body.removeEventListener("click", clickAnywhereToCloseSearchBar, { capture: true });
             document.body.removeEventListener("keydown", pressEscapeToCloseSearchBar, { capture: true });
-            e.stopPropagation();
-            e.preventDefault();
         }
     }
 
@@ -421,29 +418,35 @@ async function openSearchBar(searchBar, searchIcon) {
     let locked = false;     // Prevents creating more than one additional request per interval
     let somethingWasLeftOut = false;
 
-    // Limits the number of search requests to one every "waitInterval" milliseconds as the user types.
-    // Last 'n' search string changes may be lost, since the event listener only fires on value change.
-    // If changes were made while 'waiting' was true, 'somethingWasLeftOut' flag gets raised.
-    input.addEventListener("input", (e) => {
-        if (input.value.length > 1) {
-            if (waiting === false) {
-                waiting = true;
-                locked = false;
-                setTimeout(() => { waiting = false }, waitInterval);
-                sendSearchRequest(input);
-            } else if (waiting === true) {
-                if (somethingWasLeftOut && !locked) {
-                    locked = true;
-                    setTimeout(() => { sendSearchRequest(input) }, waitInterval);
-                    somethingWasLeftOut = false;
+
+    if (!input.getAttribute("listenerExists")) {
+
+        // Limit the number of search requests to [one every "waitInterval"] milliseconds as the user types.
+        // Last 'n' search string changes may be lost, since the event listener only fires on value change.
+        // If changes were made while 'waiting' was true, 'somethingWasLeftOut' flag is raised.
+        input.addEventListener("input", (e) => {
+            input.setAttribute("listenerExists", true);
+            if (input.value.length > 1) {
+                if (waiting === false) {
+                    waiting = true;
+                    locked = false;
+                    setTimeout(() => { waiting = false }, waitInterval);
+                    sendSearchRequest(input);
+                } else if (waiting === true) {
+                    if (somethingWasLeftOut && !locked) {
+                        locked = true;
+                        setTimeout(() => { sendSearchRequest(input) }, waitInterval);
+                        somethingWasLeftOut = false;
+                    }
+                    somethingWasLeftOut = true;
                 }
-                somethingWasLeftOut = true;
             }
-        }
-        else {
-            document.getElementById('search-results').setAttribute("hidden", "");
-        }
-    });
+            else {
+                document.getElementById('search-results').setAttribute("hidden", "");
+            }
+        });
+
+    }
 }
 
 function closeSearchBar(searchBar) {

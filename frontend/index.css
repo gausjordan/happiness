@@ -296,6 +296,7 @@ nav.mainmenu #menu-icon img:active {
 /* Always-invisible toggle helper */
 nav.mainmenu input[type="checkbox"] {
   display: none;
+  -display: block;
   user-select: none;
 }
 
