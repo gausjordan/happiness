@@ -164,8 +164,10 @@ flag[1].addEventListener("click", () => {
         flag[0].style.opacity = "1";
         flag[1].style.opacity = "0";
         document.documentElement.lang = "hr"
-    }    
-    //renderMainMenu();
+    }
+    
+    structure.then((c) => buildMainMenu(c.categories.categories));
+
     navigateTo(window.location.pathname || "/home");
 });
 
@@ -523,149 +525,107 @@ let structure = (async function getDataStructure() {
     return { categories };
 })();
 
-async function buildMainMenu(categories) {
-    categories.forEach(c => console.log(c));
+async function buildMainMenu(categories, lang) {
+
+    function decodeUserRole() {
+        let token = localStorage.getItem("access_token");
+        if (token) {
+            const payload = JSON.parse(atob(token.split('.')[1])); // Decode JWT payload
+            return `${payload.role}`;
+        }
+        else {
+            return "user";
+        }
+    }
+
+    let userRole = decodeUserRole();
+    let fullMenu = document.getElementById('nav-links');
+    let categoriesSubMenu = document.querySelector('div.submenu');
+        
+     // Wipe old categories
+    categoriesSubMenu.innerHTML = "";
+    Array.from(fullMenu.children).forEach((menuItem, idx) => {
+        if (idx > 2) { fullMenu.removeChild(menuItem); }
+    });
+
+    if (localStorage.getItem('lang') === 'hr') {
+        fullMenu.querySelector('a[href="/home"] li span').innerHTML = "Naslovna stranica"
+        fullMenu.querySelector('a[href="/shop"] li span').innerHTML = "Trgovina"
+        fullMenu.querySelector('a[href="/about"] li span').innerHTML = "O nama"
+    } else {
+        fullMenu.querySelector('a[href="/home"] li span').innerHTML = "Home Page"
+        fullMenu.querySelector('a[href="/shop"] li span').innerHTML = "Shop"
+        fullMenu.querySelector('a[href="/about"] li span').innerHTML = "About Us"
+    }
+
+    categories.forEach(c => {
+        let a = document.createElement("a");
+            a.setAttribute('data-link', '');
+            a.href = "/shop?category=" + (String)(c.categoryname_en).toLowerCase();
+        let li = document.createElement("li");
+        let span = document.createElement("span");
+            span.innerHTML = localStorage.getItem('lang') === 'hr' ? c.categoryname_hr : c.categoryname_en;
+            li.appendChild(span);
+            a.appendChild(li);
+        categoriesSubMenu.appendChild(a);
+    });
+
+    if (userRole === 'employee' || userRole === 'admin') {
+        let div = document.createElement("div");
+        let a = document.createElement("a");
+            a.setAttribute('data-link', '');
+            a.href = "/orders";
+        let li = document.createElement("li");
+        let span = document.createElement("span");
+            span.innerHTML = localStorage.getItem('lang') === 'hr' ? "Narudžbe" : "Orders";
+            li.appendChild(span);
+            a.appendChild(li);
+            div.appendChild(a);
+        fullMenu.appendChild(div);
+    }
+
+    if (userRole === 'admin') {
+        let div = document.createElement("div");
+        let a = document.createElement("a");
+            a.setAttribute('data-link', '');
+            a.href = "/inventory";
+        let li = document.createElement("li");
+        let span = document.createElement("span");
+            span.innerHTML = localStorage.getItem('lang') === 'hr' ? "Ponuda" : "Inventory";
+            li.appendChild(span);
+            a.appendChild(li);
+            div.appendChild(a);
+        fullMenu.appendChild(div);
+    }
+    
+    if (userRole === 'admin') {
+        let div = document.createElement("div");
+        let a = document.createElement("a");
+            a.setAttribute('data-link', '');
+            a.href = "/users";
+        let li = document.createElement("li");
+        let span = document.createElement("span");
+            span.innerHTML = localStorage.getItem('lang') === 'hr' ? "Korisnici" : "Users";
+            li.appendChild(span);
+            a.appendChild(li);
+            div.appendChild(a);
+        fullMenu.appendChild(div);
+    }
+
+    document.querySelectorAll('a[data-link]').forEach(anchor => {
+        anchor.addEventListener('click', (event) => {
+            event.preventDefault();
+            const path = anchor.getAttribute('href');
+            navigateTo(path);
+        });
+    });
+
 };
 
 structure.then((c) => buildMainMenu(c.categories.categories));
-
-//getDataStructure().then((c) => console.log(c));
 
 // Entry point
 navigateTo(window.location.pathname + window.location.search, true);
 
 
 
-
-
-
-/* commented out before completely revamping the main menu
-// Prevent main menu from being pre-opened on load
-const cbxTemp = document.querySelector('nav input[type="checkbox"]');
-const menuTemp = document.querySelector('nav ul');
-cbxTemp.addEventListener('change', () => {
-    if (!cbxTemp.checked) {
-        menuTemp.style.animationName = 'main-menu-slide-out';
-    } else {
-        menuTemp.style.animationName = 'main-menu-slide-in';
-    }
-});
-*/
-
-
-// Close the opened menu if anything else gets clicked
-// document.addEventListener("click", (event) => anyThingButTheMainMenu(event));
-// document.addEventListener("contextmenu", (event) => anyThingButTheMainMenu(event));
-// function anyThingButTheMainMenu(event) {
-//     if (document.getElementById("menu-toggle").checked
-//         && event.target.getAttribute('id') !== 'menu-toggle'
-//         && event.target.getAttribute('id') !== 'menu-icon'
-//         && event.target.getAttribute('id') !== 'nav-links') {
-//         document.getElementById("menu-toggle").click();
-//     }
-// }
-
-// Close the menu if the next touch target is neither the menu, nor the menu icon
-// document.addEventListener("touchstart", (event) => {
-//     const menuToggle = document.getElementById("menu-toggle");
-//     const menuIcon = document.getElementById("menu-icon");
-//     const navLinks = document.getElementById("nav-links");
-//     if (menuToggle.checked && !navLinks.contains(event.target) && event.target !== menuIcon) {
-//         menuToggle.click();
-//     }
-// });
-
-// Show administrative options to the main menu, when required
-// adminMenuOptions();
-
-// Show or hide menu items, depenting on the language selected
-// renderMainMenu();
-
-
-// Hide/show main menu items depending on the role by setting boolean attributes
-// function adminMenuOptions() {
-//     let token = localStorage.getItem("access_token");
-//     if (token) {
-//         let payload = JSON.parse(atob(token.split('.')[1]));
-        
-//         if (payload["role"] === "admin") {
-//             let employeeOptions = document.querySelectorAll('[employee]');
-//                 employeeOptions.forEach(i => i.removeAttribute("hidden"));
-//             let adminOptions = document.querySelectorAll('[admin]');
-//                 adminOptions.forEach(i => i.removeAttribute("hidden"));
-//         }
-//         else if (payload["role"] === "employee") {
-//             let employeeOptions = document.querySelectorAll('[employee]');
-//                 employeeOptions.forEach(i => i.removeAttribute("hidden"));
-//         }
-//         else {
-//             hideAdminMenuOptions();
-//         }
-//     } else {
-//         hideAdminMenuOptions();
-//     }
-//     tagLastVisibleMenuItem();
-// }
-
-// function hideAdminMenuOptions() {
-//     document.querySelectorAll('[employee]').forEach(i => {
-//         if (!i.hasAttribute("hidden", "")) {
-//            i.setAttribute("hidden", "");
-//         }
-//    });
-//    document.querySelectorAll('[admin]').forEach(i => {
-//        if (!i.hasAttribute("hidden", "")) {
-//           i.setAttribute("hidden", "");
-//        }
-//   });
-// }
-
-// CSS needs this: find the last visible menu item (for the current user) and tag it
-// function tagLastVisibleMenuItem() {
-//     let items = document.querySelectorAll('nav ul#nav-links a');
-
-//     // Clear previous tags, if any
-//     items.forEach(i => i.removeAttribute("last-visible-item"));
-
-//     for (let i = items.length-1; i >= 0; i--) {
-//         if (items[i].hasAttribute("hidden")) {
-//             continue;
-//         }
-//         else {
-//             items[i].setAttribute("last-visible-item", "");
-//             break;
-//         }
-//     }
-// }
-
-
-// Add options to the main menu. [Unused, for future use]
-// function addMenuOptions(croatianText, englishText, path) {
-//     let spanHr = document.createElement("span");
-//         spanHr.setAttribute("class", "hr");
-//         spanHr.textContent = croatianText;
-//     let spanEn = document.createElement("span");
-//         spanEn.setAttribute("class", "en");
-//         spanEn.textContent = englishText;
-//     let listItem = document.createElement("li");
-//         listItem.appendChild(spanHr);
-//         listItem.appendChild(spanEn);
-//     let usersMenu = document.createElement("a");
-//         usersMenu.setAttribute("href", path);
-//         usersMenu.setAttribute("data-link", "");
-//         usersMenu.setAttribute("admin", "");
-//         usersMenu.appendChild(listItem);
-//     let list = document.getElementById("nav-links");
-//         list.appendChild(usersMenu);
-// }
-
-// Translate main menu -> hide text in irrelevant language
-// function renderMainMenu() {
-//     if (localStorage.getItem('lang') === 'hr') {
-//         Array.from(document.getElementsByClassName("en")).forEach(e => { e.style.display = "none"; });
-//         Array.from(document.getElementsByClassName("hr")).forEach(e => { e.style.display = "flex"; });
-//     } else {
-//         Array.from(document.getElementsByClassName("hr")).forEach(e => { e.style.display = "none"; });
-//         Array.from(document.getElementsByClassName("en")).forEach(e => { e.style.display = "flex"; });
-//     }
-// }

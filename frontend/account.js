@@ -18,7 +18,7 @@ async function logout() {
     
     localStorage.removeItem("access_token");
     localStorage.removeItem("refresh_token");
-    adminMenuOptions();
+    structure.then((c) => buildMainMenu(c.categories.categories));
     navigateTo("/home");
 
 }
@@ -43,11 +43,10 @@ async function login(event) {
     if (response.status == 200) {
         localStorage.setItem("access_token", obj.access_token);
         localStorage.setItem("refresh_token", obj.refresh_token);
-        adminMenuOptions();
+        structure.then((c) => buildMainMenu(c.categories.categories));
         navigateTo("/shop");
     } else if (response.status == 401) {
-        alert("Gay");
-        console.log("You are gay");
+        //
     }
 
 

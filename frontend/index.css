@@ -439,6 +439,7 @@ nav.mainmenu .submenu {
 nav.mainmenu .submenu a {
   background-color:#606060;
   padding-left: 1.5em;
+  padding-right: 1.5em;
 }
 
 nav.mainmenu .nav-links div > div.folded {
