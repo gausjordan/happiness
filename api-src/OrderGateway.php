@@ -317,6 +317,7 @@ class OrderGateway {
         $orderByDesc = null;
         $visibility = " WHERE is_archived = 0 ";
         $search = null;
+        $finished = null;
         
         if (isset($urlQuery)) {
             if (in_array("order-by-asc", array_keys($urlQuery))) {
@@ -351,6 +352,19 @@ class OrderGateway {
                     ";
                 }
             }
+
+            if (isset($urlQuery["finished"])) {
+                if($visibility || $search) {
+                    $finished = " 
+                        AND dateOrdered IS NOT NULL 
+                    ";
+                } else {
+                    $finished = " 
+                        WHERE dateOrdered IS NOT NULL 
+                    ";
+                }
+            }
+
         }
 
         $sql_base = "
@@ -361,7 +375,7 @@ class OrderGateway {
 
         $sql_group_by = " GROUP BY order_id ";
 
-        $sql = $sql_base . $visibility . $search . $sql_group_by . $orderByAsc . $orderByDesc . $limit;
+        $sql = $sql_base . $visibility . $search . $finished . $sql_group_by . $orderByAsc . $orderByDesc . $limit;
 
         //echo $sql;
 

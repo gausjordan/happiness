@@ -1,0 +1,61 @@
+nav#orders-options {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+}
+
+nav#orders-options #order-manage-archived,
+nav#orders-options #order-filtering-options {
+    display: flex;
+    flex-direction: column;
+}
+
+@media screen and (min-width: 420px) { 
+
+    table#orders-list {
+
+        & tr td:nth-child(odd) {
+            display: none;
+        }
+
+    }
+
+}
+
+@media screen and (max-width: 420px) { 
+
+    nav#orders-options {
+        margin: 2em 0em;
+    }
+
+    table#orders-list {
+
+        width: 100%;
+
+        & th {
+            display: none;
+        }
+        
+        & tr {
+            display:grid;
+            grid-template-columns: auto auto;
+        }
+
+        & tr td:nth-child(odd) {
+            display:flex;
+            background-color: yellow;
+        }
+        
+        & tr td:nth-child(even) {
+            display:flex;
+            background-color: pink;
+        }
+        
+
+        & input[type="text"] {
+            width: 100%;
+        }
+    }
+
+    
+}

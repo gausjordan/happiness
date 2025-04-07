@@ -10,8 +10,58 @@
 
 <head>
     <title></title>
+    <link rel="stylesheet" href="/frontend/orders.css" rel="preload" as="style"></link>
+    <script src="/frontend/orders.js"></script>
 </head>
 <body>
     <h1></h1>
-    <p></p>
+    
+    <nav id="orders-options">
+
+        <div id="order-filtering-options">
+            <label for="sorting-criteria">Sortiraj po</label>
+            <select name="sorting-criteria" id="sort-by">
+                <option value="date-asc">datumu (prvo noviji)</option>
+                <option value="date-desc">datumu (prvo stariji)</option>
+                <option value="price-arc">iznosu (prvo veći)</option>
+                <option value="price-desc">iznosu (prvo manji)</option>
+            </select>
+        </div>
+    
+        <div id="order-manage-archived">
+            <label for="show-archived">Prikaži arhivirano</label>
+            <input type="checkbox" name="show-archived" id="show-archived">
+        </div>
+    
+    </nav>
+    
+    <table id="orders-list">
+        <tr>
+            <th>Broj narudžbe</th>
+            <th>Ime i prezime</th>
+            <th>Datum narudžbe</th>
+            <th>Datum primitka</th>
+            <th>Iznos</th>
+            <th>Plaćeno</th>
+            <th>Poslano</th>
+            <th>Vraćen proizvod</th>
+            <th>Vraćen novac</th>
+            <th>Arhivirano</th>
+            <th>Napomena</th>
+        </tr>
+        <tr>
+            <td>Broj narudžbe</td><td>1</td>
+            <td>Ime i prezime</td><td>Anabela Fuljko</td>
+            <td>Datum narudžbe</td><td>11.4.2023.</td>
+            <td>Datum primitka</td><td>31.12.2024.</td>
+            <td>Iznos</td><td>200</td>
+            <td>Plaćeno</td><td><input type="checkbox"></input></td>
+            <td>Poslano</td><td><input type="checkbox"></input></td>
+            <td>Vraćeno</td><td><input type="checkbox"></input></td>
+            <td>Refundirano</td><td><input type="checkbox"></input></td>
+            <td>Arhivirano</td><td><input type="checkbox"></input></td>
+            <td>Napomena</td><td><input type="text"></input></td>
+        </tr>
+
+
 </body>
