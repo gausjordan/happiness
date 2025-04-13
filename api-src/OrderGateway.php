@@ -318,6 +318,10 @@ class OrderGateway {
         $visibility = " WHERE is_archived = 0 ";
         $search = null;
         $finished = null;
+        $daterange = null;
+        $dateFrom = "2025-01-01";
+        $dateTo = null;
+        $sizeof = null;
         
         if (isset($urlQuery)) {
             if (in_array("order-by-asc", array_keys($urlQuery))) {
@@ -337,6 +341,19 @@ class OrderGateway {
                     $limit = " LIMIT $limitFrom, $limitLen ";
                 }
             }
+            if (in_array("daterange", array_keys($urlQuery))) {
+                $dates = explode(',', $urlQuery["daterange"]);
+                if(count($dates) == 2) {
+                    $dateFrom = $dates[0];
+                    $dateTo = $dates[1];
+                } else {
+                    $dateFrom = null;
+                    $dateTo = null;
+                    $daterange = null;
+                }
+            }
+
+
             if (isset($urlQuery["search"])) {
                 if ($visibility) {
                     $search = " 
@@ -365,7 +382,21 @@ class OrderGateway {
                 }
             }
 
+            if(isset($urlQuery["daterange"])) {
+                if($visibility || $search || $finished) {
+                    $daterange = " 
+                        AND dateOrdered BETWEEN :startdate AND :enddate
+                    ";
+                } else {
+                    $daterange = " 
+                        WHERE dateOrdered BETWEEN :startdate AND :enddate
+                    ";
+                }
+            }
+
         }
+
+        // var_dump($urlQuery["daterange"]);
 
         $sql_base = "
             SELECT order_id, user.username, user.firstName, user.lastName, dateOrdered, dateReceived, is_shipped, is_paid, is_returned, is_refunded, is_archived, SUM(price_charged) AS price, comment FROM `orders`
@@ -375,11 +406,16 @@ class OrderGateway {
 
         $sql_group_by = " GROUP BY order_id ";
 
-        $sql = $sql_base . $visibility . $search . $finished . $sql_group_by . $orderByAsc . $orderByDesc . $limit;
+        $sql = $sql_base . $visibility . $search . $finished . $daterange . $sql_group_by . $orderByAsc . $orderByDesc . $limit;
 
         //echo $sql;
 
         $stmt = $this->conn->prepare($sql);
+
+        if($dateFrom && $dateTo) {
+            $stmt->bindValue(":startdate", $dateFrom, PDO::PARAM_STR);
+            $stmt->bindValue(":enddate", $dateTo, PDO::PARAM_STR);
+        }
 
         if (isset($urlQuery) && in_array("search", array_keys($urlQuery))) {
             $bindSearchValue = '%' . $urlQuery["search"] . '%';
@@ -395,7 +431,11 @@ class OrderGateway {
             $data[] = $row;
         }
 
-        return $data;
+        if (isset($urlQuery) && in_array("sizeof", array_keys($urlQuery))) {
+            return ["rowcount" => sizeof($data)];
+        } else {
+            return $data;
+        }
     }
 
     

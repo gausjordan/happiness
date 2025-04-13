@@ -268,8 +268,8 @@ class OrderController {
                 $result = null;
                 
                 $result = $this->gateway->listAllOrders($urlQuery);
+                
                 echo json_encode($result);
-
                 break;
             
             case "POST":

@@ -134,6 +134,7 @@ document.getElementById('menu-toggle').addEventListener('change', (e) => {
     hamburgerIcon.classList.add('menu');
     
     document.addEventListener("click", closeMainMenu);
+    document.addEventListener("keydown", closeMainMenu);
 
     function closeMainMenu(e) {
         e.stopPropagation();
@@ -143,6 +144,7 @@ document.getElementById('menu-toggle').addEventListener('change', (e) => {
         hamburgerIcon.classList.remove('menu');
         document.getElementById('menu-toggle').checked = false;
         document.removeEventListener("click", closeMainMenu);
+        document.removeEventListener("keydown", closeMainMenu);
     }
 });
 
