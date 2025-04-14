@@ -4,14 +4,18 @@ if (typeof orders === "undefined") {
 
     const orders = (function () {
         
-        let sizeLimit = 5;
+        let sizeLimit = 3;
+        let pageNumber = 1;
         let userId = getUserId();
         let baselineURL = "/api/orders/?finished=1";
-        let fetchURL = baselineURL + `&order-by-desc=dateOrdered&show-all=1&limit=0,` + sizeLimit;
+        let fetchURL = applyFilteringOptions();
+
+        console.log(fetchURL);
 
         document.getElementById('orders-options').addEventListener("change", refreshData);
 
-        async function refreshData(e) {
+        function applyFilteringOptions() {
+
             let sortOption = document.getElementById('sort-by').value;
             let showArchived = document.getElementById('show-archived');
             let dateFrom = document.getElementById('date-from').value;
@@ -46,11 +50,20 @@ if (typeof orders === "undefined") {
                 dateFrom = "2000-01-01";
             }
             if (dateTo === "") {
-                dateTo = "2222-01-01";
+                dateTo = "2200-01-01";
             }
             dateLimits = "&daterange=" + dateFrom + "," + dateTo;
 
-            fetchURL = baselineURL + showArchived + sortOption + dateLimits;
+            return baselineURL +
+                showArchived +
+                sortOption +
+                dateLimits +
+                `&limit=` + ((pageNumber * sizeLimit) - sizeLimit) + "," + sizeLimit;
+        }
+
+        async function refreshData() {
+            
+            fetchURL = applyFilteringOptions();
 
             try {
                 let ordersCount = await orders.getOrdersSize();
@@ -73,7 +86,7 @@ if (typeof orders === "undefined") {
             else { navigateTo("/account"); }
         }
         
-        async function getOrdersList() {
+        async function getOrdersList(from, to) {
             let orders = await fetchData(fetchURL);
             return orders;
         }
@@ -88,17 +101,24 @@ if (typeof orders === "undefined") {
         function getSizeLimit() {
             return sizeLimit;
         }
+
+        function getPageNumber() {
+            return pageNumber;
+        }
         
         return {
             getOrdersList,
             getOrdersSize,
             getUserId,
+            getSizeLimit,
+            getPageNumber,
             getSizeLimit
         };
         
 
     })();
 
+    /* Initial data batch on load */
     (async () => {
         try {
             let ordersCount = await orders.getOrdersSize();
@@ -111,8 +131,6 @@ if (typeof orders === "undefined") {
     })();
 
     async function buildTable(raw, size, sizeLimit) {
-
-        // console.log(raw, size, sizeLimit);
 
         let table = document.getElementById('orders-list').getElementsByTagName('tbody')[0];
         let fragment = document.createDocumentFragment();
@@ -154,10 +172,10 @@ if (typeof orders === "undefined") {
         }
 
         table.appendChild(fragment);
-
-        if (size > sizeLimit) {
-            console.log("Shit got overflown");
-        }
+        
+        // if (size > sizeLimit) {
+        //     console.log("Shit got overflown");
+        // }
 
         return raw;
     }
