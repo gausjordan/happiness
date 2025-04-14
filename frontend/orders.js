@@ -7,46 +7,61 @@ if (typeof orders === "undefined") {
         let sizeLimit = 5;
         let userId = getUserId();
         let baselineURL = "/api/orders/?finished=1";
-        let fetchURL = baselineURL + `&order-by-asc=dateOrdered&show-all=1&limit=0,` + sizeLimit;
+        let fetchURL = baselineURL + `&order-by-desc=dateOrdered&show-all=1&limit=0,` + sizeLimit;
 
-        document.getElementById('orders-options').addEventListener("change", modifyFetchURL);
+        document.getElementById('orders-options').addEventListener("change", refreshData);
 
-        function modifyFetchURL(e) {
+        async function refreshData(e) {
+            let sortOption = document.getElementById('sort-by').value;
+            let showArchived = document.getElementById('show-archived');
+            let dateFrom = document.getElementById('date-from').value;
+            let dateTo = document.getElementById('date-to').value;
+            let dateLimits ="";
 
-            let showArchived = null;
-            let sortOption = null;
-
-            console.log(e);
-
-            if (e.originalTarget.id="show-archived") {
-                switch(e.originalTarget.value) {
-                    case "date-asc":
-                        sortOption = "&order-by-asc=dateOrdered";
-                        break;
-                    case "date-desc":
-                        sortOption =  "&order-by-desc=dateOrdered";
-                        break;
-                    case "price-asc":
-                        sortOption =  "&order-by-asc=price";
-                        break;
-                    case "price-desc":
-                        sortOption =  "&order-by-desc=price";
-                        break;
-                    default:
-                        sortOption = "";
-                        break;
-                }
+            switch(sortOption) {
+                case "date-asc":
+                    sortOption = "&order-by-asc=dateOrdered";
+                    break;
+                case "date-desc":
+                    sortOption =  "&order-by-desc=dateOrdered";
+                    break;
+                case "price-asc":
+                    sortOption =  "&order-by-asc=price";
+                    break;
+                case "price-desc":
+                    sortOption =  "&order-by-desc=price";
+                    break;
+                default:
+                    sortOption = "";
+                    break;
+            }
+            
+            if (showArchived.checked === true) {
+                showArchived = "&show-all=1";
+            } else {
+                showArchived = "";
             }
 
-            if (e.originalTarget.id="show-archived") {
-                if (e.originalTarget.checked === true) {
-                    showArchived = "&show-all=1";
-                } else {
-                    showArchived = "";
-                }
+            if (dateFrom === "") {
+                dateFrom = "2000-01-01";
             }
+            if (dateTo === "") {
+                dateTo = "2222-01-01";
+            }
+            dateLimits = "&daterange=" + dateFrom + "," + dateTo;
 
-            console.log(baselineURL + showArchived + sortOption);
+            fetchURL = baselineURL + showArchived + sortOption + dateLimits;
+
+            try {
+                let ordersCount = await orders.getOrdersSize();
+                let rawData = await orders.getOrdersList();
+                buildTable(rawData, ordersCount.rowcount, orders.getSizeLimit());
+    
+            } catch (error) {
+                console.error("Error refreshing orders or re-building the table:", error);
+            }
+            
+       
         }
 
         function getUserId() {
@@ -97,17 +112,17 @@ if (typeof orders === "undefined") {
 
     async function buildTable(raw, size, sizeLimit) {
 
-        console.log(raw, size, sizeLimit);
+        // console.log(raw, size, sizeLimit);
 
         let table = document.getElementById('orders-list').getElementsByTagName('tbody')[0];
         let fragment = document.createDocumentFragment();
         let template = document.getElementsByClassName('empty-template')[0];
 
-        // let existingRows = Array.from(document.getElementsByClassName('data'));
+        let existingRows = Array.from(document.getElementsByClassName('data'));
         
-        // if(existingRows) {
-        //     existingRows.forEach(r => table.removeChild(r));
-        // }
+        if(existingRows) {
+            existingRows.forEach(r => table.removeChild(r));
+        }
 
         for (let i = 0; i < raw.length; i++) {
             let newRow = template.cloneNode(true);

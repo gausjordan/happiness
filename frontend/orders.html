@@ -4,10 +4,10 @@
         document.querySelector("h1").textContent = "Customer orders";
         document.getElementById("order-filtering-options").querySelector("label").textContent = "Sort by";
         document.getElementById("order-manage-archived").querySelector("label").textContent = "Show archived";
-        document.getElementById("order-filtering-options").querySelector("option[value='date-asc']").textContent = "date (newest first)";
-        document.getElementById("order-filtering-options").querySelector("option[value='date-desc']").textContent = "date (oldest first)";
-        document.getElementById("order-filtering-options").querySelector("option[value='price-asc']").textContent = "price (highest first)";
-        document.getElementById("order-filtering-options").querySelector("option[value='price-desc']").textContent = "price (lowest first)";
+        document.getElementById("order-filtering-options").querySelector("option[value='date-asc']").textContent = "date (oldest first)";
+        document.getElementById("order-filtering-options").querySelector("option[value='date-desc']").textContent = "date (newest first)";
+        document.getElementById("order-filtering-options").querySelector("option[value='price-asc']").textContent = "price (lowest first)";
+        document.getElementById("order-filtering-options").querySelector("option[value='price-desc']").textContent = "price (highest first)";
         document.getElementById("date-filtering").querySelector("label[for='date-from']").innerHTML = "Ordered between"
         document.getElementById("date-filtering").querySelector("label[for='date-to']").innerHTML = "and"
     } else {
@@ -29,10 +29,10 @@
         <div id="order-filtering-options">
             <label for="sorting-criteria">Složi prema</label>
             <select name="sorting-criteria" id="sort-by">
-                <option value="date-asc">datumu (prvo noviji)</option>
-                <option value="date-desc">datumu (prvo stariji)</option>
-                <option value="price-asc">iznosu (prvo veći)</option>
-                <option value="price-desc">iznosu (prvo manji)</option>
+                <option value="date-desc">datumu (prvo noviji)</option>
+                <option value="date-asc">datumu (prvo stariji)</option>
+                <option value="price-desc">iznosu (prvo veći)</option>
+                <option value="price-asc">iznosu (prvo manji)</option>
             </select>
         </div>
     
