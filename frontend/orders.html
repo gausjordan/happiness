@@ -8,7 +8,7 @@
         document.getElementById("order-filtering-options").querySelector("option[value='date-desc']").textContent = "date (newest first)";
         document.getElementById("order-filtering-options").querySelector("option[value='price-asc']").textContent = "price (lowest first)";
         document.getElementById("order-filtering-options").querySelector("option[value='price-desc']").textContent = "price (highest first)";
-        document.getElementById("date-filtering").querySelector("label[for='date-from']").innerHTML = "Ordered between"
+        document.getElementById("date-filtering").querySelector("label[for='date-from']").innerHTML = "placed between"
         document.getElementById("date-filtering").querySelector("label[for='date-to']").innerHTML = "and"
     } else {
         document.title = "Administracija ponude";
@@ -43,11 +43,11 @@
 
         <div id="date-filtering">
             <div>
-                <label for="date-from">i samo novije od</label>
+                <label for="date-from">naručene između </label>
                 <input type="date" name="date-from" id="date-from"></input>
             </div>
             <div>
-                <label for="date-to">te starije od</label>
+                <label for="date-to">i</label>
                 <input type="date" name="date-to" id="date-to"></input>
             </div>
         </div>

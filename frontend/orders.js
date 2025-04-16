@@ -2,9 +2,9 @@
 
 if (typeof orders === "undefined") {
 
+
     const orders = (function () {
-        
-        let sizeLimit = 3;
+        let sizeLimit = 20;
         let pageNumber = 1;
         let userId = getUserId();
         let baselineURL = "/api/orders/?finished=1";
@@ -12,7 +12,24 @@ if (typeof orders === "undefined") {
 
         console.log(fetchURL);
 
-        document.getElementById('orders-options').addEventListener("change", refreshData);
+        document.getElementById('orders-options').addEventListener("change", () => {
+            refreshData();
+            // Each time one changes the sorting criteria, we're back to page 1
+            pageNumber = 1;
+        });
+
+        async function refreshData() {
+            fetchURL = applyFilteringOptions();
+            try {
+                let ordersCount = await orders.getOrdersSize();
+                let rawData = await orders.getOrdersList();
+                deleteOldContentIfAny();
+                buildTable(rawData, ordersCount.rowcount, orders.getSizeLimit());
+    
+            } catch (error) {
+                console.error("Error refreshing orders or re-building the table:", error);
+            }
+        }
 
         function applyFilteringOptions() {
 
@@ -61,22 +78,6 @@ if (typeof orders === "undefined") {
                 `&limit=` + ((pageNumber * sizeLimit) - sizeLimit) + "," + sizeLimit;
         }
 
-        async function refreshData() {
-            
-            fetchURL = applyFilteringOptions();
-
-            try {
-                let ordersCount = await orders.getOrdersSize();
-                let rawData = await orders.getOrdersList();
-                buildTable(rawData, ordersCount.rowcount, orders.getSizeLimit());
-    
-            } catch (error) {
-                console.error("Error refreshing orders or re-building the table:", error);
-            }
-            
-       
-        }
-
         function getUserId() {
             let token = localStorage.getItem("access_token");
             if (token) {
@@ -105,6 +106,10 @@ if (typeof orders === "undefined") {
         function getPageNumber() {
             return pageNumber;
         }
+
+        function setPageNumber(num) {
+            pageNumber = num;
+        }
         
         return {
             getOrdersList,
@@ -112,7 +117,9 @@ if (typeof orders === "undefined") {
             getUserId,
             getSizeLimit,
             getPageNumber,
-            getSizeLimit
+            getSizeLimit,
+            setPageNumber,
+            refreshData
         };
         
 
@@ -135,13 +142,7 @@ if (typeof orders === "undefined") {
         let table = document.getElementById('orders-list').getElementsByTagName('tbody')[0];
         let fragment = document.createDocumentFragment();
         let template = document.getElementsByClassName('empty-template')[0];
-
-        let existingRows = Array.from(document.getElementsByClassName('data'));
         
-        if(existingRows) {
-            existingRows.forEach(r => table.removeChild(r));
-        }
-
         for (let i = 0; i < raw.length; i++) {
             let newRow = template.cloneNode(true);
             newRow.classList.remove('empty-template');
@@ -171,13 +172,68 @@ if (typeof orders === "undefined") {
             fragment.appendChild(newRow);
         }
 
+        if (size > sizeLimit) {
+            drawPageSelector(size, sizeLimit, orders.getPageNumber());
+        }
+
         table.appendChild(fragment);
-        
-        // if (size > sizeLimit) {
-        //     console.log("Shit got overflown");
-        // }
 
         return raw;
+    }
+
+    function deleteOldContentIfAny() {
+        let table = document.getElementById('orders-list').getElementsByTagName('tbody')[0];
+        let existingRows = Array.from(document.getElementsByClassName('data'));
+        let pageSelector = document.getElementsByClassName('orders-page-selector')[0];
+        
+        if(existingRows) {
+            existingRows.forEach(r => table.removeChild(r));
+        }
+        if (pageSelector) {
+            document.getElementById('app').removeChild(pageSelector);
+        }
+    }   
+
+    function drawPageSelector(size, sizeLimit, pageNumber) {
+        let backButton = document.createElement("button");
+        console.log("---");
+        console.log(pageNumber);
+            backButton.textContent = localStorage.getItem('lang') == 'hr' ? "Prethodna" : "Previous";
+            if (pageNumber == 1) {
+                backButton.setAttribute('disabled', "");
+            }
+            backButton.addEventListener("click", () => {
+                orders.setPageNumber(orders.getPageNumber() - 1);
+                orders.refreshData();
+            });
+        let pageInput = document.createElement("input");
+            pageInput.setAttribute('type', 'number');
+            pageInput.setAttribute('min', 1);
+            pageInput.setAttribute('size', "3");
+            pageInput.setAttribute('max', Math.ceil(size / sizeLimit));
+            pageInput.setAttribute('value', orders.getPageNumber());
+            pageInput.addEventListener("change", (e) => {
+                orders.setPageNumber(e.target.value);
+                orders.refreshData();
+            });
+        let forwardButton = document.createElement("button");
+            forwardButton.textContent = localStorage.getItem('lang') == 'hr' ? "Sljedeća" : "Next";
+            if (pageNumber == Math.ceil(size / sizeLimit)) {
+                forwardButton.setAttribute('disabled', "");
+            }
+            forwardButton.addEventListener("click", () => {
+                orders.setPageNumber(orders.getPageNumber() + 1);
+                orders.refreshData();
+            });
+        
+        let pageSelector = document.createElement("div");
+            pageSelector.classList.add('orders-page-selector');
+       
+        pageSelector.appendChild(backButton);
+        pageSelector.appendChild(pageInput);
+        pageSelector.appendChild(forwardButton);
+        
+        document.getElementById('app').appendChild(pageSelector);
     }
     
 
