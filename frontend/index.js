@@ -250,8 +250,9 @@ const navigateTo = async (path, doNotPushState = false) => {
     document.getElementById('menu-toggle').checked = false;
 
     // Manage browser history
+    let currentPath = window.location.pathname + window.location.search;
     if (!doNotPushState) {
-        if (window.location.pathname !== path) {
+        if (currentPath !== path) {
             history.pushState({}, "", path);
         }
     } else {
@@ -267,6 +268,7 @@ const navigateTo = async (path, doNotPushState = false) => {
     if (!target) {
         url = new URL(window.location.origin + "/404");
         target = routes[url.pathname];
+        console.log(target);
     }
 
     // Load the page content
@@ -560,6 +562,18 @@ async function buildMainMenu(categories, lang) {
         fullMenu.querySelector('a[href="/about"] li span').innerHTML = "About Us"
     }
 
+    // Add submenu item "all articles"
+    let a = document.createElement("a");
+        a.setAttribute('data-link', '');
+        a.href = "/shop";
+    let li = document.createElement("li");
+    let span = document.createElement("span");
+        span.innerHTML = localStorage.getItem('lang') === 'hr' ? "Svi artikli" : "All products";
+    li.appendChild(span);
+    a.appendChild(li);
+    categoriesSubMenu.appendChild(a);
+
+    // Add as many submenu item as there are categories
     categories.forEach(c => {
         let a = document.createElement("a");
             a.setAttribute('data-link', '');

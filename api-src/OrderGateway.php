@@ -200,7 +200,7 @@ class OrderGateway {
         return $data ?? null;
     }
 
-    public function updateSingleOrderMetadata($oldOrder, $newData) {
+    public function updateSingleOrderMetadata($oldOrder, $newData, $is_privileged) {
         $id = $oldOrder[0]["id"];
         $is_shipped = $oldOrder[0]["is_shipped"];
         $is_paid = $oldOrder[0]["is_paid"];
@@ -209,19 +209,38 @@ class OrderGateway {
         $is_archived = $oldOrder[0]["is_archived"];
         $dateOrdered = $oldOrder[0]["dateOrdered"];
         $dateReceived  = $oldOrder[0]["dateReceived"];
+        $comment = $oldOrder[0]["comment"];
 
-        $sql = "UPDATE
-                    orders
-                SET
-                    dateOrdered = :dateOrdered,
-                    dateReceived = :dateReceived,
-                    is_shipped = :is_shipped,
-                    is_paid = :is_paid,
-                    is_returned = :is_returned,
-                    is_refunded = :is_refunded,
-                    is_archived = :is_archived
-                WHERE
-                    id = :id;";
+        if($is_privileged) {
+
+            $sql = "UPDATE
+                        orders
+                    SET
+                        dateOrdered = :dateOrdered,
+                        dateReceived = :dateReceived,
+                        is_shipped = :is_shipped,
+                        is_paid = :is_paid,
+                        is_returned = :is_returned,
+                        is_refunded = :is_refunded,
+                        is_archived = :is_archived,
+                        comment = :comment
+                    WHERE
+                        id = :id;";
+        }
+        else {
+            $sql = "UPDATE
+                        orders
+                    SET
+                        dateOrdered = :dateOrdered,
+                        dateReceived = :dateReceived,
+                        is_shipped = :is_shipped,
+                        is_paid = :is_paid,
+                        is_returned = :is_returned,
+                        is_refunded = :is_refunded,
+                        is_archived = :is_archived
+                    WHERE
+                        id = :id;";
+        }
 
         $stmt = $this->conn->prepare($sql);
         $stmt->bindValue(":id", $id, PDO::PARAM_INT);
@@ -243,6 +262,11 @@ class OrderGateway {
         $stmt->bindValue(":is_returned", $newData["is_returned"] ?? $is_returned, PDO::PARAM_INT);
         $stmt->bindValue(":is_refunded", $newData["is_refunded"] ?? $is_refunded, PDO::PARAM_INT);
         $stmt->bindValue(":is_archived", $newData["is_archived"] ?? $is_archived, PDO::PARAM_INT);
+
+        if ($is_privileged) {
+            $stmt->bindValue(":comment", $newData["comment"] ?? $comment, PDO::PARAM_STR);
+        }
+
         $stmt->execute();
         return $stmt->rowCount();
     }

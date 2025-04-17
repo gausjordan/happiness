@@ -195,7 +195,7 @@ if (typeof orders === "undefined") {
                 }
             });
 
-            // Handle updating one particular order's custom notes
+            // Handle updating one particular order's custom text notes
             newRow.addEventListener("input", (e) => {
                 let nameParam = e.target.parentElement.getAttribute("name");
                 let id = e.target.parentElement.parentElement.querySelector('td[name="order_id_value"]').textContent;
@@ -203,22 +203,19 @@ if (typeof orders === "undefined") {
                 
                 switch (nameParam) {
                     case "note_value":
-                        debouncedTextHandler(textValue);
+                        debouncedTextHandler(e, textValue, id);
                         break;
                     default:
                         break;
                 }
             });
-            
             fragment.appendChild(newRow);
         }
 
-        
         // Only draw the page selection <div> if there is more than one page
         if (size > sizeLimit) { drawPageSelector(size, sizeLimit, orders.getPageNumber()); }
 
         table.appendChild(fragment);
-
         return raw;
     }
 
@@ -238,12 +235,19 @@ if (typeof orders === "undefined") {
         }
     }
 
-    function handleTextAreaUpdates(textValue) {
-        console.log(textValue);
-    }
-
-    let debouncedTextHandler = debounce((textValue) => {
-        handleTextAreaUpdates(textValue);
+    let debouncedTextHandler = debounce(async (e, textValue, id) => {
+        let backup = e.target.value;
+        try {
+            await fetchData(`api/orders/${id}`, "PATCH", {
+                "comment" : textValue
+            });
+            let response = await fetchData(`api/orders/${id}?overview=1`, "GET");
+            e.target.value = response.comment;
+            //console.log(response);
+        } catch (error) {
+            console.error(`Error updating an order's text comment: `, error);
+            e.target.value = backup;
+        }
     }, 500);
 
     function debounce(func, delay) {

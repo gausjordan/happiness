@@ -17,7 +17,6 @@ async function buildShop(fetchURL = "/api/products", refreshExisting) {
 
     let url = new URL(window.location);
     
-    //console.log(url.searchParams.get("fuck"));
 
     let obj;
 
@@ -189,7 +188,7 @@ function populateFilterMenu(obj) {
 function assembleQueryPath() {
     let checked = document.querySelectorAll('ul#shop-filtering-menu li input[type="checkbox"]:checked');
     let queryPath = "/api/products";
-
+    
     if (checked.length == 0) {
         return null;
     }
@@ -317,5 +316,32 @@ function filteringMenuHandler(event) {
     }
 }
 
-filterButtonToggle();
-buildShop();
+    async function getId(catgName) {
+        let categoryIDs = {};
+        const s = await structure;
+
+        s.categories.categories.forEach((c) => {
+            categoryIDs[c.categoryname_en.toLowerCase()] = c.category_id;
+        });
+
+        return categoryIDs[catgName.toLowerCase()];
+    }
+  
+    async function lookUpURL() {
+        let url = new URL(window.location.href);
+        if (url.searchParams.get("category")) {
+            let id = await getId(url.searchParams.get("category"));
+            return "/api/products?products_and_categories=" + id;
+        } else {
+            return "/api/products";
+        }
+    }
+    
+    
+    filterButtonToggle();
+
+    (async () => {
+        let apiPath = await lookUpURL();
+        buildShop(apiPath);
+    })();
+    

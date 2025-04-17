@@ -192,10 +192,18 @@ class OrderController {
 
                     // Check for errors
                     if ($this->getUpdateValidationErrors($input, $oldOrder, $id) !== 0) {
+                        var_dump($input);
                         exit;
                     }
 
-                    if ($status = $this->gateway->updateSingleOrderMetadata($oldOrder, $input)) {
+                    $is_privileged = null;
+
+                    if ($this->user_role == "employee" || $this->user_role == "admin") {
+                        $is_privileged = true; // We are admin or employee
+                    }
+
+                    // Unless we are an admin or an employee - ignore the comment field
+                    if ($status = $this->gateway->updateSingleOrderMetadata($oldOrder, $input, $is_privileged)) {
                         echo json_encode(["Message: " => "Update successful. $status row affected."]);
                     } else {
                         echo json_encode(["Message: " => "Nothing got updated."]);
@@ -211,7 +219,7 @@ class OrderController {
                     
                     // Find out which user (by id) made the order that we want
                     $ordersOwnerId = $this->gateway->getOrdersOwnerId($id);
-                    if($this->user_id == $ordersOwnerId || $this->user_role == "employe" || $this->user_role == "admin") {
+                    if($this->user_id == $ordersOwnerId || $this->user_role == "employee" || $this->user_role == "admin") {
                         $item = $urlQuery["delete-item"];
                         $rows = $this->gateway->deleteOrderItem($id, $item);
                         if ($rows > 0) {
