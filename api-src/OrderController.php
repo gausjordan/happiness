@@ -73,6 +73,25 @@ class OrderController {
                         return null;
                     }
                 }
+
+                else if (isset($urlQuery) && array_key_exists("overview", $urlQuery)) {
+                    if ($this->user_role !== "admin" && $this->user_role !== "employee") {
+                        http_response_code(403);
+                        echo json_encode(["Message: " => "Only admins can access another's order."]);
+                        exit;
+                    }
+                    
+                    $result = $this->gateway->getOrderOverview($id);
+
+                    if(!$result) {
+                        http_response_code(404);
+                        echo json_encode(["Message: " => "No orders with this id."]);
+                        return null;
+                    }
+
+                    echo json_encode($result[0]);
+                    
+                }
                 
                 // If no query parameters were given, we get order details by order's id
                 else {
@@ -130,7 +149,6 @@ class OrderController {
 
                     $order_item_id = $urlQuery["order_item_id"];
                     $quantity = $urlQuery["quantity"];
-
 
                     // Find out which user (by id) made the order that we want
                     $ordersOwnerId = $this->gateway->getOrdersOwnerId($id);
@@ -303,7 +321,7 @@ class OrderController {
         // Find out which user (by id) made the order that we want
         $ordersOwnerId = $this->gateway->getOrdersOwnerId($id);
 
-        if (!($this->user_id == $ordersOwnerId || $this->user_role == "employe" || $this->user_role == "admin")) {
+        if (!($this->user_id == $ordersOwnerId || $this->user_role == "employee" || $this->user_role == "admin")) {
             http_response_code(403);
             echo json_encode(["Message: " => "Only admins and cart owners can update orders."]);
             exit;

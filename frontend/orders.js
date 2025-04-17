@@ -169,16 +169,91 @@ if (typeof orders === "undefined") {
             newRow.querySelector('td[name="is_archived_value"] input').checked = raw[i].is_archived === 1 ? true : false;
             newRow.querySelector('td[name="note_caption"]').innerHTML = localStorage.getItem('lang') == 'hr' ? 'Napomena' : 'Note';
             newRow.querySelector('td[name="note_value"] textarea').innerHTML = raw[i].comment;
+            
+            // Handle updating one particular order's checkbox states
+            newRow.addEventListener("click", async (e) => {
+                let nameParam = e.target.parentElement.getAttribute("name");
+                let id = e.target.parentElement.parentElement.querySelector('td[name="order_id_value"]').textContent;
+                switch (nameParam) {
+                    case "is_paid_value":
+                        flipTheCheckbox(e, id, "is_paid");
+                        break;
+                    case "is_sent_value":
+                        flipTheCheckbox(e, id, "is_shipped");
+                        break;
+                    case "is_returned_value":
+                        flipTheCheckbox(e, id, "is_returned");
+                        break;
+                    case "is_refunded_value":
+                        flipTheCheckbox(e, id, "is_refunded");
+                        break;
+                    case "is_archived_value":
+                        flipTheCheckbox(e, id, "is_archived");
+                        break;
+                    default:
+                        break;
+                }
+            });
+
+            // Handle updating one particular order's custom notes
+            newRow.addEventListener("input", (e) => {
+                let nameParam = e.target.parentElement.getAttribute("name");
+                let id = e.target.parentElement.parentElement.querySelector('td[name="order_id_value"]').textContent;
+                let textValue = e.target.parentElement.parentElement.querySelector('td[name="note_value"] textarea').value;
+                
+                switch (nameParam) {
+                    case "note_value":
+                        debouncedTextHandler(textValue);
+                        break;
+                    default:
+                        break;
+                }
+            });
+            
             fragment.appendChild(newRow);
         }
 
-        if (size > sizeLimit) {
-            drawPageSelector(size, sizeLimit, orders.getPageNumber());
-        }
+        
+        // Only draw the page selection <div> if there is more than one page
+        if (size > sizeLimit) { drawPageSelector(size, sizeLimit, orders.getPageNumber()); }
 
         table.appendChild(fragment);
 
         return raw;
+    }
+
+    async function flipTheCheckbox(e, id, whichRow) {
+        e.target.disabled = true;
+        try {
+            await fetchData(`api/orders/${id}`, "PATCH", {
+                [whichRow] : e.target.checked ? 1 : 0
+            });
+            let response = await fetchData(`api/orders/${id}?overview=1`, "GET");
+            e.target.checked = response[whichRow];
+        } catch (error) {
+            console.error(`Error updating ${whichRow} checkbox state: `, error);
+            e.target.checked = !e.target.checked;
+        } finally {
+            e.target.disabled = false;
+        }
+    }
+
+    function handleTextAreaUpdates(textValue) {
+        console.log(textValue);
+    }
+
+    let debouncedTextHandler = debounce((textValue) => {
+        handleTextAreaUpdates(textValue);
+    }, 500);
+
+    function debounce(func, delay) {
+        let timeoutId;
+        return function (...args) {
+            clearTimeout(timeoutId);
+            timeoutId = setTimeout(() => {
+                func.apply(this, args);
+            }, delay);
+        };
     }
 
     function deleteOldContentIfAny() {

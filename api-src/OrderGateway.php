@@ -258,6 +258,26 @@ class OrderGateway {
     }
 
 
+    public function getOrderOverview($id) {
+        $sql = "
+            SELECT id, dateOrdered, dateReceived, is_shipped, is_paid, is_returned, is_refunded, is_archived, comment FROM `orders`
+            WHERE id = :order_id
+        ";
+
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindValue(":order_id", $id, PDO::PARAM_INT);
+        $stmt->execute();
+
+        $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        // $data = [];
+        // while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+        //     $data[] = $row;
+        // }
+
+        return $data;
+    }
+
     public function getAllOrdersByUser($id) {
         $sql = "
             # Fetch all orders made by the current user
