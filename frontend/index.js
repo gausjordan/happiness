@@ -137,6 +137,11 @@ document.getElementById('menu-toggle').addEventListener('change', (e) => {
     document.addEventListener("keydown", closeMainMenu);
 
     function closeMainMenu(e) {
+
+        if (e.type === "keydown" && e.key !== "Escape") {
+            return;
+        }
+
         e.stopPropagation();
         e.preventDefault();
         document.body.classList.remove('disable-pointer-events');
@@ -170,7 +175,10 @@ flag[1].addEventListener("click", () => {
     
     structure.then((c) => buildMainMenu(c.categories.categories));
 
-    navigateTo(window.location.pathname || "/home");
+    let url = new URL(window.location.origin + window.location.pathname + window.location.search);
+    // navigateTo(window.location.pathname || "/home");
+    navigateTo(url.pathname + url.search || "/home");
+
 });
 
 
@@ -577,6 +585,7 @@ async function buildMainMenu(categories, lang) {
     categories.forEach(c => {
         let a = document.createElement("a");
             a.setAttribute('data-link', '');
+            a.setAttribute('category-id', c.category_id);
             a.href = "/shop?category=" + (String)(c.categoryname_en).toLowerCase();
         let li = document.createElement("li");
         let span = document.createElement("span");

@@ -10,6 +10,7 @@ function loadImage(src) {
     });
 }
 
+
 // Build the page (<app>)
 async function buildShop(fetchURL = "/api/products", refreshExisting) {
     let app = document.getElementById('app');
@@ -17,7 +18,6 @@ async function buildShop(fetchURL = "/api/products", refreshExisting) {
 
     let url = new URL(window.location);
     
-
     let obj;
 
     try { obj = await fetchData(fetchURL);
@@ -354,10 +354,22 @@ var currentCategory = (() => {
 
 
 filterButtonToggle();
+
+// Entry point
 (async () => {
     let apiPath = await lookUpURL();
     currentCategory.setApiPath(apiPath);
     buildShop(apiPath);
+
+    // If, whatever is typed in as a category in the URL, IS a valid category, we will copy the category's
+    // name from the main menu. In such case, apiPath ends with a category id (an integer value). Otherwise, we ignore it
+    if (Number.isInteger(Number.parseInt(apiPath[apiPath.length-1]))) {
+        let newTitle = document.querySelector('ul#nav-links div.submenu a[category-id="' + apiPath[apiPath.length-1] + '"] span').textContent;
+        document.querySelector('main#app h1.shop-title').textContent = newTitle;
+        document.title = newTitle;
+    }
+    
+
 })();
 
 
