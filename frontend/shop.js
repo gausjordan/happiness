@@ -132,7 +132,8 @@ function populateFilterMenu(obj) {
             element.checked = false;
         });
 
-        let queryPath = assembleQueryPath() !== null ? queryPath : "/api/products";
+        let queryPath = assembleQueryPath() !== null ? queryPath : currentCategory.getApiPath();
+        
         buildShop(queryPath, true);
 
         // Close filtering menu after resetting filtering
@@ -151,13 +152,12 @@ function populateFilterMenu(obj) {
     checkbice.forEach(c => {
         c.addEventListener("change", (e) => {
             let queryPath = assembleQueryPath();
-            queryPath = assembleQueryPath() !== null ? queryPath : "/api/products";
+            queryPath = assembleQueryPath() !== null ? queryPath : currentCategory.getApiPath();
             buildShop(queryPath, true);
         });
     })
         
     
-
     
     // Prevent "mouse over" styling on touch-based devices, keep it for mouse users only
     let items = document.querySelectorAll('ul#shop-filtering-menu li');
@@ -187,13 +187,13 @@ function populateFilterMenu(obj) {
 
 function assembleQueryPath() {
     let checked = document.querySelectorAll('ul#shop-filtering-menu li input[type="checkbox"]:checked');
-    let queryPath = "/api/products";
-    
+    //let queryPath = "/api/products";
+    let queryPath = currentCategory.getApiPath();
+        
     if (checked.length == 0) {
         return null;
     }
 
-    let categories = [];
     let tags = [];
 
     checked.forEach((i) => {
@@ -204,11 +204,12 @@ function assembleQueryPath() {
         }
     });
 
-    queryPath += "?";
-
-    if (categories.length > 0) {
-        queryPath += "products_and_categories=" + categories.join(",");
+    if (queryPath === '/api/products') {
+        queryPath += "?";
+    } else {        
+        queryPath += "&";
     }
+
     if (tags.length > 0) {
         queryPath += "&";
         queryPath += "products_and_tags=" + tags.join(",");
@@ -295,7 +296,6 @@ function filterButtonToggle() {
 
 
 
-
 // Open and close the filter menu in special cases
 function filteringMenuHandler(event) {
 
@@ -316,32 +316,48 @@ function filteringMenuHandler(event) {
     }
 }
 
-    async function getId(catgName) {
-        let categoryIDs = {};
-        const s = await structure;
+async function getId(catgName) {
+    let categoryIDs = {};
+    const s = await structure;
 
-        s.categories.categories.forEach((c) => {
-            categoryIDs[c.categoryname_en.toLowerCase()] = c.category_id;
-        });
+    s.categories.categories.forEach((c) => {
+        categoryIDs[c.categoryname_en.toLowerCase()] = c.category_id;
+    });
 
-        return categoryIDs[catgName.toLowerCase()];
+    return categoryIDs[catgName.toLowerCase()];
+}
+
+async function lookUpURL() {
+    let url = new URL(window.location.href);
+    if (url.searchParams.get("category")) {
+        let id = await getId(url.searchParams.get("category"));
+        return "/api/products?products_and_categories=" + id;
+    } else {
+        return "/api/products";
     }
-  
-    async function lookUpURL() {
-        let url = new URL(window.location.href);
-        if (url.searchParams.get("category")) {
-            let id = await getId(url.searchParams.get("category"));
-            return "/api/products?products_and_categories=" + id;
-        } else {
-            return "/api/products";
+}
+
+
+// Stores which category a user is viewing (global)
+var currentCategory = (() => {
+    let apiPath;
+     return {
+        setApiPath: (p) => { apiPath = p; },
+        getApiPath: () => {
+            if (apiPath === undefined) {
+                throw new Error("Too soon... apiPath has not been set yet.");
+            }
+            return apiPath;
         }
-    }
-    
-    
-    filterButtonToggle();
+    };
+})();
 
-    (async () => {
-        let apiPath = await lookUpURL();
-        buildShop(apiPath);
-    })();
-    
+
+filterButtonToggle();
+(async () => {
+    let apiPath = await lookUpURL();
+    currentCategory.setApiPath(apiPath);
+    buildShop(apiPath);
+})();
+
+
