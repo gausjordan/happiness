@@ -180,7 +180,7 @@ if (typeof cart === "undefined") {
                     "Empty this cart and cancel your order?" :
                     "Isprazniti košaricu i poništiti narudžbu?";
         
-        let usersChoice = await openModal(text, buttons);
+        let usersChoice = await openDialogModal(text, buttons);
         if (usersChoice == "Da" || usersChoice == "Yes") {
             try {
                 let userId = JSON.parse(atob(localStorage.getItem('access_token').split('.')[1])).sub;
@@ -203,7 +203,7 @@ if (typeof cart === "undefined") {
                     "Place order?" :
                     "Dovršiti narudžbu?" ;
         
-        let usersChoice = await openModal(text, buttons);
+        let usersChoice = await openDialogModal(text, buttons);
         if (usersChoice == "Da" || usersChoice == "Yes") {
             let data = await cart.getOrder();
             let orderId = data[0].order_id;

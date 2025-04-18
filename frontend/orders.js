@@ -10,8 +10,6 @@ if (typeof orders === "undefined") {
         let baselineURL = "/api/orders/?finished=1";
         let fetchURL = applyFilteringOptions();
 
-        console.log(fetchURL);
-
         document.getElementById('orders-options').addEventListener("change", () => {
             refreshData();
             // Each time one changes the sorting criteria, we're back to page 1
@@ -170,7 +168,7 @@ if (typeof orders === "undefined") {
             newRow.querySelector('td[name="note_caption"]').innerHTML = localStorage.getItem('lang') == 'hr' ? 'Napomena' : 'Note';
             newRow.querySelector('td[name="note_value"] textarea').innerHTML = raw[i].comment;
             
-            // Handle updating one particular order's checkbox states
+            // Handle updating one particular order's checkbox states AND viewing order details
             newRow.addEventListener("click", async (e) => {
                 let nameParam = e.target.parentElement.getAttribute("name");
                 let id = e.target.parentElement.parentElement.querySelector('td[name="order_id_value"]').textContent;
@@ -191,6 +189,14 @@ if (typeof orders === "undefined") {
                         flipTheCheckbox(e, id, "is_archived");
                         break;
                     default:
+                        if (e.target.getAttribute('name') === 'order_id_value' ||
+                            e.target.getAttribute('name') === 'full_name_value' ||
+                            e.target.getAttribute('name') === 'date_received_value' ||
+                            e.target.getAttribute('name') === 'date_ordered_value' ||
+                            e.target.getAttribute('name') === 'total_value') {
+                                let id = e.target.parentElement.querySelector('td[name="order_id_value"]').textContent;
+                                showOrderDetails(id);
+                        }
                         break;
                 }
             });
@@ -218,6 +224,47 @@ if (typeof orders === "undefined") {
         table.appendChild(fragment);
         return raw;
     }
+
+    function showOrderDetails(id) {
+        
+        let content = document.createDocumentFragment();
+        let p = document.createElement("p");
+            p.textContent = "Probni tekst";
+        content.appendChild(p);
+        popUpBigModal(content);
+
+    }
+
+    function popUpBigModal(content) {
+        //let main = document.getElementById('app');
+        let modal = document.createElement('div');
+            modal.appendChild(content);
+            modal.classList.add("modal");
+               
+
+    }
+
+
+    /*
+    async function openDialogModal(text, buttons) {
+    document.getElementById('modal').style.display = "flex";
+    document.querySelectorAll(' body *:not(#app):not(#modal):not(#modal *) ').forEach(i => {
+        i.classList.add('blurred');
+    });
+    document.getElementById('modal').querySelector('p').innerHTML = text;
+    
+    return new Promise(resolve => {
+        if (buttons) {
+            buttons.forEach(async b => {
+                let button = document.createElement('div');
+                button.innerHTML = b;
+                document.getElementById('modal-buttons').appendChild(button);
+                button.addEventListener("click", async () => { removeModal(); resolve(b); });
+            });
+        }
+    })
+}
+    */
 
     async function flipTheCheckbox(e, id, whichRow) {
         e.target.disabled = true;

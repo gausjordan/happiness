@@ -222,13 +222,17 @@ document.querySelector("header a[href='/cart']").addEventListener("click", () =>
 // Override default <a> behavior
 document.addEventListener("DOMContentLoaded", () => {
     document.querySelectorAll('a[data-link]').forEach(anchor => {
-        anchor.addEventListener('click', (event) => {
-            event.preventDefault();
-            const path = anchor.getAttribute('href');
-            navigateTo(path);
-        });
+        anchor.addEventListener('click', overrideLinkBehavior);
     });
 });
+
+// Don't reload page on links, fetch data instead
+function overrideLinkBehavior(e) {
+    e.preventDefault();
+    let link = e.target.closest('a');
+    let path = link?.getAttribute('href');
+    navigateTo(path);
+}
 
 // Override "shop" menu item behavior
 document.querySelector('#nav-links a[href="/shop"]').addEventListener("click", (e) => {
@@ -500,7 +504,7 @@ document.getElementById("search-cancel-x").addEventListener("click", (e) => {
 
 
 /* Blurs everything and pops up a dialog window */
-async function openModal(text, buttons) {
+async function openDialogModal(text, buttons) {
     document.getElementById('modal').style.display = "flex";
     document.querySelectorAll(' body *:not(#app):not(#modal):not(#modal *) ').forEach(i => {
         i.classList.add('blurred');
@@ -537,7 +541,7 @@ let structure = (async function getDataStructure() {
     return { categories };
 })();
 
-async function buildMainMenu(categories, lang) {
+async function buildMainMenu(categories) {
 
     function decodeUserRole() {
         let token = localStorage.getItem("access_token");
@@ -600,6 +604,7 @@ async function buildMainMenu(categories, lang) {
         let a = document.createElement("a");
             a.setAttribute('data-link', '');
             a.href = "/orders";
+            a.addEventListener('click', (e) => overrideLinkBehavior(e) );
         let li = document.createElement("li");
         let span = document.createElement("span");
             span.innerHTML = localStorage.getItem('lang') === 'hr' ? "Narudžbe" : "Orders";
@@ -614,6 +619,7 @@ async function buildMainMenu(categories, lang) {
         let a = document.createElement("a");
             a.setAttribute('data-link', '');
             a.href = "/inventory";
+            a.addEventListener('click', (e) => overrideLinkBehavior(e) );
         let li = document.createElement("li");
         let span = document.createElement("span");
             span.innerHTML = localStorage.getItem('lang') === 'hr' ? "Ponuda" : "Inventory";
@@ -628,6 +634,7 @@ async function buildMainMenu(categories, lang) {
         let a = document.createElement("a");
             a.setAttribute('data-link', '');
             a.href = "/users";
+            a.addEventListener('click', (e) => overrideLinkBehavior(e) );
         let li = document.createElement("li");
         let span = document.createElement("span");
             span.innerHTML = localStorage.getItem('lang') === 'hr' ? "Korisnici" : "Users";
@@ -637,13 +644,13 @@ async function buildMainMenu(categories, lang) {
         fullMenu.appendChild(div);
     }
 
-    document.querySelectorAll('a[data-link]').forEach(anchor => {
-        anchor.addEventListener('click', (event) => {
-            event.preventDefault();
-            const path = anchor.getAttribute('href');
-            navigateTo(path);
+    // Modify link behavior to avoid reloading (only affect subcategories added after the DOM)
+    document.querySelectorAll('ul#nav-links .submenu a[data-link]').forEach(anchor => {
+        anchor.addEventListener('click', (e) => {
+            overrideLinkBehavior(e);
         });
     });
+    
 
 };
 
