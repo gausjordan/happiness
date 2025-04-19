@@ -286,7 +286,6 @@ function filterButtonToggle() {
             document.body.classList.add("disable-pointer-events");
         } else {
             // Menu was already open - close it
-            // TODO - apply settings
             menu.removeAttribute("active");
             // And remove a no-longer-needed listener
             document.documentElement.removeEventListener("click", filteringMenuHandler, true);

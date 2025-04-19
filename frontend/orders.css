@@ -70,6 +70,24 @@
                 resize:vertical;
             }
         }
+        td[name="order_id_value"],
+        td[name="date_ordered_value"],
+        td[name="date_received_value"],
+        td[name="total_value"],
+        td[name="full_name_value"]{
+            /* color: blue; */
+            /* text-decoration: underline; */
+            cursor: pointer;
+        }
+
+        td[name="order_id_value"]::after {
+            content: "\24D8";
+            color: blue;
+            font-weight: normal;
+            font-size: 120%;
+            margin-left: 0.2em;
+        }
+
 
         tr {
             box-sizing: border-box;

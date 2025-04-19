@@ -163,7 +163,7 @@ if (typeof orders === "undefined") {
             newRow.querySelector('td[name="is_returned_value"] input').checked = raw[i].is_returned === 1 ? true : false;
             newRow.querySelector('td[name="is_refunded_caption"]').innerHTML = localStorage.getItem('lang') == 'hr' ? 'Vraćen novac' : 'Refunded';
             newRow.querySelector('td[name="is_refunded_value"] input').checked = raw[i].is_refunded === 1 ? true : false;
-            newRow.querySelector('td[name="is_archived_caption"]').innerHTML = localStorage.getItem('lang') == 'hr' ? 'U arhivi' : 'Archived';
+            newRow.querySelector('td[name="is_archived_caption"]').innerHTML = localStorage.getItem('lang') == 'hr' ? 'Arhivirano' : 'Archived';
             newRow.querySelector('td[name="is_archived_value"] input').checked = raw[i].is_archived === 1 ? true : false;
             newRow.querySelector('td[name="note_caption"]').innerHTML = localStorage.getItem('lang') == 'hr' ? 'Napomena' : 'Note';
             newRow.querySelector('td[name="note_value"] textarea').innerHTML = raw[i].comment;
@@ -195,7 +195,8 @@ if (typeof orders === "undefined") {
                             e.target.getAttribute('name') === 'date_ordered_value' ||
                             e.target.getAttribute('name') === 'total_value') {
                                 let id = e.target.parentElement.querySelector('td[name="order_id_value"]').textContent;
-                                showOrderDetails(id);
+                                let user_id = raw[i].user_id;
+                                showOrderDetails(id, user_id);
                         }
                         break;
                 }
@@ -225,46 +226,70 @@ if (typeof orders === "undefined") {
         return raw;
     }
 
-    function showOrderDetails(id) {
-        
+    async function showOrderDetails(id, user_id) {
         let content = document.createDocumentFragment();
-        let p = document.createElement("p");
-            p.textContent = "Probni tekst";
-        content.appendChild(p);
+
+        let [orderDetails, userDetails] = await Promise.all([
+            getSingleOrderDetails(id),
+            getUserDetails(user_id)
+        ]);
+
+        let masterDiv = document.createElement("div");
+        let orderItems = document.createElement("div");
+        let buyerInfo = document.createElement("div");
+
+        let orderItemsHeader = document.createElement("h1");
+            orderItemsHeader.textContent = userDetails.email;
+        let buyerInfoHeader = document.createElement("h1");
+        
+        buyerInfo.appendChild(buyerInfoHeader);
+        orderItems.appendChild(orderItemsHeader);
+        masterDiv.appendChild(buyerInfo);
+        masterDiv.appendChild(orderItems);
+        
+        
+
+
+        masterDiv.setAttribute("id", "modal-dialog-box");
+        masterDiv.appendChild(p);
+        content.appendChild(masterDiv);
         popUpBigModal(content);
 
+
+        
     }
 
     function popUpBigModal(content) {
-        //let main = document.getElementById('app');
-        let modal = document.createElement('div');
-            modal.appendChild(content);
-            modal.classList.add("modal");
-               
-
+        let main = document.getElementById('app');
+        let invisiDiv = document.createElement('div');
+            invisiDiv.style.display = "flex";
+            invisiDiv.setAttribute("id", "modal");
+            invisiDiv.classList.add("modal");
+        invisiDiv.appendChild(content);
+        document.body.appendChild(invisiDiv);
+        invisiDiv.addEventListener("click", () => { document.body.removeChild(invisiDiv) });
     }
 
-
-    /*
-    async function openDialogModal(text, buttons) {
-    document.getElementById('modal').style.display = "flex";
-    document.querySelectorAll(' body *:not(#app):not(#modal):not(#modal *) ').forEach(i => {
-        i.classList.add('blurred');
-    });
-    document.getElementById('modal').querySelector('p').innerHTML = text;
     
-    return new Promise(resolve => {
-        if (buttons) {
-            buttons.forEach(async b => {
-                let button = document.createElement('div');
-                button.innerHTML = b;
-                document.getElementById('modal-buttons').appendChild(button);
-                button.addEventListener("click", async () => { removeModal(); resolve(b); });
-            });
+        async function getSingleOrderDetails(id) {
+            try {
+                let response = await fetchData(`/api/orders/${id}`, "GET");
+                return response;
+            } catch (error) {
+                console.error("Error fetching order details:", error);
+            }
         }
-    })
-}
-    */
+    
+        async function getUserDetails(user_id) {
+            try {
+                let response = await fetchData(`/api/users/${user_id}`, "GET");
+                return response;
+            } catch (error) {
+                console.error("Error fetching order details:", error);
+            }
+        }
+    
+    
 
     async function flipTheCheckbox(e, id, whichRow) {
         e.target.disabled = true;

@@ -20,7 +20,8 @@ class UserGateway {
     }
 
     public function getByUserId(int $id): array | false {
-        $sql = "SELECT user.id AS id, username, firstName, lastName, email, phone, addressStreet, addressNumber, postalCode, city, country, role, password_hash, description FROM `user` INNER JOIN `user_roles` ON user.role = user_roles.id WHERE user.id = :id";
+        //$sql = "SELECT user.id AS id, username, firstName, lastName, email, phone, addressStreet, addressNumber, postalCode, city, country, role, password_hash, description FROM `user` INNER JOIN `user_roles` ON user.role = user_roles.id WHERE user.id = :id";
+        $sql = "SELECT user.id AS id, username, firstName, lastName, email, phone, addressStreet, addressNumber, postalCode, city, country, role, description FROM `user` INNER JOIN `user_roles` ON user.role = user_roles.id WHERE user.id = :id";
         $stmt = $this->conn->prepare($sql);
         $stmt->bindValue(":id", $id, PDO::PARAM_INT);
         $stmt->execute();

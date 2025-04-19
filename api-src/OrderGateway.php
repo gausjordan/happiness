@@ -168,10 +168,12 @@ class OrderGateway {
 
         $sql = "
         # Fetch one order by id, with all the product details
-            SELECT order_id, product_id, quantity, price_charged
+            SELECT order_id, product_id, quantity, price_charged, title, naslov
             FROM `orders`
             INNER JOIN `user` ON `orders`.`user_id` = `user`.`id`
             INNER JOIN `order_items` ON `orders`.`id` = `order_items`.`order_id`
+            INNER JOIN `product` ON `order_items`.`product_id` = `product`.id
+            
             # WHERE `dateOrdered` IS NOT NULL
             AND order_id = :order_id;
         ";
@@ -284,7 +286,7 @@ class OrderGateway {
 
     public function getOrderOverview($id) {
         $sql = "
-            SELECT id, dateOrdered, dateReceived, is_shipped, is_paid, is_returned, is_refunded, is_archived, comment FROM `orders`
+            SELECT id, user_id, dateOrdered, dateReceived, is_shipped, is_paid, is_returned, is_refunded, is_archived, comment FROM `orders`
             WHERE id = :order_id
         ";
 
@@ -443,7 +445,7 @@ class OrderGateway {
         // var_dump($urlQuery["daterange"]);
 
         $sql_base = "
-            SELECT order_id, user.username, user.firstName, user.lastName, dateOrdered, dateReceived, is_shipped, is_paid, is_returned, is_refunded, is_archived, SUM(price_charged) AS price, comment FROM `orders`
+            SELECT order_id, user_id, user.username, user.firstName, user.lastName, dateOrdered, dateReceived, is_shipped, is_paid, is_returned, is_refunded, is_archived, SUM(price_charged) AS price, comment FROM `orders`
             INNER JOIN `user` ON `orders`.`user_id` = `user`.`id`
             INNER JOIN `order_items` ON `orders`.`id` = `order_items`.`order_id`
         ";
