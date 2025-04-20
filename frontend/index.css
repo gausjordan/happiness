@@ -45,6 +45,12 @@ body.disable-pointer-events .menu, body.disable-pointer-events .menu * {
   padding: 1.5em;
   box-shadow: 3px 3px 12px gray;
   border-radius: 0.2em;
+  overflow: hidden;
+  word-break: break-all;
+}
+
+.modal #modal-dialog-box h1 {
+  font-size: 1.2em;
 }
 
 .modal #modal-buttons {

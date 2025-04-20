@@ -235,23 +235,83 @@ if (typeof orders === "undefined") {
         ]);
 
         let masterDiv = document.createElement("div");
+            masterDiv.setAttribute("id", "modal-dialog-box");
         let orderItems = document.createElement("div");
         let buyerInfo = document.createElement("div");
-
+            
         let orderItemsHeader = document.createElement("h1");
-            orderItemsHeader.textContent = userDetails.email;
-        let buyerInfoHeader = document.createElement("h1");
+            orderItemsHeader.textContent = localStorage.getItem('lang') == 'hr' ? "Odabrani artikli" : "Ordered items";
+            
+            let buyerInfoHeader = document.createElement("h1");
+                buyerInfoHeader.textContent = localStorage.getItem('lang') == 'hr' ? "Podaci o naručitelju" : "Customer details";
+
+            buyerInfo.appendChild(buyerInfoHeader);
+            orderItems.appendChild(orderItemsHeader);
+
+            console.log(orderDetails);
+            
+
+        let name = document.createElement("p");
+            name.textContent = userDetails.firstName + " " + userDetails.lastName;
+            buyerInfo.appendChild(name);
+
+        let address = document.createElement("p");
+            address.textContent = userDetails.addressStreet + " " + userDetails.addressNumber;
+            buyerInfo.appendChild(address);
         
-        buyerInfo.appendChild(buyerInfoHeader);
-        orderItems.appendChild(orderItemsHeader);
+        
+        let city = document.createElement("p");
+            city.textContent = userDetails.postalCode + " " + userDetails.city;
+            buyerInfo.appendChild(city);
+        
+        let country = document.createElement("p");
+            country.textContent = userDetails.country;
+            buyerInfo.appendChild(country);
+        
+        let email = document.createElement("p");
+            email.textContent = "e-mail: " + userDetails.email;
+            buyerInfo.appendChild(email);
+            
+        let phone = document.createElement("p");
+            let phoneCaption = localStorage.getItem('lang') == 'hr' ? "Telefon: " : "Phone number: ";
+            phone.textContent = phoneCaption + userDetails.phone;
+            buyerInfo.appendChild(phone);
+
+        let itemsList = document.createElement("ul");
+        let totalCharged = document.createElement("p");
+
+        let manualTotal = 0;
+
+        orderDetails.forEach(i => {
+
+            manualTotal = manualTotal + Number.parseFloat(i.price_charged);
+
+            let item = document.createElement("li");
+            let name = document.createElement("p");
+            let separator = document.createElement("span");
+            let quantity = document.createElement("p");
+            let price = document.createElement("p");
+
+            name.textContent = localStorage.getItem('lang') == 'hr' ? i.naslov : i.title;
+            quantity.textContent = i.quantity;
+            price.textContent = i.price_charged;
+            totalCharged.textContent = (localStorage.getItem('lang') == 'hr' ? "Ukupno: " : "Total: ") + manualTotal + " €";
+
+            item.appendChild(name);
+            item.appendChild(separator);
+            item.appendChild(quantity);
+            item.appendChild(price);
+            
+            itemsList.appendChild(item);
+        });
+
+        
+
+        orderItems.appendChild(itemsList);
+        orderItems.appendChild(totalCharged);
         masterDiv.appendChild(buyerInfo);
         masterDiv.appendChild(orderItems);
-        
-        
-
-
-        masterDiv.setAttribute("id", "modal-dialog-box");
-        masterDiv.appendChild(p);
+                
         content.appendChild(masterDiv);
         popUpBigModal(content);
 

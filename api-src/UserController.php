@@ -16,7 +16,7 @@ class UserController {
 
     public function processRequest(string $method, ?string $id, ?array $urlQuery): void {
         
-        if ($this->user_role !== "admin" && $method !== 'POST') {
+        if (($this->user_role !== "admin" && $this->user_role !== "employee") && $method !== 'POST') {
             echo(json_encode([ "message" => "Admin account required." ]));
             exit;
         }
