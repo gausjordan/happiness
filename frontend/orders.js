@@ -279,6 +279,7 @@ if (typeof orders === "undefined") {
 
         let itemsList = document.createElement("ul");
         let totalCharged = document.createElement("p");
+            totalCharged.setAttribute("id", "total-charged");
 
         let manualTotal = 0;
 
@@ -288,18 +289,24 @@ if (typeof orders === "undefined") {
 
             let item = document.createElement("li");
             let name = document.createElement("p");
-            let separator = document.createElement("span");
+            let separator1 = document.createElement("span");
+            let separator2 = document.createElement("span");
             let quantity = document.createElement("p");
             let price = document.createElement("p");
 
             name.textContent = localStorage.getItem('lang') == 'hr' ? i.naslov : i.title;
             quantity.textContent = i.quantity;
             price.textContent = i.price_charged;
-            totalCharged.textContent = (localStorage.getItem('lang') == 'hr' ? "Ukupno: " : "Total: ") + manualTotal + " €";
+            totalCharged.textContent = (localStorage.getItem('lang') == 'hr' ? "Ukupno: " : "Total: ") + manualTotal.toFixed(2); + " €";
+
+            name.classList.add("order-list-item");
+            quantity.classList.add("order-list-item");
+            price.classList.add("order-list-item");
 
             item.appendChild(name);
-            item.appendChild(separator);
+            item.appendChild(separator1);
             item.appendChild(quantity);
+            item.appendChild(separator2);
             item.appendChild(price);
             
             itemsList.appendChild(item);
@@ -315,11 +322,26 @@ if (typeof orders === "undefined") {
         content.appendChild(masterDiv);
         popUpBigModal(content);
 
-
-        
     }
 
     function popUpBigModal(content) {
+
+        // document.getElementById('modal').style.display = "flex";
+        // document.querySelectorAll(' body *:not(#app):not(#modal):not(#modal *) ').forEach(i => {
+        //     i.classList.add('blurred');
+        // });
+
+        document.body.style.overflow = "hidden";
+
+        window.addEventListener('keydown', function(e) {
+            const keys = ['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End', ' '];
+            if (keys.includes(e.key)) {
+              e.preventDefault();
+            }
+          }, { passive: false });
+
+
+
         let main = document.getElementById('app');
         let invisiDiv = document.createElement('div');
             invisiDiv.style.display = "flex";
@@ -327,7 +349,14 @@ if (typeof orders === "undefined") {
             invisiDiv.classList.add("modal");
         invisiDiv.appendChild(content);
         document.body.appendChild(invisiDiv);
-        invisiDiv.addEventListener("click", () => { document.body.removeChild(invisiDiv) });
+        
+        invisiDiv.addEventListener("click", () => {
+            document.body.removeChild(invisiDiv);
+            document.querySelectorAll('div #modal-buttons *').forEach(i => i.remove());
+            document.querySelectorAll('.blurred').forEach(i => i.classList.remove('blurred'));
+            document.getElementById('modal').style.display = "none";
+            document.body.style.overflow = "initial";
+        });
     }
 
     

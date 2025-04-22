@@ -117,6 +117,7 @@ for (let flag of flags) {
         flag.style.opacity = "1";
     }
 }
+document.documentElement.lang = localStorage.getItem('lang') == "en" ? "en" : "hr";
 
 
 // Disable all interactive elements while the menu is shown
@@ -509,7 +510,7 @@ async function openDialogModal(text, buttons) {
     document.querySelectorAll(' body *:not(#app):not(#modal):not(#modal *) ').forEach(i => {
         i.classList.add('blurred');
     });
-    document.getElementById('modal').querySelector('p').innerHTML = text;
+    document.getElementById('modal').querySelector('p').textContent = text;
     
     return new Promise(resolve => {
         if (buttons) {
