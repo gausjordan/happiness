@@ -206,7 +206,7 @@ const routes = {
     "/shop": '/frontend/shop.html',
     "/cart": '/frontend/cart.html',
     "/product": '/frontend/product.html',
-    "/products-admin": '/frontend/products-admin.html',
+    "/inventory": '/frontend/inventory.html',
     "/account": '/frontend/account.html',
     "/register": '/frontend/register.html',
     "/404": '/frontend/404.html',
@@ -284,9 +284,17 @@ const navigateTo = async (path, doNotPushState = false) => {
         console.log(target);
     }
 
-    // Load the page content
+    // Good old worky
     const page = await loadPage(url.origin + target + url.search);
+    
+    if (!page) {
+        // There are two cases where we fetch 404. If the path is not on the
+        // valid paths routing list, or if the html actually isn't there
+        // This particular one happens when the file cannot be found
+        navigateTo("/404");
+    }
 
+    
     // Parse the loaded HTML to extract the title and body content
     const parser = new DOMParser();
     const parsedPage = parser.parseFromString(page, 'text/html');
@@ -370,14 +378,28 @@ function loadStylesheets(container, baseUrl) {
 }
 
 
-// Load and inject page content
+// Load page content
 async function loadPage(target) {
     try {
         const response = await fetch(target);
+
+        // Back-end SPA serves index.html as a fallback page if path is not found
+        // If a user actually wanted index.html - that's simply what he's getting
+        if (target.includes("home.html")) {
+            return await response.text();
+        }
+        
+        // Otherwise, check if the response is actually the fallback page
+        // If it is - redirect to 404. Otherwise, proceed and return whatever
         const text = await response.text();
+        if (text.startsWith("<!DOCTYPE html")) {
+            return null;
+        }
+
         return text;
-    } catch (error) {
-        return `<h1>Error fetching the page</h1>`;
+
+    } catch (e) {
+        
     }
 }
 

@@ -86,7 +86,7 @@ body.disable-pointer-events .menu, body.disable-pointer-events .menu * {
   content: "x";
 }
 
-.modal ul li p:nth-child(5)::before {
+.modal ul li p:nth-child(5)::after {
   content: " €";
 }
 

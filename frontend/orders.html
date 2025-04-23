@@ -1,6 +1,6 @@
 <script>
     if (localStorage.getItem("lang") === 'en') {
-        document.title = "Store inventory";
+        document.title = "Customer orders";
         document.querySelector("h1").textContent = "Customer orders";
         document.getElementById("order-filtering-options").querySelector("label").textContent = "Sort by";
         document.getElementById("order-manage-archived").querySelector("label").textContent = "Show archived";
@@ -11,7 +11,7 @@
         document.getElementById("date-filtering").querySelector("label[for='date-from']").innerHTML = "placed between"
         document.getElementById("date-filtering").querySelector("label[for='date-to']").innerHTML = "and"
     } else {
-        document.title = "Administracija ponude";
+        document.title = "Upravljanje narudžbama";
         document.querySelector("h1").textContent = "Narudžbe";
     }
 </script>
