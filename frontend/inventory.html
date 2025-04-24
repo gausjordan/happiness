@@ -15,6 +15,37 @@
 </head>
 <body>
     <h1></h1>
+    <div id="inventory-options">
+
+        <div id="inventory-sorting">
+            <label for="sorting-criteria">Slaži prema</label>
+            <select name="sorting-criteria" id="sort-by">
+                <option value="date-desc">datumu (prvo noviji)</option>
+                <option value="date-asc">datumu (prvo stariji)</option>
+                <option value="price-desc">iznosu (prvo veći)</option>
+                <option value="price-asc">iznosu (prvo manji)</option>
+            </select>
+        </div>
+
+        <div id="inventory-filtering">
+            <label for="filter-by-category">Prikaži kategorije</label>
+            <select name="filter-by-category" id="category-filter">
+                <option value="all">Sve</option>
+            </select>
+        </div>
+
+        <div id="inventory-pagination">
+            <label for="inventory-size-limit">Broj artikala po stranici</label>
+            <select name="inventory-size-limit" id="inventory-size-limit">
+                <option value="10">10</option>
+                <option value="10">20</option>
+                <option value="10">50</option>
+                <option value="10">100</option>
+                <option value="10">200</option>
+            </select>
+        </div>
+
+    </div>
     
 
 </body>

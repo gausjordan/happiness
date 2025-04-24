@@ -97,8 +97,6 @@ class ProductGateway {
                 
             ($limit ? " LIMIT :limit_from,:limit_size;" : " LIMIT 0, 200;");
 
-            //echo $sql;
-
             if ($limit) {
                 $limit = explode(",", $limit);
             }
