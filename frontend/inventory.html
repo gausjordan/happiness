@@ -2,6 +2,15 @@
     if (localStorage.getItem("lang") === 'en') {
         document.title = "Store inventory";
         document.querySelector("h1").textContent = "Store inventory";
+        document.getElementById("inventory-sorting").querySelector("option[value='dateAdded-asc']").textContent = "date (oldest first)";
+        document.getElementById("inventory-sorting").querySelector("label").textContent = "Sort by";
+        document.getElementById("inventory-sorting").querySelector("option[value='dateAdded-desc']").textContent = "date (newest first)";
+        document.getElementById("inventory-sorting").querySelector("option[value='price-asc']").textContent = "price (lowest first)";
+        document.getElementById("inventory-sorting").querySelector("option[value='price-desc']").textContent = "price (highest first)";
+        document.getElementById("inventory-filtering").querySelector("label").textContent = "Show categories";
+        document.getElementById("inventory-filtering").querySelector("option[value='all']").textContent = "All";
+        document.getElementById("inventory-pagination").querySelector("label").textContent = "Articles per page";
+        document.getElementById("add-product-button").textContent = 'Add new product';
     } else {
         document.title = "Administracija ponude";
         document.querySelector("h1").textContent = "Proizvodi u ponudi";
@@ -20,8 +29,8 @@
         <div id="inventory-sorting">
             <label for="sorting-criteria">Slaži prema</label>
             <select name="sorting-criteria" id="sort-by">
-                <option value="date-desc">datumu (prvo noviji)</option>
-                <option value="date-asc">datumu (prvo stariji)</option>
+                <option value="dateAdded-desc">datumu (prvo noviji)</option>
+                <option value="dateAdded-asc">datumu (prvo stariji)</option>
                 <option value="price-desc">iznosu (prvo veći)</option>
                 <option value="price-asc">iznosu (prvo manji)</option>
             </select>
@@ -38,13 +47,16 @@
             <label for="inventory-size-limit">Broj artikala po stranici</label>
             <select name="inventory-size-limit" id="inventory-size-limit">
                 <option value="10">10</option>
-                <option value="10">20</option>
-                <option value="10">50</option>
-                <option value="10">100</option>
-                <option value="10">200</option>
+                <option value="3" selected>3</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+                <option value="200">200</option>
             </select>
         </div>
 
+        <div id="inventory-buttons">
+            <button id="add-product-button">Dodaj novi proizvod</button>
+        </div>
     </div>
     
 

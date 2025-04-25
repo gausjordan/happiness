@@ -436,8 +436,6 @@ if (typeof orders === "undefined") {
 
     function drawPageSelector(size, sizeLimit, pageNumber) {
         let backButton = document.createElement("button");
-        console.log("---");
-        console.log(pageNumber);
             backButton.textContent = localStorage.getItem('lang') == 'hr' ? "Prethodna" : "Previous";
             if (pageNumber == 1) {
                 backButton.setAttribute('disabled', "");
