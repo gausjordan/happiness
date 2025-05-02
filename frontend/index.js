@@ -210,7 +210,8 @@ const routes = {
     "/account": '/frontend/account.html',
     "/register": '/frontend/register.html',
     "/404": '/frontend/404.html',
-    "/orders" : '/frontend/orders.html'
+    "/orders" : '/frontend/orders.html',
+    "/editor" : '/frontend/edit.html'
 };
 
 // Re-route from 'view cart' to login if logged off
@@ -275,6 +276,9 @@ const navigateTo = async (path, doNotPushState = false) => {
     let url = new URL(window.location.origin + path);
     
     let app = document.getElementById("app");
+    
+    // Experimental - potential bugs
+    app.innerHTML = "";
     
     // Only evaluate the first path segment (add a slash at the beginning)
     let target = routes["/" + url.pathname.split("/")[1]];

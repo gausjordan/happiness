@@ -217,6 +217,10 @@ class ProductController {
                 
                 define('ALLOWED_TYPES', ['image/jpeg']);
 
+                print_r($_FILES['file']);
+
+                //var_dump($_FILES);
+
                 if (!isset($_FILES['file']) || $_FILES['file']['error'] !== UPLOAD_ERR_OK) {
                     http_response_code(400);
                     echo json_encode(["Message: " => "No file uploaded or upload error."]);
@@ -224,6 +228,8 @@ class ProductController {
                 }
 
                 $file = $_FILES['file'];
+
+                exit;
 
                 $fileInfo = finfo_open(FILEINFO_MIME_TYPE);
                 $mimeType = finfo_file($fileInfo, $file['tmp_name']);

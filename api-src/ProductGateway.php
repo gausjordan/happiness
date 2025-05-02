@@ -254,7 +254,7 @@ class ProductGateway {
 
                 GROUP_CONCAT(DISTINCT CONCAT(product_tags.id, '|', product_tags.tag, '|', product_tags.tag_english) ORDER BY products_and_tags.id SEPARATOR ', ') as tag,
 
-                GROUP_CONCAT(DISTINCT product_images.url ORDER BY product_images.id SEPARATOR ', ') as url,
+                GROUP_CONCAT(DISTINCT product_images.url ORDER BY product_images.url SEPARATOR ', ') as url,
                 product.price,
                 product.is_available,
                 product.is_visible,

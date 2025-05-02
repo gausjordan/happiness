@@ -1,0 +1,78 @@
+* {
+    box-sizing: border-box;
+}
+
+div.edit-product-data label {
+    display: block;
+    margin-top: 2em;
+    margin-bottom: 0.5em;
+}
+
+div.edit-product-data input[type="text"] {
+    width: 100%;
+}
+
+div.edit-product-data textarea {
+    width: 100%;
+    height: 10em;
+}
+
+div.edit-product-data label#checkbox-field-label {
+    margin-bottom: 1.5em;
+}
+
+div.edit-product-data div#checkbox-field label {
+    display: flex;
+    margin: 0.5em 0;
+    flex-direction:row-reverse;
+    justify-content: start;
+}
+
+div.edit-product-data label#is-available-label,
+div.edit-product-data label#is-visible-label {
+    display: flex;
+    margin: 1.5em 0 0.5em 0;
+    flex-direction:row-reverse;
+    justify-content: start;
+}
+
+div.edit-product-data div#preview-images {
+    box-sizing: content-box;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5em;
+    z-index: -1;
+}
+
+div.edit-product-data div.preview-image-thumbnail {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+}
+
+
+div.edit-product-data div.preview-image-thumbnail img {
+    position: relative;
+}
+
+
+div.edit-product-data div.preview-image-thumbnail div.edit-thumbnail-buttons {
+    position: absolute;
+    padding: 0.25em 0.25em;
+}
+
+div.edit-product-data div.preview-image-thumbnail div.edit-thumbnail-buttons button {
+    padding: 0.2em 0.5em;
+    margin: 0.5em;
+    background-color: #00000055;
+    color: white;
+    text-shadow: 1px 0px black, 0px 1px black, -1px 0px black, 0px -1px black;
+    border: 2px;
+    
+}
+
+div.edit-product-data div#preview-images img {
+    width: 100%;
+    object-fit: cover;
+    aspect-ratio: 1;
+}

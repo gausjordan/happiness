@@ -2,9 +2,10 @@
 
 if (typeof inventory === "undefined") {
 
-    let sizeLimit = 20;
+    let sizeLimit = null;
     let pageNumber = 1;
     let categories = null;
+    let size = null;
     let path = "";
     let productsList;
 
@@ -14,10 +15,9 @@ if (typeof inventory === "undefined") {
         let categories = fetchCategories();
             categories.then(c => fillCategoriesSelector(c));
         productsList = getProductsList(path)
+            .then(p => { size = p.metadata[0].productCount; return p; })
             .then(p => buildPage(p))
-            .then(p => drawPageSelector(p.metadata[0].productCount), sizeLimit, pageNumber);
-
-        
+            .then(p => drawPageSelector());
     })();
 
     // Fetch a list of items filtered by the criteria defined in a 'path'
@@ -49,7 +49,7 @@ if (typeof inventory === "undefined") {
 
     // Generate a full URI to the backend based on the options chosen
     function getPath(e) {
-        let sizeLimit = document.getElementById("inventory-size-limit").value;
+        sizeLimit = document.getElementById("inventory-size-limit").value;
         let path = "api/products?"
             + "order="
             + (document.getElementById("sort-by").value).split("-")[0]
@@ -68,10 +68,15 @@ if (typeof inventory === "undefined") {
     }
 
     // Refresh the entire page whenever filtering options are changed
-    document.getElementById("inventory-options").addEventListener("change", (e) => {
+    document.getElementById("inventory-options").addEventListener("change", refreshAll);
+
+    function refreshAll(e) {
         path = getPath(e);
-        productsList = getProductsList(path).then(p => buildPage(p));
-    });
+        productsList = getProductsList(path)
+                        .then(p => buildPage(p))
+                        .then(p => {size = p.metadata[0].productCount; return p;})
+                        .then(p => drawPageSelector(p));
+    }
 
     // Use fetched data to render the screen
     function buildPage(productsList) {
@@ -81,43 +86,58 @@ if (typeof inventory === "undefined") {
             masterDiv.setAttribute("id", "products-list");
 
         productsList.products.forEach(i => {
-            let div = document.createElement("div");
-            div.classList.add("product");
-            div.setAttribute("id", i.id);
+            let a = document.createElement("a");
+            a.classList.add("product");
+            a.setAttribute("id", i.id);
+            a.setAttribute("href", `/editor/${i.id}`);
 
-            let p = document.createElement("p");
+            let div = document.createElement("div");
             div.textContent = localStorage.getItem("lang") === "hr" ? i.naslov : i.title;
 
-            div.appendChild(p);
-            masterDiv.appendChild(div);
+            a.appendChild(div);
+            masterDiv.appendChild(a);
             frag.appendChild(masterDiv);
         });
         
+        frag.addEventListener("click", (e) => {
+            e.preventDefault();
+            let link = e.target.closest('a');
+            let path = link?.getAttribute('href');
+            navigateTo(path);
+        });
+
         document.getElementById("app").appendChild(frag);
+
         return productsList;
     }
 
     // Draw "previous/next page" buttons
-    function drawPageSelector(size) {
+    function drawPageSelector() {
+        document.getElementsByClassName("products-page-selector")[0]?.remove();
+
+        // There's no need for a page selector; everything fits on one page
+        if (size <= sizeLimit) {
+            return;
+        }
         let backButton = document.createElement("button");
             backButton.textContent = localStorage.getItem('lang') == 'hr' ? "Prethodna" : "Previous";
             if (pageNumber == 1) {
                 backButton.setAttribute('disabled', "");
             }
-            return null;
+            
             backButton.addEventListener("click", () => {
-                productsList.setPageNumber(pageNumber - 1);
-                orders.refreshData();
+                pageNumber = pageNumber - 1;
+                refreshAll();
             });
         let pageInput = document.createElement("input");
             pageInput.setAttribute('type', 'number');
             pageInput.setAttribute('min', 1);
             pageInput.setAttribute('size', "3");
             pageInput.setAttribute('max', Math.ceil(size / sizeLimit));
-            pageInput.setAttribute('value', orders.getPageNumber());
+            pageInput.setAttribute('value', pageNumber);
             pageInput.addEventListener("change", (e) => {
-                orders.setPageNumber(e.target.value);
-                orders.refreshData();
+                pageNumber = Number.parseInt(e.target.value);
+                refreshAll();
             });
         let forwardButton = document.createElement("button");
             forwardButton.textContent = localStorage.getItem('lang') == 'hr' ? "Sljedeća" : "Next";
@@ -125,12 +145,12 @@ if (typeof inventory === "undefined") {
                 forwardButton.setAttribute('disabled', "");
             }
             forwardButton.addEventListener("click", () => {
-                orders.setPageNumber(orders.getPageNumber() + 1);
-                orders.refreshData();
+                pageNumber = pageNumber + 1;
+                refreshAll();
             });
         
         let pageSelector = document.createElement("div");
-            pageSelector.classList.add('orders-page-selector');
+            pageSelector.classList.add('products-page-selector');
        
         pageSelector.appendChild(backButton);
         pageSelector.appendChild(pageInput);
