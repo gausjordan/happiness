@@ -214,10 +214,10 @@ class ProductController {
         switch ($method) {
             
             case "POST":
-                
+
                 define('ALLOWED_TYPES', ['image/jpeg']);
 
-                print_r($_FILES['file']);
+                //print_r($_FILES['file']);
 
                 //var_dump($_FILES);
 
@@ -228,8 +228,6 @@ class ProductController {
                 }
 
                 $file = $_FILES['file'];
-
-                exit;
 
                 $fileInfo = finfo_open(FILEINFO_MIME_TYPE);
                 $mimeType = finfo_file($fileInfo, $file['tmp_name']);
@@ -281,7 +279,7 @@ class ProductController {
                 break;
             
             case "GET":
-                echo($id);
+                // echo($id);
                 $fileName = $this->sanitize->sanitizeFilename($id);
                 
                 if (!file_exists(".." . DIRECTORY_SEPARATOR . "product-images" . DIRECTORY_SEPARATOR . $fileName)) {
@@ -294,8 +292,48 @@ class ProductController {
                     exit;
                 }
             
+            case "PATCH":
+                // JSON body must contain "old" and "new" keys
+                // Old one contains the entire filename
+                // New one only contains the human readable part of the filename
+                $data = (array) json_decode(file_get_contents("php://input"), true);
+                
+                $directory = '../product-images';
+
+                $oldFile = $data["old"];
+                $newFile = $data["new"];
+
+                $oldFilePath = $directory . DIRECTORY_SEPARATOR . $oldFile;
+
+                if (!file_exists($oldFilePath)) {
+                    echo 'The file does not exist';
+                    exit;
+                }
+
+                $oldUniqid = explode("_", $oldFile);
+                $oldUniqid = end($oldUniqid);
+
+                $lastDotInNewFilenamePosition = strrpos($newFile, ".");
+                $newFileWithoutExtension = substr($newFile, 0, $lastDotInNewFilenamePosition);
+              
+                $newFileWithUniqid = $newFileWithoutExtension . "_" . $oldUniqid;
+
+                echo $newFileWithUniqid;
+                
+                try {
+                    rename($oldFilePath, $directory . DIRECTORY_SEPARATOR . $newFileWithUniqid);
+                    echo json_encode(["Message: " => "Rename operation successful."]);
+                } catch (error) {
+                    http_response_code(500);
+                    echo json_encode(["Message: " => "File rename operation failed."]);
+                    exit;
+                }
+
+            break;
+
+            
             default:
-                $this->respondMethodNotAllowed("POST, DELETE");
+                $this->respondMethodNotAllowed("POST, DELETE, GET, PATCH");
         }
 
     }

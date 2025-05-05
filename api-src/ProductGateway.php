@@ -295,6 +295,7 @@ class ProductGateway {
     }
 
 
+    // Tags and categories must be provided as strings in Croatian rather than id's
     public function update(array $old, array $new): int {
         $this->conn->beginTransaction();
         $sql = "
@@ -323,6 +324,7 @@ class ProductGateway {
         $productsRowCount = $statement->rowCount();
         
         if (isset($new["tag"]) && ($old["tag"] !== $new["tag"])) {
+
             $sql = "DELETE FROM products_and_tags WHERE products_and_tags.product_id = :product_id" ;
             $statement = $this->conn->prepare($sql);
             $statement->bindValue(":product_id", $old["id"], PDO::PARAM_INT);

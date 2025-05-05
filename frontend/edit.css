@@ -58,7 +58,7 @@ div.edit-product-data div.preview-image-thumbnail img {
 
 div.edit-product-data div.preview-image-thumbnail div.edit-thumbnail-buttons {
     position: absolute;
-    padding: 0.25em 0.25em;
+    padding: 0.25em 0em;
 }
 
 div.edit-product-data div.preview-image-thumbnail div.edit-thumbnail-buttons button {
@@ -75,4 +75,8 @@ div.edit-product-data div#preview-images img {
     width: 100%;
     object-fit: cover;
     aspect-ratio: 1;
+}
+
+div.edit-product-data div#preview-images img.new-image-placeholder {
+    background-color: darkgray;
 }

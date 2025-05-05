@@ -68,7 +68,8 @@ switch ($uri[2]) {
         }
         else if ($uri[3] == "images")
         {
-            // Either a POST or a DELETE request on a "products/image" resource, POST won't have na id, DELETE will
+            // Either POST, PATCH (rename) or a DELETE request are possible on a "products/image" resource
+            // POST won't have na id, DELETE will
             $id = $uri[4] ?? null;
             $productController->processImageRequest($_SERVER["REQUEST_METHOD"], $id);  
         }

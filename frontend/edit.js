@@ -2,13 +2,15 @@
 
 if (typeof product === "undefined") {
 
+    let apiPath = null;
+    let categories = null;
+
     // Entry point; autoexec.bat
     let product = (function () {
         let params = new URLSearchParams(window.location.href);
         let basePath = new URL(window.location.href);
         let productId = basePath.pathname.split('/')[2];
-        let apiPath = "/api/products/" + productId;
-        let categories = null;
+            apiPath = "/api/products/" + productId;
         let item = null;
         
         fetchCategories()
@@ -23,8 +25,91 @@ if (typeof product === "undefined") {
             .then(f => {
                 document.getElementById("app").appendChild(f);
             })
-            .catch(e => console.error('Async failure. Get to the chopa. ', e));
+            .then((a) => {
+                document.getElementsByClassName("edit-product-data")[0].addEventListener("input", mainChangeRouter);
+            })
+            .catch(e => console.error('Async failure. Get to tha choppa! -> ', e));
+            
     })();
+
+    // Text input and textarea boxes actually require debouncing, checkboxes and dropdowns do not
+    async function mainChangeRouter(e) {
+        // console.log(e.target.type);
+        if (e.target.type === "text" || e.target.type === "textarea" || e.target.type === "number" || e.target.type === "date") {
+            debouncedTextHandler(e);
+        }
+        else if (e.target.closest('div#checkbox-field')) {
+            handleTagChange(e);
+        } else if (e.target.id === "select-category") {
+            handleCategoryChange(e);
+        }
+    }
+
+
+    const debouncedTextHandler = debounce(async function (e) {
+            await handleTextChange(e);
+    }, 500);
+
+    
+    async function handleTagChange(e) {
+        // let dbAttribute = String(e.target.id).split("-")[1];
+        let field = document.getElementById("checkbox-field");
+        let taglist = [];
+
+        Array.from(field.children).forEach(f => {
+            let input = f.querySelector('input');
+            //console.log(input);
+            if (input.checked) {
+                taglist.push(input.getAttribute("hr"));
+            }
+        });
+        
+        try {
+            let response = await fetchData(apiPath, "PATCH", {
+                tag : taglist
+            });
+        } catch (e) {
+            console.log("Error updating the product's tag(s).");
+        }
+    }
+
+    
+    async function handleCategoryChange(e) {
+        let selector = document.getElementById("select-category");
+        console.log(selector.value);
+        
+        try {
+            let response = await fetchData(apiPath, "PATCH", {
+                category : [selector.value]
+            });
+        } catch (e) {
+            console.log("Error updating the product's category.");
+        }
+    }
+
+    
+    async function handleTextChange(e) {
+        let dbAttribute = String(e.target.id).split("-")[1];
+        // console.log(e.target.value);
+        try {
+            let response = await fetchData(apiPath, "PATCH", {
+                [dbAttribute]: e.target.value
+            });
+        } catch (e) {
+            console.log("Error updating a product input or textarea field.");
+        }
+    }
+
+
+    function debounce(func, delay) {
+        let timeoutId;
+        return function (...args) {
+            clearTimeout(timeoutId);
+            timeoutId = setTimeout(() => {
+                func.apply(this, args);
+            }, delay);
+        };
+    }
 
     // Retrieve information about an existing product
     async function getItem(apiPath) {
@@ -110,10 +195,10 @@ if (typeof product === "undefined") {
                     </input>
                 </label>
                 
-                <label for="input-date"  id="input-date-label">
+                <label for="input-dateAdded"  id="input-dateAdded-label">
                     Datum upisa | Date added
                 </label>
-                <input type="date" name="input-date" id="input-date">
+                <input type="date" name="input-dateAdded" id="input-dateAdded">
                 </input>
                 
                 <label for="preview-images"  id="preview-images-label">
@@ -138,12 +223,13 @@ if (typeof product === "undefined") {
         frag.getElementById("input-price").value = item.price;
         frag.getElementById("is-available").checked = item.is_available;
         frag.getElementById("is-visible").checked = item.is_visible;
-        frag.getElementById("input-date").value = item.dateAdded;
+        frag.getElementById("input-dateAdded").value = item.dateAdded;
         
         categories.categories.forEach(c => {
             let opt = document.createElement('option');
-            opt.value = "c" + c.category_id;
-            opt.textContent = c.categoryname_hr + " | " + c.categoryname_en;
+            opt.value = c.categoryname_hr;
+            opt.setAttribute("db-id", c.category_id);
+            opt.textContent = localStorage.getItem("lang") === 'hr' ? c.categoryname_hr : c.categoryname_en;
 
             if (item.category[0] === c.categoryname_hr) {
                 opt.selected = true;
@@ -159,11 +245,14 @@ if (typeof product === "undefined") {
             let checkbox = document.createElement('input');
             let checkbox_label = document.createElement('label');
                 checkbox_label.setAttribute("for", "t" + t.tag_id);
-                checkbox_label.textContent = t.tagname_hr + " | " + t.tagname_en;
+                checkbox_label.textContent = localStorage.getItem("lang") === 'hr' ? t.tagname_hr : t.tagname_en;
             checkbox.type = "checkbox";
             checkbox.name = "checkbox-field";
             checkbox.id = "t" + t.tag_id;
-            checkbox.value = t.tagname_hr + " | " + t.tagname_en;
+            checkbox.setAttribute("db-id", t.tag_id);
+            checkbox.setAttribute("en", t.tagname_en);
+            checkbox.setAttribute("hr", t.tagname_hr);
+            checkbox.value = checkbox_label.textContent;
 
             if (productTagIDs.includes(t.tag_id)) {
                 checkbox.checked = true;
@@ -196,6 +285,7 @@ if (typeof product === "undefined") {
             div.classList.add("preview-image-thumbnail");
         let img = document.createElement('img');
             img.src = "";
+            img.classList.add("new-image-placeholder");
         let buttons = document.createElement('div');
             buttons.classList.add("edit-thumbnail-buttons");
         let addButton = document.createElement('button');
@@ -206,7 +296,6 @@ if (typeof product === "undefined") {
         div.appendChild(buttons);
         frag.getElementById("preview-images").appendChild(div);
         
-
 
         return frag;
     }
