@@ -306,7 +306,8 @@ class ProductController {
                 $oldFilePath = $directory . DIRECTORY_SEPARATOR . $oldFile;
 
                 if (!file_exists($oldFilePath)) {
-                    echo 'The file does not exist';
+                    http_response_code(404);
+                    echo json_encode(["Message: " => "File $oldFilePath not found."]);
                     exit;
                 }
 
@@ -316,16 +317,18 @@ class ProductController {
                 $lastDotInNewFilenamePosition = strrpos($newFile, ".");
                 $newFileWithoutExtension = substr($newFile, 0, $lastDotInNewFilenamePosition);
               
-                $newFileWithUniqid = $newFileWithoutExtension . "_" . $oldUniqid;
-
-                echo $newFileWithUniqid;
                 
-                try {
-                    rename($oldFilePath, $directory . DIRECTORY_SEPARATOR . $newFileWithUniqid);
-                    echo json_encode(["Message: " => "Rename operation successful."]);
-                } catch (error) {
+                if (strpos($oldFile, "_")) {
+                    $newFileWithUniqid = $newFileWithoutExtension . "_" . $oldUniqid;
+                } else {
+                    $newFileWithUniqid = $newFile;
+                }
+
+                if (rename($oldFilePath, $directory . DIRECTORY_SEPARATOR . $newFileWithUniqid)) {
+                    echo json_encode(["Message" => "Rename operation successful."]);
+                } else {
                     http_response_code(500);
-                    echo json_encode(["Message: " => "File rename operation failed."]);
+                    echo json_encode(["Message" => "File rename operation failed."]);
                     exit;
                 }
 

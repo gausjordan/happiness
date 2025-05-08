@@ -100,6 +100,36 @@ if (typeof product === "undefined") {
         }
     }
 
+    function popUpBigModal(content, ...ignoredElements) {
+
+        document.body.style.overflow = "hidden";
+
+        window.addEventListener('keydown', function(e) {
+            const keys = ['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End', ' '];
+            if (keys.includes(e.key) && e.target.nodeName !== 'INPUT') {
+              e.preventDefault();
+            }
+          }, { passive: false });
+
+        let main = document.getElementById('app');
+        let invisiDiv = document.createElement('div');
+            invisiDiv.style.display = "flex";
+            invisiDiv.setAttribute("id", "modal");
+            invisiDiv.classList.add("modal");
+        invisiDiv.appendChild(content);
+        document.body.appendChild(invisiDiv);
+        
+        invisiDiv.addEventListener("click", (e) => {
+            if (!ignoredElements.includes(e.target)) {
+                document.body.removeChild(invisiDiv);
+            }
+            document.querySelectorAll('div #modal-buttons *').forEach(i => i.remove());
+            document.querySelectorAll('.blurred').forEach(i => i.classList.remove('blurred'));
+            document.getElementById('modal').style.display = "none";
+            document.body.style.overflow = "initial";
+        });
+    }
+
 
     function debounce(func, delay) {
         let timeoutId;
@@ -273,6 +303,7 @@ if (typeof product === "undefined") {
                 deleteButton.textContent = localStorage.getItem('lang') === 'hr' ? "Obriši" : "Delete";
             let renameButton = document.createElement('button');
                 renameButton.textContent = localStorage.getItem('lang') === 'hr' ? "Preimenuj" : "Rename";
+                renameButton.addEventListener("click", (e) => renameImage(e, u, item.id, item.url));
             
             div.appendChild(img);
             buttons.appendChild(deleteButton);
@@ -298,6 +329,55 @@ if (typeof product === "undefined") {
         
 
         return frag;
+    }
+
+    async function renameImage(e, url, id, urls) {
+        let dialog = document.createElement("div");
+        dialog.setAttribute("id", "modal-dialog-box");
+        let filteredFilename = url;
+        let lastDot = filteredFilename.lastIndexOf('.');
+        let fileWithoutExtension = filteredFilename.slice(0, lastDot);
+        
+        let input = document.createElement("input");
+            input.type = "text";
+            input.value = fileWithoutExtension;
+        dialog.appendChild(input);
+
+        // last two parameters are references to elements to whom this
+        // function won't attach on click listeners (which close the popup)
+        popUpBigModal(dialog, dialog);
+        input.focus();
+        input.setSelectionRange(input.value.length, input.value.length);
+        document.querySelector("div#modal-dialog-box input").addEventListener("input", (e, url) => {
+            renameImageHandler(e, fileWithoutExtension, id, urls) }
+        );
+    }
+
+    let renameImageHandler = debounce(async (e, fileWithoutExtension, id, urls) => {
+        await renameGateway(e, fileWithoutExtension, id, urls);
+    }, 500)
+
+    async function renameGateway(e, fileWithoutExtension, id, urls) {
+        
+        let index = urls.indexOf(fileWithoutExtension + ".jpg");
+        urls[index] = e.target.value + ".jpg";
+
+        try {
+            let resp1 = await fetchData("/api/products/images", "PATCH", 
+                {
+                    old : [fileWithoutExtension] + ".jpg",
+                    new : [e.target.value] + ".jpg"
+                }
+            )
+
+            let resp2 = await fetchData("/api/products/" + id, "PATCH", 
+                {
+                    url : urls
+                }
+            )
+        } catch {
+            console.log("Image rename request failed.");
+        }
     }
 
 }

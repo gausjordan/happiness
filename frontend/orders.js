@@ -326,11 +326,6 @@ if (typeof orders === "undefined") {
 
     function popUpBigModal(content) {
 
-        // document.getElementById('modal').style.display = "flex";
-        // document.querySelectorAll(' body *:not(#app):not(#modal):not(#modal *) ').forEach(i => {
-        //     i.classList.add('blurred');
-        // });
-
         document.body.style.overflow = "hidden";
 
         window.addEventListener('keydown', function(e) {

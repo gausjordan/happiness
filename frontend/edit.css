@@ -80,3 +80,9 @@ div.edit-product-data div#preview-images img {
 div.edit-product-data div#preview-images img.new-image-placeholder {
     background-color: darkgray;
 }
+
+div#modal-dialog-box input {
+    font-size: 1.1em;
+    border: none;
+    outline: none;
+}
