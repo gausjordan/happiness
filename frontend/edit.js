@@ -4,11 +4,12 @@ if (typeof product === "undefined") {
 
     let apiPath = null;
     let categories = null;
+    let params = new URLSearchParams(window.location.href);
+    let basePath = new URL(window.location.href);
 
     // Entry point; autoexec.bat
     let product = (function () {
-        let params = new URLSearchParams(window.location.href);
-        let basePath = new URL(window.location.href);
+
         let productId = basePath.pathname.split('/')[2];
             apiPath = "/api/products/" + productId;
         let item = null;
@@ -98,36 +99,6 @@ if (typeof product === "undefined") {
         } catch (e) {
             console.log("Error updating a product input or textarea field.");
         }
-    }
-
-    function popUpBigModal(content, ...ignoredElements) {
-
-        document.body.style.overflow = "hidden";
-
-        window.addEventListener('keydown', function(e) {
-            const keys = ['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End', ' '];
-            if (keys.includes(e.key) && e.target.nodeName !== 'INPUT') {
-              e.preventDefault();
-            }
-          }, { passive: false });
-
-        let main = document.getElementById('app');
-        let invisiDiv = document.createElement('div');
-            invisiDiv.style.display = "flex";
-            invisiDiv.setAttribute("id", "modal");
-            invisiDiv.classList.add("modal");
-        invisiDiv.appendChild(content);
-        document.body.appendChild(invisiDiv);
-        
-        invisiDiv.addEventListener("click", (e) => {
-            if (!ignoredElements.includes(e.target)) {
-                document.body.removeChild(invisiDiv);
-            }
-            document.querySelectorAll('div #modal-buttons *').forEach(i => i.remove());
-            document.querySelectorAll('.blurred').forEach(i => i.classList.remove('blurred'));
-            document.getElementById('modal').style.display = "none";
-            document.body.style.overflow = "initial";
-        });
     }
 
 
@@ -301,9 +272,11 @@ if (typeof product === "undefined") {
                 buttons.classList.add("edit-thumbnail-buttons");
             let deleteButton = document.createElement('button');
                 deleteButton.textContent = localStorage.getItem('lang') === 'hr' ? "Obriši" : "Delete";
+                deleteButton.classList.add("delete-image-button");
             let renameButton = document.createElement('button');
                 renameButton.textContent = localStorage.getItem('lang') === 'hr' ? "Preimenuj" : "Rename";
                 renameButton.addEventListener("click", (e) => renameImage(e, u, item.id, item.url));
+                renameButton.classList.add("rename-image-button");
             
             div.appendChild(img);
             buttons.appendChild(deleteButton);
@@ -326,14 +299,28 @@ if (typeof product === "undefined") {
         buttons.appendChild(addButton);
         div.appendChild(buttons);
         frag.getElementById("preview-images").appendChild(div);
-        
 
         return frag;
     }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // This is where renaming operation starts, on a click of a button
     async function renameImage(e, url, id, urls) {
         let dialog = document.createElement("div");
-        dialog.setAttribute("id", "modal-dialog-box");
+            dialog.setAttribute("id", "modal-dialog-box");
         let filteredFilename = url;
         let lastDot = filteredFilename.lastIndexOf('.');
         let fileWithoutExtension = filteredFilename.slice(0, lastDot);
@@ -343,41 +330,96 @@ if (typeof product === "undefined") {
             input.value = fileWithoutExtension;
         dialog.appendChild(input);
 
-        // last two parameters are references to elements to whom this
-        // function won't attach on click listeners (which close the popup)
-        popUpBigModal(dialog, dialog);
+        // the second parameter is a function which should add some logic to the passed (and now generated) elements
+        // last two parameters are references to elements to whom default click listeners (closing the popup) won't be appended
+        popUpBigModal(
+            dialog,
+            (ignoredElements, invisiDiv) => {
+                injectListeners(e, url, fileWithoutExtension, id, urls, ignoredElements, invisiDiv);
+            },
+            dialog, input);
         input.focus();
         input.setSelectionRange(input.value.length, input.value.length);
-        document.querySelector("div#modal-dialog-box input").addEventListener("input", (e, url) => {
-            renameImageHandler(e, fileWithoutExtension, id, urls) }
-        );
     }
 
-    let renameImageHandler = debounce(async (e, fileWithoutExtension, id, urls) => {
-        await renameGateway(e, fileWithoutExtension, id, urls);
-    }, 500)
+
+    // This function brings up a modal on screen, generates some content passed into it,
+    // prevents regular flow to be scrollable underneath the modal, and then EITHER:
+    // (a) sets listeners to autodestruct the modal on click ANYWHERE but on the "ignoredElements" array OR
+    // (b) implements custom logic if callback is not null.
+    function popUpBigModal(content, callback, ...ignoredElements) {
+        document.body.style.overflow = "hidden";
+        window.addEventListener('keydown', function(e) {
+            const keys = ['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End', ' '];
+            if (keys.includes(e.key) && e.target.nodeName !== 'INPUT') {
+              e.preventDefault();
+            }
+          }, { passive: false });
+
+        let invisiDiv = document.createElement('div');
+            invisiDiv.style.display = "flex";
+            invisiDiv.setAttribute("id", "modal-dialog-box");
+            invisiDiv.classList.add("modal");
+        invisiDiv.appendChild(content);
+        document.body.appendChild(invisiDiv);
+
+        callback(ignoredElements, invisiDiv);
+    }
+
+
+    function injectListeners(e, url, fileWithoutExtension, id, urls, ignoredElements, invisiDiv) {
+
+        setTimeout(() => {
+            document.body.addEventListener("click", closeModal);
+        }, 0);
+
+
+        function closeModal(e) {
+            if (!ignoredElements.includes(e.target)) {
+                renameGateway(e, fileWithoutExtension, id, urls);
+                //console.log(e); console.log(fileWithoutExtension); console.log(id); console.log(urls);
+                cleanupModal(e);
+                document.body.removeEventListener("click", closeModal);
+            }
+            else {
+                // console.log("Klik unutra");
+                // console.log(e); console.log(fileWithoutExtension); console.log(id); console.log(urls);
+            }
+        };
+
+    }
+
 
     async function renameGateway(e, fileWithoutExtension, id, urls) {
-        
         let index = urls.indexOf(fileWithoutExtension + ".jpg");
-        urls[index] = e.target.value + ".jpg";
+        let oldFilename = urls[index];
+        let value = document.querySelector("div#modal-dialog-box.modal input").value;
+        urls[index] = value + ".jpg";
 
         try {
             let resp1 = await fetchData("/api/products/images", "PATCH", 
-                {
-                    old : [fileWithoutExtension] + ".jpg",
-                    new : [e.target.value] + ".jpg"
-                }
-            )
-
+                {   old : [fileWithoutExtension] + ".jpg",
+                    new : [value] + ".jpg" }
+            );
             let resp2 = await fetchData("/api/products/" + id, "PATCH", 
-                {
-                    url : urls
-                }
-            )
-        } catch {
-            console.log("Image rename request failed.");
+                {  url : urls }
+            );
+            document.getElementById("app").innerHTML = "";
+            navigateTo(basePath.pathname);
         }
+        catch (e) { console.log("Image rename request failed. Error: ", e) }
+    }
+
+
+
+    function cleanupModal(e) {
+        document.querySelector('div#modal-dialog-box.modal').remove();
+        //document.getElementsByClassName('modal')[0].remove();
+        document.querySelectorAll('.blurred').forEach(i => i.classList.remove('blurred'));
+        document.body.style.overflow = "initial";
+        //document.getElementById('modal-dialog-box').style.display = "none";
+        //document.querySelector("div#modal-dialog-box.modal").innerHTML = "";
+        
     }
 
 }
