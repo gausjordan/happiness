@@ -301,9 +301,11 @@ if (typeof product === "undefined") {
                 buttons.classList.add("edit-thumbnail-buttons");
             let deleteButton = document.createElement('button');
                 deleteButton.textContent = localStorage.getItem('lang') === 'hr' ? "Obriši" : "Delete";
+                deleteButton.classList.add("delete-image-button");
             let renameButton = document.createElement('button');
                 renameButton.textContent = localStorage.getItem('lang') === 'hr' ? "Preimenuj" : "Rename";
                 renameButton.addEventListener("click", (e) => renameImage(e, u, item.id, item.url));
+                renameButton.classList.add("rename-image-button");
             
             div.appendChild(img);
             buttons.appendChild(deleteButton);
@@ -326,7 +328,6 @@ if (typeof product === "undefined") {
         buttons.appendChild(addButton);
         div.appendChild(buttons);
         frag.getElementById("preview-images").appendChild(div);
-        
 
         return frag;
     }
@@ -345,21 +346,31 @@ if (typeof product === "undefined") {
 
         // last two parameters are references to elements to whom this
         // function won't attach on click listeners (which close the popup)
-        popUpBigModal(dialog, dialog);
+        popUpBigModal(dialog, dialog, input);
         input.focus();
         input.setSelectionRange(input.value.length, input.value.length);
-        document.querySelector("div#modal-dialog-box input").addEventListener("input", (e, url) => {
-            renameImageHandler(e, fileWithoutExtension, id, urls) }
-        );
+        
+        document.querySelector("div#modal-dialog-box input").addEventListener("focusout", (e, url) => {
+            renameGateway(e, fileWithoutExtension, id, urls)
+        });
+        document.querySelector("div#modal-dialog-box input").addEventListener("keydown", (e, url) => {
+            if (e.key === 'Enter') {
+                // This always gets triggered by on "focusout" above; no need to duplicate calls
+                // renameGateway(e, fileWithoutExtension, id, urls)
+                let invisiDiv = document.getElementById("modal");
+                document.body.removeChild(invisiDiv);
+                document.querySelectorAll('div #modal-buttons *').forEach(i => i.remove());
+                document.querySelectorAll('.blurred').forEach(i => i.classList.remove('blurred'));
+                document.getElementById('modal').style.display = "none";
+                document.body.style.overflow = "initial";
+            }
+        });
     }
-
-    let renameImageHandler = debounce(async (e, fileWithoutExtension, id, urls) => {
-        await renameGateway(e, fileWithoutExtension, id, urls);
-    }, 500)
 
     async function renameGateway(e, fileWithoutExtension, id, urls) {
         
         let index = urls.indexOf(fileWithoutExtension + ".jpg");
+        let oldFilename = urls[index];
         urls[index] = e.target.value + ".jpg";
 
         try {
@@ -368,15 +379,62 @@ if (typeof product === "undefined") {
                     old : [fileWithoutExtension] + ".jpg",
                     new : [e.target.value] + ".jpg"
                 }
-            )
+            );
 
             let resp2 = await fetchData("/api/products/" + id, "PATCH", 
                 {
                     url : urls
                 }
-            )
-        } catch {
-            console.log("Image rename request failed.");
+            );
+            
+            let imgElement = document.querySelector(`div.preview-image-thumbnail img[src*="/product-images/${oldFilename}"]`);
+            imgElement.src = "/product-images/" + e.target.value + ".jpg";
+
+            let imgContainer = document.querySelector("div#preview-images");
+                imgContainer.innerHTML = "";
+            let item = await getItem(apiPath);
+
+            item.url.forEach(u => {
+                let div = document.createElement('div');
+                    div.classList.add("preview-image-thumbnail");
+                let img = document.createElement('img');
+                    img.src = "/product-images/" + u;
+                let buttons = document.createElement('div');
+                    buttons.classList.add("edit-thumbnail-buttons");
+                let deleteButton = document.createElement('button');
+                    deleteButton.textContent = localStorage.getItem('lang') === 'hr' ? "Obriši" : "Delete";
+                    deleteButton.classList.add("delete-image-button");
+                let renameButton = document.createElement('button');
+                    renameButton.textContent = localStorage.getItem('lang') === 'hr' ? "Preimenuj" : "Rename";
+                    renameButton.addEventListener("click", (e) => renameImage(e, u, item.id, item.url));
+                    renameButton.classList.add("rename-image-button");
+                
+                // Funcionira 2x onda se smrzne
+
+                div.appendChild(img);
+                buttons.appendChild(deleteButton);
+                buttons.appendChild(renameButton);
+                div.appendChild(buttons);
+                imgContainer.appendChild(div);
+            });
+    
+            let div = document.createElement('div');
+                div.classList.add("preview-image-thumbnail");
+            let img = document.createElement('img');
+                img.src = "";
+                img.classList.add("new-image-placeholder");
+            let buttons = document.createElement('div');
+                buttons.classList.add("edit-thumbnail-buttons");
+            let addButton = document.createElement('button');
+                addButton.textContent = localStorage.getItem('lang') === 'hr' ? "Dodaj novu sliku" : "Add new image";
+            
+            div.appendChild(img);
+            buttons.appendChild(addButton);
+            div.appendChild(buttons);
+            imgContainer.appendChild(div);
+
+        } catch (e) {
+            console.log("Image rename request failed. Error: ", e);
         }
     }
 
