@@ -55,14 +55,21 @@ class ProductController {
                 $data = (array) json_decode(file_get_contents("php://input"), true);
                 $errors = $this->getValidationErrors($data, false);
 
+                $cleanUrls = [];
+
                 if (!empty($data["url"])) {
                     foreach($data["url"] as $url) {
                         $fileName = $this->sanitize->sanitizeFilename($url);
+                        $cleanUrls[] = $fileName;
                         if (!file_exists(".." . DIRECTORY_SEPARATOR . "product-images" . DIRECTORY_SEPARATOR . $fileName)) {
                             http_response_code(404);
                             $errors[] = "Product update failed. Missing image file." . $fileName;
                         }
                     }
+                }
+
+                if (!empty($data["url"])) {
+                    $data["url"] = $cleanUrls;
                 }
 
                 if (! empty($errors)) {
@@ -302,6 +309,8 @@ class ProductController {
 
                 $oldFile = $data["old"];
                 $newFile = $data["new"];
+
+                $newFile = $this->sanitize->sanitizeFilename($newFile);
 
                 $oldFilePath = $directory . DIRECTORY_SEPARATOR . $oldFile;
 

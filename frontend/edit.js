@@ -35,7 +35,7 @@ if (typeof product === "undefined") {
 
     // Text input and textarea boxes actually require debouncing, checkboxes and dropdowns do not
     async function mainChangeRouter(e) {
-        // console.log(e.target.type);
+        // console.log(e.target);
         if (e.target.type === "text" || e.target.type === "textarea" || e.target.type === "number" || e.target.type === "date") {
             debouncedTextHandler(e);
         }
@@ -43,11 +43,25 @@ if (typeof product === "undefined") {
             handleTagChange(e);
         } else if (e.target.id === "select-category") {
             handleCategoryChange(e);
+        } else if (e.target.type === 'checkbox' && (e.target.name === 'is-available' || e.target.name === 'is-visible')) {
+            handleSimpleBoolean(e);
         }
     }
 
+    function handleSimpleBoolean(e) {
+        let dbAttribute = String(e.target.name).replace("-", "_");
+        try {
+            let response = fetchData(apiPath, "PATCH", {
+                [dbAttribute] : e.target.checked ? true : false
+            });
+        } catch (e) {
+            console.log("Error toggling a product's bool attribute.");
+            console.log(e);
+    }
 
-    const debouncedTextHandler = debounce(async function (e) {
+    }
+
+    let debouncedTextHandler = debounce(async function (e) {
             await handleTextChange(e);
     }, 500);
 
@@ -273,6 +287,7 @@ if (typeof product === "undefined") {
             let deleteButton = document.createElement('button');
                 deleteButton.textContent = localStorage.getItem('lang') === 'hr' ? "Obriši" : "Delete";
                 deleteButton.classList.add("delete-image-button");
+                deleteButton.addEventListener("click", (e) => deleteImage(e));
             let renameButton = document.createElement('button');
                 renameButton.textContent = localStorage.getItem('lang') === 'hr' ? "Preimenuj" : "Rename";
                 renameButton.addEventListener("click", (e) => renameImage(e, u, item.id, item.url));
@@ -304,19 +319,6 @@ if (typeof product === "undefined") {
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
     // This is where renaming operation starts, on a click of a button
     async function renameImage(e, url, id, urls) {
         let dialog = document.createElement("div");
@@ -333,14 +335,55 @@ if (typeof product === "undefined") {
         // the second parameter is a function which should add some logic to the passed (and now generated) elements
         // last two parameters are references to elements to whom default click listeners (closing the popup) won't be appended
         popUpBigModal(
-            dialog,
-            (ignoredElements, invisiDiv) => {
-                injectListeners(e, url, fileWithoutExtension, id, urls, ignoredElements, invisiDiv);
-            },
-            dialog, input);
+                        dialog,
+                        (ignoredElements, invisiDiv) => {
+                            injectListeners(e, url, fileWithoutExtension, id, urls, ignoredElements, invisiDiv);
+                        }, dialog, input
+                    );
         input.focus();
         input.setSelectionRange(input.value.length, input.value.length);
     }
+
+
+    async function deleteImage(e) {
+
+        let dialog = document.createElement("div");
+            dialog.setAttribute("id", "modal-dialog-box");
+            dialog.setAttribute("class", "modal");
+        
+        let text = document.createElement("p");
+            text.textContent = localStorage.getItem('lang') === 'hr' ? "Obrisati sliku?" : "Delete image?";
+
+        let buttons = document.createElement("div");
+            buttons.classList.add("modal-buttons");
+        
+        let yesButton = document.createElement("button");
+            yesButton.textContent = localStorage.getItem('lang') === 'hr' ? "Da" : "Yes";
+            
+        let noButton = document.createElement("button");
+            noButton.textContent = localStorage.getItem('lang') === 'hr' ? "Ne" : "No";
+
+        dialog.appendChild(text);
+        buttons.appendChild(yesButton);
+        buttons.appendChild(noButton);
+        dialog.appendChild(buttons);
+
+        popUpBigModal(
+                        dialog,
+                        () => {
+                            setTimeout(() => {
+                                document.body.addEventListener("click", closeModal);
+                            }, 0);
+                    
+                            function closeModal(e) {
+                                cleanupModal(e);
+                                document.body.removeEventListener("click", closeModal);
+                            };
+
+                        }, dialog, text
+                    );
+    }
+
 
 
     // This function brings up a modal on screen, generates some content passed into it,
@@ -368,25 +411,17 @@ if (typeof product === "undefined") {
 
 
     function injectListeners(e, url, fileWithoutExtension, id, urls, ignoredElements, invisiDiv) {
-
         setTimeout(() => {
             document.body.addEventListener("click", closeModal);
         }, 0);
 
-
         function closeModal(e) {
             if (!ignoredElements.includes(e.target)) {
                 renameGateway(e, fileWithoutExtension, id, urls);
-                //console.log(e); console.log(fileWithoutExtension); console.log(id); console.log(urls);
                 cleanupModal(e);
                 document.body.removeEventListener("click", closeModal);
             }
-            else {
-                // console.log("Klik unutra");
-                // console.log(e); console.log(fileWithoutExtension); console.log(id); console.log(urls);
-            }
         };
-
     }
 
 
@@ -396,30 +431,29 @@ if (typeof product === "undefined") {
         let value = document.querySelector("div#modal-dialog-box.modal input").value;
         urls[index] = value + ".jpg";
 
-        try {
-            let resp1 = await fetchData("/api/products/images", "PATCH", 
-                {   old : [fileWithoutExtension] + ".jpg",
-                    new : [value] + ".jpg" }
-            );
-            let resp2 = await fetchData("/api/products/" + id, "PATCH", 
-                {  url : urls }
-            );
-            document.getElementById("app").innerHTML = "";
-            navigateTo(basePath.pathname);
+        if (fileWithoutExtension !== value) {
+            try {
+                let resp1 = await fetchData("/api/products/images", "PATCH", 
+                    {   old : [fileWithoutExtension] + ".jpg",
+                        new : [value] + ".jpg" }
+                );
+                let resp2 = await fetchData("/api/products/" + id, "PATCH", 
+                    {  url : urls }
+                );
+                document.getElementById("app").innerHTML = "";
+                navigateTo(basePath.pathname);
+            }
+            catch (e) { console.log("Image rename request failed. Error: ", e) }
+        } else {
+            // TODO
         }
-        catch (e) { console.log("Image rename request failed. Error: ", e) }
     }
-
 
 
     function cleanupModal(e) {
         document.querySelector('div#modal-dialog-box.modal').remove();
-        //document.getElementsByClassName('modal')[0].remove();
         document.querySelectorAll('.blurred').forEach(i => i.classList.remove('blurred'));
         document.body.style.overflow = "initial";
-        //document.getElementById('modal-dialog-box').style.display = "none";
-        //document.querySelector("div#modal-dialog-box.modal").innerHTML = "";
-        
     }
 
 }
