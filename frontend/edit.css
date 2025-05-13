@@ -50,6 +50,16 @@ div.edit-product-data div.preview-image-thumbnail {
     align-items: flex-end;
 }
 
+div.edit-product-data div.preview-image-thumbnail.add-new {
+    background-color: #008800cc;
+}
+
+div.edit-product-data div.preview-image-thumbnail.add-new p {
+    position: relative;   
+    align-self: center;
+    align-items: center;
+    text-align: center;
+}
 
 div.edit-product-data div.preview-image-thumbnail img {
     position: relative;
@@ -85,4 +95,13 @@ div#modal-dialog-box input {
     font-size: 1.1em;
     border: none;
     outline: none;
+}
+
+div#modal-dialog-box div.modal-buttons {
+
+}
+
+div#modal-dialog-box div.modal-buttons button {
+    padding: 0.5em 1.5em;
+    margin: 1em 1em 0em 1em;
 }

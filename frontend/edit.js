@@ -6,13 +6,14 @@ if (typeof product === "undefined") {
     let categories = null;
     let params = new URLSearchParams(window.location.href);
     let basePath = new URL(window.location.href);
+    let item = null;
 
     // Entry point; autoexec.bat
     let product = (function () {
 
         let productId = basePath.pathname.split('/')[2];
             apiPath = "/api/products/" + productId;
-        let item = null;
+        
         
         fetchCategories()
             .then(c => {
@@ -287,7 +288,7 @@ if (typeof product === "undefined") {
             let deleteButton = document.createElement('button');
                 deleteButton.textContent = localStorage.getItem('lang') === 'hr' ? "Obriši" : "Delete";
                 deleteButton.classList.add("delete-image-button");
-                deleteButton.addEventListener("click", (e) => deleteImage(e));
+                deleteButton.addEventListener("click", (e) => deleteImage(e, item));
             let renameButton = document.createElement('button');
                 renameButton.textContent = localStorage.getItem('lang') === 'hr' ? "Preimenuj" : "Rename";
                 renameButton.addEventListener("click", (e) => renameImage(e, u, item.id, item.url));
@@ -300,23 +301,79 @@ if (typeof product === "undefined") {
             frag.getElementById("preview-images").appendChild(div);
         });
 
+        let invisibleFileInput = document.createElement('input');
+            invisibleFileInput.type = "file";
+            invisibleFileInput.id = "invisibleFileInput";
+            invisibleFileInput.style.display = "none";
+            invisibleFileInput.accept = ".jpg, .jpeg, image/jpeg";
+            invisibleFileInput.multiple = "false";
+
         let div = document.createElement('div');
             div.classList.add("preview-image-thumbnail");
-        let img = document.createElement('img');
-            img.src = "";
-            img.classList.add("new-image-placeholder");
+            div.classList.add("add-new");
+        let progressIndicator = document.createElement('p');
+            progressIndicator.id = "ul-progress-indicator";
+            progressIndicator.textContent = "";
         let buttons = document.createElement('div');
             buttons.classList.add("edit-thumbnail-buttons");
         let addButton = document.createElement('button');
+            addButton.setAttribute("id", "fileUploadButton");
+            //addButton.addEventListener("click", triggerFileUpload);
+
+        
         addButton.textContent = localStorage.getItem('lang') === 'hr' ? "Dodaj novu sliku" : "Add new image";
         
-        div.appendChild(img);
+        addButton.addEventListener("click", async () => {
+            document.getElementById('invisibleFileInput').click();
+        });
+        
+        invisibleFileInput.addEventListener("change", async (e) => {
+            let file = e.target.files[0];
+           
+            if (!file) {
+                return;
+            }
+            
+            let xhr = new XMLHttpRequest();
+            xhr.open('POST', '/api/products/images');
+            xhr.setRequestHeader("Authorization", "Bearer " + localStorage.getItem("access_token")); // TODO - refresh token logic
+            xhr.upload.onprogress = (event) => {
+                if (event.lengthComputable) {
+                    let percent = Math.round((event.loaded / event.total) * 100);
+                    let progressIndicator = document.getElementById("ul-progress-indicator");
+                    progressIndicator.textContent = `${percent} %`;
+                }
+            };
+        
+            xhr.onload = () => { 
+                let outputStatus = xhr.status === 201 ? "Upload complete" : `Uploading failed: ${xhr.status} `;
+                console.log(outputStatus);
+                updateDBonNewImage(e);
+                //navigateTo(basePath.pathname);
+            };
+
+            xhr.onerror = () => {
+                console.log("Upload failed miserably.");
+            };
+        
+            const formData = new FormData();
+            formData.append('file', file);
+            xhr.send(formData);
+        });
+
         buttons.appendChild(addButton);
+        div.appendChild(progressIndicator);
         div.appendChild(buttons);
+        div.appendChild(invisibleFileInput);
         frag.getElementById("preview-images").appendChild(div);
 
         return frag;
     }
+
+    function updateDBonNewImage(e) {
+        console.log(item);
+    }
+
 
 
     // This is where renaming operation starts, on a click of a button
@@ -345,7 +402,7 @@ if (typeof product === "undefined") {
     }
 
 
-    async function deleteImage(e) {
+    async function deleteImage(e, item) {
 
         let dialog = document.createElement("div");
             dialog.setAttribute("id", "modal-dialog-box");
@@ -357,33 +414,57 @@ if (typeof product === "undefined") {
         let buttons = document.createElement("div");
             buttons.classList.add("modal-buttons");
         
+        let fileName = String(e.target.closest("div.preview-image-thumbnail").querySelector("img[src]").src).split("/").pop();
+
         let yesButton = document.createElement("button");
             yesButton.textContent = localStorage.getItem('lang') === 'hr' ? "Da" : "Yes";
+            yesButton.id = "yes-modal-button";
+            yesButton.setAttribute("filename", fileName);
             
         let noButton = document.createElement("button");
             noButton.textContent = localStorage.getItem('lang') === 'hr' ? "Ne" : "No";
 
         dialog.appendChild(text);
-        buttons.appendChild(yesButton);
         buttons.appendChild(noButton);
+        buttons.appendChild(yesButton);
         dialog.appendChild(buttons);
 
         popUpBigModal(
-                        dialog,
-                        () => {
-                            setTimeout(() => {
-                                document.body.addEventListener("click", closeModal);
-                            }, 0);
+            dialog,
+            () => {
+                setTimeout(() => {
+                    document.body.addEventListener("click", closeModal);
                     
-                            function closeModal(e) {
-                                cleanupModal(e);
-                                document.body.removeEventListener("click", closeModal);
-                            };
+                }, 0);
+        
+                function closeModal(e) {
+                    let yes = document.getElementById("yes-modal-button");
+                    if (e.target !== yes) {
+                        cleanupModal(e);
+                        document.body.removeEventListener("click", closeModal);
+                    } else {
+                        try {
+                            let fileName = e.target.getAttribute("filename");
+                            let currenImageIndex = item.url.indexOf(fileName);
+                            let urlArray = item.url.filter(u => (item.url.indexOf(u) !== currenImageIndex) );
 
-                        }, dialog, text
-                    );
+                            let res1 = fetchData("/api/products/" + item.id, "PATCH", {
+                                url : urlArray
+                            });
+                            
+                            let res2 = fetchData("/api/products/images/" + fileName, "DELETE");
+
+                        } catch (e) {
+                            console.log("Image delete request failed. Error: ", e);
+                        }
+                        cleanupModal(e);
+                        document.body.removeEventListener("click", closeModal);
+                    }
+                };
+
+            }, dialog, text
+        );
     }
-
 
 
     // This function brings up a modal on screen, generates some content passed into it,
