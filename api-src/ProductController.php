@@ -261,7 +261,8 @@ class ProductController {
                     exit;
                 } else {
                     http_response_code(201);
-                    echo json_encode(["Message: " => "Image resource " . $fileName . " created."]);
+                    echo json_encode(["Message: " => "Image resource created.",
+                                      "Filename" => $fileName]);
                     exit;
                 }
                 break;
@@ -320,20 +321,7 @@ class ProductController {
                     exit;
                 }
 
-                $oldUniqid = explode("_", $oldFile);
-                $oldUniqid = end($oldUniqid);
-
-                $lastDotInNewFilenamePosition = strrpos($newFile, ".");
-                $newFileWithoutExtension = substr($newFile, 0, $lastDotInNewFilenamePosition);
-              
-                
-                if (strpos($oldFile, "_")) {
-                    $newFileWithUniqid = $newFileWithoutExtension . "_" . $oldUniqid;
-                } else {
-                    $newFileWithUniqid = $newFile;
-                }
-
-                if (rename($oldFilePath, $directory . DIRECTORY_SEPARATOR . $newFileWithUniqid)) {
+                if (rename($oldFilePath, $directory . DIRECTORY_SEPARATOR . $newFile)) {
                     echo json_encode(["Message" => "Rename operation successful."]);
                 } else {
                     http_response_code(500);

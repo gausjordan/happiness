@@ -328,7 +328,13 @@ if (typeof product === "undefined") {
         });
         
         invisibleFileInput.addEventListener("change", async (e) => {
+
             let file = e.target.files[0];
+            let createdFilename = null;
+
+            // console.log("---");
+            // console.log(e);
+            // console.log(file);
            
             if (!file) {
                 return;
@@ -348,7 +354,9 @@ if (typeof product === "undefined") {
             xhr.onload = () => { 
                 let outputStatus = xhr.status === 201 ? "Upload complete" : `Uploading failed: ${xhr.status} `;
                 console.log(outputStatus);
-                updateDBonNewImage(e);
+                createdFilename = JSON.parse(xhr.response).Filename;
+                console.log(createdFilename);
+                updateDBonNewImage(e, createdFilename);
                 //navigateTo(basePath.pathname);
             };
 
@@ -370,8 +378,16 @@ if (typeof product === "undefined") {
         return frag;
     }
 
-    function updateDBonNewImage(e) {
-        console.log(item);
+    function updateDBonNewImage(e, createdFilename) {
+        try {
+            item.url.push(createdFilename);
+            console.log(item.url);
+            let response = fetchData("/api/products/" + item.id, "PATCH", {
+                url : item.url
+            });
+        } catch (e) {
+            console.log("Image upload database update failed. Error: ", e);
+        }
     }
 
 
@@ -383,6 +399,16 @@ if (typeof product === "undefined") {
         let filteredFilename = url;
         let lastDot = filteredFilename.lastIndexOf('.');
         let fileWithoutExtension = filteredFilename.slice(0, lastDot);
+
+        // File without extension AND without unique random suffix
+        let fileBaseName = fileWithoutExtension.split("_")[0];
+        let uniqueSuffixOnly = fileWithoutExtension.split("_")[1];
+
+        console.log("Base: ");
+        console.log(fileBaseName);
+        console.log("UID:  ");
+        console.log(uniqueSuffixOnly);
+        console.log("------");
         
         let input = document.createElement("input");
             input.type = "text";

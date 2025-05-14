@@ -151,7 +151,7 @@ CREATE TABLE `product_images` (
   PRIMARY KEY (`id`),
   KEY `fk_product_images` (`product_id`),
   CONSTRAINT `fk_product_images` FOREIGN KEY (`product_id`) REFERENCES `product` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=700 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=738 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -160,7 +160,7 @@ CREATE TABLE `product_images` (
 
 LOCK TABLES `product_images` WRITE;
 /*!40000 ALTER TABLE `product_images` DISABLE KEYS */;
-INSERT INTO `product_images` VALUES (1,1,'nanogica1.jpg'),(2,1,'nanogica2.jpg'),(3,1,'nanogica3.jpg'),(4,2,'nanogica-koza-staklo-1.jpg'),(5,2,'nanogica-koza-staklo-2.jpg'),(6,2,'nanogica-koza-staklo-3.jpg'),(7,3,'narukvica-celik-1.jpg'),(8,3,'narukvica-celik-2.jpg'),(9,3,'narukvica-celik-3.jpg'),(10,3,'narukvica-celik-4.jpg'),(11,4,'narukvica-kamen-1.jpg'),(12,4,'narukvica-kamen-2.jpg'),(13,4,'narukvica-kamen-3.jpg'),(14,5,'nausnica-b-1.jpg'),(15,5,'nausnica-b-2.jpg'),(16,5,'nausnica-b-3.jpg'),(17,5,'nausnica-b-4.jpg'),(18,6,'nausnica1.jpg'),(19,6,'nausnica2.jpg'),(20,6,'nausnica3.jpg'),(21,6,'nausnica4.jpg'),(22,6,'nausnica5.jpg'),(23,7,'nausnica-poludragi-kamen-2.jpg'),(24,7,'nausnica-poludragi-kamen-1.jpg'),(25,8,'ogrlica1.jpg'),(26,8,'ogrlica2.jpg'),(27,9,'ogrlica-kozna-1.jpg'),(28,9,'ogrlica-kozna-2.jpg'),(29,9,'ogrlica-kozna-3.jpg'),(30,10,'ogrlica-staklo-celik-1.jpg'),(31,10,'ogrlica-staklo-celik-2.jpg'),(32,10,'ogrlica-staklo-celik-3.jpg'),(33,11,'prsten1.jpg'),(34,11,'prsten2.jpg'),(35,11,'prsten3.jpg'),(36,11,'prsten4.jpg'),(37,12,'prsten-staklo-1.jpg'),(38,12,'prsten-staklo-2.jpg'),(39,12,'prsten-staklo-3.jpg'),(360,13,'ogrlica-apr-fools1.jpg'),(361,13,'ogrlica-apr-fools2.jpg'),(362,13,'ogrlica-apr-fools3.jpg'),(363,14,'kreativica1.jpg'),(364,14,'kreativica2.jpg'),(365,14,'kreativica3.jpg'),(366,14,'kreativica4.jpg'),(379,115,'pro2a.jpg'),(380,115,'pro2b.jpg'),(381,115,'pro2c.jpg'),(382,116,'pro3a.jpg'),(383,116,'pro3b.jpg'),(384,116,'pro3c.jpg'),(697,114,'pro1a.jpg'),(698,114,'pro1c.jpg'),(699,114,'pro1b.jpg');
+INSERT INTO `product_images` VALUES (1,1,'nanogica1.jpg'),(2,1,'nanogica2.jpg'),(3,1,'nanogica3.jpg'),(4,2,'nanogica-koza-staklo-1.jpg'),(5,2,'nanogica-koza-staklo-2.jpg'),(6,2,'nanogica-koza-staklo-3.jpg'),(7,3,'narukvica-celik-1.jpg'),(8,3,'narukvica-celik-2.jpg'),(9,3,'narukvica-celik-3.jpg'),(10,3,'narukvica-celik-4.jpg'),(11,4,'narukvica-kamen-1.jpg'),(12,4,'narukvica-kamen-2.jpg'),(13,4,'narukvica-kamen-3.jpg'),(14,5,'nausnica-b-1.jpg'),(15,5,'nausnica-b-2.jpg'),(16,5,'nausnica-b-3.jpg'),(17,5,'nausnica-b-4.jpg'),(18,6,'nausnica1.jpg'),(19,6,'nausnica2.jpg'),(20,6,'nausnica3.jpg'),(21,6,'nausnica4.jpg'),(22,6,'nausnica5.jpg'),(23,7,'nausnica-poludragi-kamen-2.jpg'),(24,7,'nausnica-poludragi-kamen-1.jpg'),(25,8,'ogrlica1.jpg'),(26,8,'ogrlica2.jpg'),(27,9,'ogrlica-kozna-1.jpg'),(28,9,'ogrlica-kozna-2.jpg'),(29,9,'ogrlica-kozna-3.jpg'),(30,10,'ogrlica-staklo-celik-1.jpg'),(31,10,'ogrlica-staklo-celik-2.jpg'),(32,10,'ogrlica-staklo-celik-3.jpg'),(33,11,'prsten1.jpg'),(34,11,'prsten2.jpg'),(35,11,'prsten3.jpg'),(36,11,'prsten4.jpg'),(37,12,'prsten-staklo-1.jpg'),(38,12,'prsten-staklo-2.jpg'),(39,12,'prsten-staklo-3.jpg'),(360,13,'ogrlica-apr-fools1.jpg'),(361,13,'ogrlica-apr-fools2.jpg'),(362,13,'ogrlica-apr-fools3.jpg'),(363,14,'kreativica1.jpg'),(364,14,'kreativica2.jpg'),(365,14,'kreativica3.jpg'),(366,14,'kreativica4.jpg'),(379,115,'pro2a.jpg'),(380,115,'pro2b.jpg'),(381,115,'pro2c.jpg'),(697,114,'pro1a.jpg'),(698,114,'pro1c.jpg'),(699,114,'pro1b.jpg'),(734,116,'pro3a.jpg'),(735,116,'pro3b.jpg'),(736,116,'pro3c.jpg'),(737,116,'myst-2_6823f8494971d.jpg');
 /*!40000 ALTER TABLE `product_images` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -234,7 +234,7 @@ CREATE TABLE `products_and_tags` (
   KEY `fk_pat_tags` (`tag_id`),
   CONSTRAINT `fk_pat_products` FOREIGN KEY (`product_id`) REFERENCES `product` (`id`) ON DELETE CASCADE,
   CONSTRAINT `fk_pat_tags` FOREIGN KEY (`tag_id`) REFERENCES `product_tags` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=423 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=431 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -243,7 +243,7 @@ CREATE TABLE `products_and_tags` (
 
 LOCK TABLES `products_and_tags` WRITE;
 /*!40000 ALTER TABLE `products_and_tags` DISABLE KEYS */;
-INSERT INTO `products_and_tags` VALUES (1,1,1),(6,2,4),(7,2,3),(8,3,1),(9,4,2),(10,5,1),(11,6,1),(12,7,2),(13,8,1),(14,9,4),(15,10,1),(16,10,3),(17,11,1),(18,12,3),(19,13,1),(20,14,3),(243,115,4),(244,116,3),(420,114,2),(421,114,3),(422,114,4);
+INSERT INTO `products_and_tags` VALUES (1,1,1),(6,2,4),(7,2,3),(8,3,1),(9,4,2),(10,5,1),(11,6,1),(12,7,2),(13,8,1),(14,9,4),(15,10,1),(16,10,3),(17,11,1),(18,12,3),(19,13,1),(20,14,3),(243,115,4),(420,114,2),(421,114,3),(422,114,4),(428,116,2),(429,116,3),(430,116,4);
 /*!40000 ALTER TABLE `products_and_tags` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -345,4 +345,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-05-13  1:43:48
+-- Dump completed on 2025-05-14  1:57:05
