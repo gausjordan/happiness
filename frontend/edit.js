@@ -396,23 +396,19 @@ if (typeof product === "undefined") {
     async function renameImage(e, url, id, urls) {
         let dialog = document.createElement("div");
             dialog.setAttribute("id", "modal-dialog-box");
-        let filteredFilename = url;
-        let lastDot = filteredFilename.lastIndexOf('.');
-        let fileWithoutExtension = filteredFilename.slice(0, lastDot);
+            dialog.setAttribute("product-id", id);
+        // let filteredFilename = url;
+        // let lastDot = filteredFilename.lastIndexOf('.');
+        // let fileWithoutExtension = filteredFilename.slice(0, lastDot);
 
         // File without extension AND without unique random suffix
-        let fileBaseName = fileWithoutExtension.split("_")[0];
-        let uniqueSuffixOnly = fileWithoutExtension.split("_")[1];
-
-        console.log("Base: ");
-        console.log(fileBaseName);
-        console.log("UID:  ");
-        console.log(uniqueSuffixOnly);
-        console.log("------");
+        // let fileBaseName = fileWithoutExtension.split("_")[0];
+        // let uniqueSuffixOnly = fileWithoutExtension.split("_")[1];
         
         let input = document.createElement("input");
             input.type = "text";
-            input.value = fileWithoutExtension;
+            input.setAttribute("full-name", url);
+            //input.value = fileBaseName;
         dialog.appendChild(input);
 
         // the second parameter is a function which should add some logic to the passed (and now generated) elements
@@ -420,13 +416,110 @@ if (typeof product === "undefined") {
         popUpBigModal(
                         dialog,
                         (ignoredElements, invisiDiv) => {
-                            injectListeners(e, url, fileWithoutExtension, id, urls, ignoredElements, invisiDiv);
+                            injectListeners(e, url, id, urls, ignoredElements, invisiDiv);
                         }, dialog, input
                     );
         input.focus();
         input.setSelectionRange(input.value.length, input.value.length);
     }
 
+
+    // This function brings up a modal on screen, generates some content passed into it,
+    // prevents regular flow to be scrollable underneath the modal, and then EITHER:
+    // (a) sets listeners to autodestruct the modal on click ANYWHERE but on the "ignoredElements" array OR
+    // (b) implements custom logic if callback is not null.
+    function popUpBigModal(content, callback, ...ignoredElements) {
+        document.body.style.overflow = "hidden";
+        window.addEventListener('keydown', function(e) {
+            const keys = ['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End', ' '];
+            if (keys.includes(e.key) && e.target.nodeName !== 'INPUT') {
+              e.preventDefault();
+            }
+          }, { passive: false });
+
+        let invisiDiv = document.createElement('div');
+            invisiDiv.style.display = "flex";
+            invisiDiv.setAttribute("id", "modal-dialog-box");
+            invisiDiv.classList.add("modal");
+        invisiDiv.appendChild(content);
+        document.body.appendChild(invisiDiv);
+
+        callback(ignoredElements, invisiDiv);
+    }
+
+    function getFileNameInput() {
+        let modalDialog = document.querySelector("#modal-dialog-box.modal");
+        let modalInput = modalDialog.querySelector("div input");
+        let fullFileName = modalInput.getAttribute('full-name');
+        
+        let visiblePart;
+        let invisiblePart;
+
+        if (fullFileName.lastIndexOf('_') === -1) {
+            // File had a unique suffix
+            visiblePart = fullFileName.slice(0, fullFileName.lastIndexOf('.'));
+            invisiblePart = fullFileName.slice(fullFileName.lastIndexOf('.'));
+        } else {
+            // No unique suffix, none is added
+            visiblePart = fullFileName.slice(0, fullFileName.lastIndexOf('_'));
+            invisiblePart = fullFileName.slice(fullFileName.lastIndexOf('_'));
+        }
+
+        let newVisiblePart = document.querySelector("#modal-dialog-box.modal").querySelector("div input").value;
+        return { visiblePart, invisiblePart, newVisiblePart };
+    }    
+
+    function injectListeners(e, url, id, urls, ignoredElements, invisiDiv) {
+        
+        let modalInput = document.querySelector("#modal-dialog-box.modal").querySelector("div input");
+            modalInput.value = getFileNameInput().visiblePart;
+
+        setTimeout(() => {
+            document.body.addEventListener("click", closeModal);
+        }, 0);
+
+        function closeModal(e) {
+            if (!ignoredElements.includes(e.target)) {
+                renameGateway(e, id, url, urls, getFileNameInput().newVisiblePart + getFileNameInput().invisiblePart);
+                cleanupModal(e);
+                document.body.removeEventListener("click", closeModal);
+            }
+        };
+    }
+
+
+    async function renameGateway(e, id, oldUrl, urls, newUrl) {
+        
+        let index = urls.indexOf(oldUrl);
+        urls[index] = newUrl;
+
+        if (newUrl !== oldUrl) {
+            try {
+                let resp1 = await fetchData("/api/products/images", "PATCH", 
+                    {   old : oldUrl,
+                        new : newUrl }
+                );
+                
+                let resp2 = await fetchData("/api/products/" + id, "PATCH", 
+                    { url : urls }
+                );
+
+                document.getElementById("app").innerHTML = "";
+                navigateTo(basePath.pathname);
+
+            }
+            catch (e) { console.log("Image rename request failed. Error: ", e) }
+        } else {
+            // TODO
+        }
+    }
+
+
+    function cleanupModal(e) {
+        document.querySelector('div#modal-dialog-box.modal').remove();
+        document.querySelectorAll('.blurred').forEach(i => i.classList.remove('blurred'));
+        document.body.style.overflow = "initial";
+    }
 
     async function deleteImage(e, item) {
 
@@ -490,77 +583,6 @@ if (typeof product === "undefined") {
 
             }, dialog, text
         );
-    }
-
-
-    // This function brings up a modal on screen, generates some content passed into it,
-    // prevents regular flow to be scrollable underneath the modal, and then EITHER:
-    // (a) sets listeners to autodestruct the modal on click ANYWHERE but on the "ignoredElements" array OR
-    // (b) implements custom logic if callback is not null.
-    function popUpBigModal(content, callback, ...ignoredElements) {
-        document.body.style.overflow = "hidden";
-        window.addEventListener('keydown', function(e) {
-            const keys = ['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End', ' '];
-            if (keys.includes(e.key) && e.target.nodeName !== 'INPUT') {
-              e.preventDefault();
-            }
-          }, { passive: false });
-
-        let invisiDiv = document.createElement('div');
-            invisiDiv.style.display = "flex";
-            invisiDiv.setAttribute("id", "modal-dialog-box");
-            invisiDiv.classList.add("modal");
-        invisiDiv.appendChild(content);
-        document.body.appendChild(invisiDiv);
-
-        callback(ignoredElements, invisiDiv);
-    }
-
-
-    function injectListeners(e, url, fileWithoutExtension, id, urls, ignoredElements, invisiDiv) {
-        setTimeout(() => {
-            document.body.addEventListener("click", closeModal);
-        }, 0);
-
-        function closeModal(e) {
-            if (!ignoredElements.includes(e.target)) {
-                renameGateway(e, fileWithoutExtension, id, urls);
-                cleanupModal(e);
-                document.body.removeEventListener("click", closeModal);
-            }
-        };
-    }
-
-
-    async function renameGateway(e, fileWithoutExtension, id, urls) {
-        let index = urls.indexOf(fileWithoutExtension + ".jpg");
-        let oldFilename = urls[index];
-        let value = document.querySelector("div#modal-dialog-box.modal input").value;
-        urls[index] = value + ".jpg";
-
-        if (fileWithoutExtension !== value) {
-            try {
-                let resp1 = await fetchData("/api/products/images", "PATCH", 
-                    {   old : [fileWithoutExtension] + ".jpg",
-                        new : [value] + ".jpg" }
-                );
-                let resp2 = await fetchData("/api/products/" + id, "PATCH", 
-                    {  url : urls }
-                );
-                document.getElementById("app").innerHTML = "";
-                navigateTo(basePath.pathname);
-            }
-            catch (e) { console.log("Image rename request failed. Error: ", e) }
-        } else {
-            // TODO
-        }
-    }
-
-
-    function cleanupModal(e) {
-        document.querySelector('div#modal-dialog-box.modal').remove();
-        document.querySelectorAll('.blurred').forEach(i => i.classList.remove('blurred'));
-        document.body.style.overflow = "initial";
     }
 
 }
