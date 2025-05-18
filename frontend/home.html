@@ -12,19 +12,21 @@
     
     if (localStorage.getItem("lang") === 'en') {
         document.title = "Home page";
-        document.querySelector("h1").textContent = "Welcome" + decodeUsersName();
-        document.querySelector("p").textContent = "Welcome text and images go here.";
+        document.querySelector("main h1").textContent = "Welcome" + decodeUsersName();
+        document.querySelector("main p:last-of-type").textContent = "This horrid styling is just a temporary bare minimum.";
     } else {
         document.title = "Početna stranica";
-        document.querySelector("h1").textContent = "Dobrodošli" + decodeUsersName();
-        document.querySelector("p").textContent = "Poruka dobrodošlice.";
+        document.querySelector("main h1").textContent = "Dobrodošli" + decodeUsersName();
+        document.querySelector("main p:last-of-type").textContent = "Dizajn je provizoran. Neće izgledati ovako.";
     }
 </script>
 
 <head>
+    <link rel="stylesheet" href="/frontend/home.css" rel="preload" as="style"></link>
     <title></title>
 </head>
-</body>
+<body>
+    <p class="homepage-background"></p>
     <h1></h1>
     <p></p>
 </body>

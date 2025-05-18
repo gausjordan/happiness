@@ -1,12 +1,15 @@
 <script>
     if (localStorage.getItem("lang") === 'en') {
         document.title = "About us";
-        document.querySelector("h1").textContent = "About us";
-        document.querySelector("p").textContent = "Corporate fluff goes here.";
+        let title = document.querySelector("main h1");
+            title.textContent = "About us";
+        let paragraph = document.querySelector("main p");
+            paragraph.textContent = "Corporate fluff goes here.";
     } else {
         document.title = "O nama";
-        document.querySelector("h1").textContent = "O nama";
-        document.querySelector("p").textContent = "Ovdje prikazujemo podatke o trgovini.";
+        document.querySelector("main h1").textContent = "O nama";
+        document.querySelector("main p").textContent = "Hvalospjevni podaci o trgovini.";
+
     }
 </script>
 
@@ -17,9 +20,12 @@
     <script src="/frontend/about.js"></script>
     
 </head>
+
 <body>
     <h1></h1>
     <p></p>
-    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2780.906260346853!2d15.967806076733506!3d45.81313571008879!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4765d7b648e07bd1%3A0x8a799ad6569696de!2sHappiness%20by%20Maya%20Estella!5e0!3m2!1sen!2shr!4v1736036015088!5m2!1sen!2shr" width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" sandbox="allow-scripts"></iframe>
-    <script src="/frontend/about.js" defer></script>
+    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2780.906260346853!2d15.967806076733506!3d45.81313571008879!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4765d7b648e07bd1%3A0x8a799ad6569696de!2sHappiness%20by%20Maya%20Estella!5e0!3m2!1sen!2shr!4v1736036015088!5m2!1sen!2shr" width="100%" height="320" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" sandbox="allow-scripts"></iframe>
+    <p>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus mollis, tellus quis luctus convallis, leo leo faucibus risus, at euismod neque ligula nec justo. Sed vehicula ipsum id libero varius euismod. Phasellus at facilisis nisl. Proin cursus neque quis purus tempor tincidunt. Etiam eu metus tristique, varius lacus nec, placerat mauris. Aliquam ac ornare tellus. Proin pharetra dui nec pretium molestie. Fusce egestas tristique ultricies. Fusce vulputate massa in sapien ullamcorper, ac egestas sem pharetra. Phasellus ut euismod massa, a aliquam arcu. Nullam eget nisi eu nunc bibendum luctus congue sit amet ipsum. Maecenas tempor nibh nec ligula congue eleifend. Etiam sit amet est odio. Quisque a malesuada quam. Sed tincidunt aliquet arcu vitae maximus.
+    </p>
 </body>

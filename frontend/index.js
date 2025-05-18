@@ -70,7 +70,18 @@ async function fetchData(fetchURL, method="GET", body) {
     catch { console.log("Initial fetch failed."); }
 
     if (response.status == 204 || response.status == 201) {
-        data = null;
+        
+        try {
+            let resp = await response.json();
+            if (resp.message === "Product created") {
+            data = Number.parseInt(resp.id);
+        } else {
+            data = null;
+        }
+        } catch {
+            data = null;
+        }
+        
         return data;
     } else if (response.ok) {
         data = await response.json();

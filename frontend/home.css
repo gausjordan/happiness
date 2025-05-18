@@ -1,0 +1,15 @@
+main:has(> .homepage-background) {
+  background-image: url('/frontend/graphics/bg-wide.jpg');
+  background-size: cover;
+  background-position:top;
+  background-repeat: repeat-x;
+}
+
+main:has(> .homepage-background) h1 {
+  color: white;
+  text-shadow: 2px 2px 2px black;
+}
+
+main:has(> .homepage-background) p {
+  color: white;
+}

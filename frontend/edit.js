@@ -8,7 +8,7 @@ if (typeof product === "undefined") {
     let basePath = new URL(window.location.href);
     let item = null;
 
-    // Entry point; autoexec.bat
+    // Entry point
     let product = (function () {
 
         let productId = basePath.pathname.split('/')[2];
@@ -53,20 +53,20 @@ if (typeof product === "undefined") {
         let dbAttribute = String(e.target.name).replace("-", "_");
         try {
             let response = fetchData(apiPath, "PATCH", {
-                [dbAttribute] : e.target.checked ? true : false
+                [dbAttribute]: e.target.checked ? true : false
             });
         } catch (e) {
             console.log("Error toggling a product's bool attribute.");
             console.log(e);
-    }
+        }
 
     }
 
     let debouncedTextHandler = debounce(async function (e) {
-            await handleTextChange(e);
+        await handleTextChange(e);
     }, 500);
 
-    
+
     async function handleTagChange(e) {
         // let dbAttribute = String(e.target.id).split("-")[1];
         let field = document.getElementById("checkbox-field");
@@ -79,17 +79,17 @@ if (typeof product === "undefined") {
                 taglist.push(input.getAttribute("hr"));
             }
         });
-        
+
         try {
             let response = await fetchData(apiPath, "PATCH", {
-                tag : taglist
+                tag: taglist
             });
         } catch (e) {
             console.log("Error updating the product's tag(s).");
         }
     }
 
-    
+
     async function handleCategoryChange(e) {
         let selector = document.getElementById("select-category");
         console.log(selector.value);
@@ -151,11 +151,19 @@ if (typeof product === "undefined") {
         let masterDiv = `
             <div class="edit-product-data">
                 
-                <label for="input-id" id="input-id-label">
-                    Id: 
-                </label>
-                <input type="text" name="input-id" id="input-id" value="" disabled>
-                </input>
+                <div class="id-and-delete">
+
+                    <label for="input-id" id="input-id-label">
+                        Id: 
+                    </label>
+                    <input type="text" name="input-id" id="input-id" value="" disabled>
+                    </input>
+
+                    <button id="delete-product-button">
+                    </button>
+
+                </div>
+
 
                 <label for="input-naslov" id="input-naslov-label">
                     Naslov (Croatian title): 
@@ -216,7 +224,7 @@ if (typeof product === "undefined") {
                 </label>
                 <input type="date" name="input-dateAdded" id="input-dateAdded">
                 </input>
-                
+
                 <label for="preview-images"  id="preview-images-label">
                     Slike | Images:
                 </label>
@@ -240,6 +248,17 @@ if (typeof product === "undefined") {
         frag.getElementById("is-available").checked = item.is_available;
         frag.getElementById("is-visible").checked = item.is_visible;
         frag.getElementById("input-dateAdded").value = item.dateAdded;
+
+        let deleteButton = frag.getElementById("delete-product-button");
+            deleteButton.textContent = localStorage.getItem('lang') === 'hr' ? "Obriši proizvod" : "Delete product";
+            deleteButton.addEventListener("click", () => {
+                try {
+                    let res1 = fetchData("/api/products/" + item.id, "DELETE");
+                } catch (e) {
+                    console.log("Delete request failed. Error: ", e);
+                }
+                navigateTo("/inventory");
+            });
         
         categories.categories.forEach(c => {
             let opt = document.createElement('option');
@@ -319,8 +338,7 @@ if (typeof product === "undefined") {
         let addButton = document.createElement('button');
             addButton.setAttribute("id", "fileUploadButton");
             //addButton.addEventListener("click", triggerFileUpload);
-
-        
+                
         addButton.textContent = localStorage.getItem('lang') === 'hr' ? "Dodaj novu sliku" : "Add new image";
         
         addButton.addEventListener("click", async () => {
@@ -357,7 +375,7 @@ if (typeof product === "undefined") {
                 createdFilename = JSON.parse(xhr.response).Filename;
                 console.log(createdFilename);
                 updateDBonNewImage(e, createdFilename);
-                //navigateTo(basePath.pathname);
+                navigateTo(basePath.pathname);
             };
 
             xhr.onerror = () => {
@@ -572,6 +590,8 @@ if (typeof product === "undefined") {
                             });
                             
                             let res2 = fetchData("/api/products/images/" + fileName, "DELETE");
+
+                            navigateTo(basePath.pathname);
 
                         } catch (e) {
                             console.log("Image delete request failed. Error: ", e);

@@ -4,32 +4,84 @@
 } */
 
 
-#image-big {
-    max-width: 100%;
+@media screen and (max-width: 440px) {
+       
+    #image-big {
+        max-width: 100%;
+    }
+
+    div#thumbnails {
+        display: grid;
+        width: 100%;
+        grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+        gap: 0.5em;
+    }
+
+    div#thumbnails div {
+        width: 100%;
+    }
+
+    div#thumbnails img {
+        width: 100%;
+        object-fit: cover;
+        aspect-ratio: 1;
+    }
+
+    div#commerce button#atc-button{
+        font-size: 1em;
+        padding: 0.3em;
+    }
+
+    #app p#description {
+        line-height: 1.5;
+    }
+    
 }
 
-div#thumbnails {
-    display: grid;
-    width: 100%;
-    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
-    gap: 0.5em;
+
+
+@media screen and (min-width: 440px) {
+
+    .gallery {
+        align-content: center;
+    }
+       
+    #image-big {
+        max-height: 60dvh;
+        max-width: 100%;
+    }
+
+    div#thumbnails {
+        display: flex;
+        max-height: 12em;
+        height: 9em;
+        gap: 0.5em;
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-items: flex-start;
+    }
+
+    div#thumbnails div {
+        height: 100%;
+    }
+
+    div#thumbnails img {
+        height: 100%;
+        object-fit: cover;
+        aspect-ratio: 1;
+    }
+
+    div#commerce button#atc-button{
+        font-size: 1em;
+        padding: 0.3em;
+    }
+
+    #app p#description {
+        line-height: 1.5;
+    }
+    
 }
 
-div#thumbnails div {
-    width: 100%;
-}
 
-div#thumbnails img {
-    width: 100%;
-    object-fit: cover;
-    aspect-ratio: 1;
-}
 
-div#commerce button#atc-button{
-    font-size: 1em;
-    padding: 0.3em;
-}
 
-#app p#description {
-    line-height: 1.5;
-}

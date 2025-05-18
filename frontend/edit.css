@@ -2,6 +2,27 @@
     box-sizing: border-box;
 }
 
+div.id-and-delete {
+    display: flex;
+    flex-direction: row;
+    height: 2em;
+    justify-content: space-between;
+    align-items: center;
+    align-content: center;
+    gap: 0.5em;
+}
+
+div.id-and-delete input,
+div.id-and-delete button {
+    width: 100%;
+    height: unset;
+}
+
+div.edit-product-data div.id-and-delete label {
+    margin: 0em;
+    padding: 0em;
+}
+
 div.edit-product-data label {
     display: block;
     margin-top: 2em;
@@ -52,6 +73,7 @@ div.edit-product-data div.preview-image-thumbnail {
 
 div.edit-product-data div.preview-image-thumbnail.add-new {
     background-color: #008800cc;
+    aspect-ratio: 1;
 }
 
 div.edit-product-data div.preview-image-thumbnail.add-new p {

@@ -19,7 +19,7 @@ async function logout() {
     localStorage.removeItem("access_token");
     localStorage.removeItem("refresh_token");
     structure.then((c) => buildMainMenu(c.categories.categories));
-    navigateTo("/home");
+    navigateTo("/account");
 
 }
 
@@ -44,7 +44,7 @@ async function login(event) {
         localStorage.setItem("access_token", obj.access_token);
         localStorage.setItem("refresh_token", obj.refresh_token);
         structure.then((c) => buildMainMenu(c.categories.categories));
-        navigateTo("/shop");
+        navigateTo("/home");
     } else if (response.status == 401) {
         //
     }

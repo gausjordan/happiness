@@ -67,7 +67,27 @@ if (typeof inventory === "undefined") {
         return path;
     }
 
-    // Refresh the entire page whenever filtering options are changed
+    document.getElementById("add-product-button").addEventListener("click", async () => {
+        
+        try {
+            let id = await fetchData("/api/products", "POST", {
+                title : "New product",
+                naslov : "Novi proizvod",
+                price : 0,
+                cijena : 0
+            });
+            
+            navigateTo("/editor/" + Number.parseInt(id));
+
+        } catch (e) {
+            console.log("Error creating a new product. Error: ", e);
+        }
+        
+    });
+
+
+
+    // Refresh the entire page whenever filtering options change
     document.getElementById("inventory-options").addEventListener("change", refreshAll);
 
     function refreshAll(e) {

@@ -92,7 +92,7 @@ class ProductController {
                     echo json_encode(["Message: " => "Administrative account required."]);
                     break;
                 } else {
-                    $product = $this->gateway->get($id, true);
+                    $product = $this->gateway->get($id, false);
                     if (!$product) {
                         http_response_code(404);
                         echo json_encode(["Message: " => "Product $id does not exist."]);
@@ -187,14 +187,16 @@ class ProductController {
 
                 $failure = false;
 
-                foreach($data["url"] as $url) {
-                    $fileName = $this->sanitize->sanitizeFilename($url);
-                    if (!file_exists(".." . DIRECTORY_SEPARATOR . "product-images" . DIRECTORY_SEPARATOR . $fileName)) {
-                        http_response_code(404);
-                        echo json_encode(["Message: " => "Product insertion failed. Missing image " . $fileName]);
-                        $failure = true;
-                        break;
-                        exit;
+                if(isset($data["url"])) {
+                    foreach($data["url"] as $url) {
+                        $fileName = $this->sanitize->sanitizeFilename($url);
+                        if (!file_exists(".." . DIRECTORY_SEPARATOR . "product-images" . DIRECTORY_SEPARATOR . $fileName)) {
+                            http_response_code(404);
+                            echo json_encode(["Message: " => "Product insertion failed. Missing image " . $fileName]);
+                            $failure = true;
+                            break;
+                            exit;
+                        }
                     }
                 }
 
