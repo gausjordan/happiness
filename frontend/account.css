@@ -28,6 +28,12 @@ div#login-form p {
     line-height: 1.5;
 }
 
+div#login-form p.error-info {
+    margin: 0;
+    color: red;
+}
+
+
 div#login-form p a {
     font-weight: bold;
 }

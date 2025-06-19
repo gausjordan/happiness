@@ -46,9 +46,13 @@ async function login(event) {
         structure.then((c) => buildMainMenu(c.categories.categories));
         navigateTo("/home");
     } else if (response.status == 401) {
-        //
+        if (document.getElementsByClassName("error-info").length == 0) {
+            let formfield = document.querySelector("form");
+            let errormsg = document.createElement("p");
+                errormsg.classList.add("error-info");
+            errormsg.textContent = localStorage.getItem('lang') == 'en' ? "Invalid username or password." : "Neispravni korisnički podaci.";
+            formfield.appendChild(errormsg);
+        }
     }
 
-
-    //console.log(obj);
 }
