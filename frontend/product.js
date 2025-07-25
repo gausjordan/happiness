@@ -27,25 +27,67 @@ if (typeof ProductPage === "undefined") {
             document.getElementsByTagName("h1")[0].innerHTML = (lang === 'en') ? obj.title : obj.naslov;
             // Main image
             let mainImage = document.getElementById("image-big");
-            mainImage.src = '/product-images/' + obj.url[0];
+            // mainImage.src = '/product-images/' + obj.url[0];
             // Build gallery
-            let thumbnails = document.getElementById('thumbnails');
+            let gallery = document.getElementById('gallery');
+            // Add dots
+            let dotContainer = document.getElementById("dot-indicators");
+            let dots = [];
+
             obj.url.forEach(u => {
                 let div = document.createElement('div');
                 let img = document.createElement('img');
                 img.setAttribute('src', '/product-images/' + u);
-                img.addEventListener("click", (u) => {
-                mainImage.src = u.target.currentSrc;
+                // img.addEventListener("click", (u) => {
+                //     mainImage.src = u.target.currentSrc;
+                // });
+                div.appendChild(img);
+                gallery.appendChild(div);
+                let dot = document.createElement("div");
+                dot.classList.add("dot");
+                dotContainer.appendChild(dot);
+                dots.push(dot);
             });
-            div.appendChild(img);
-            thumbnails.appendChild(div);
+           
+            function updateActiveDot() {
+                const scrollLeft = gallery.scrollLeft;
+                const slideWidth = gallery.offsetWidth;
+                const index = Math.round(scrollLeft / slideWidth);
+
+                dots.forEach((d, i) => {
+                    d.classList.toggle("active", i === index);
+                });
+            }
+
+            // Listen to scroll events
+            gallery.addEventListener("scroll", () => {
+                // debounce for smoother update
+                window.requestAnimationFrame(updateActiveDot);
+            });
+
+            updateActiveDot();
+
+
+            
+            // let thumbnails = document.getElementById('thumbnails');
+            // obj.url.forEach(u => {
+            //     let div = document.createElement('div');
+            //     let img = document.createElement('img');
+            //     img.setAttribute('src', '/product-images/' + u);
+            //     img.addEventListener("click", (u) => {
+            //     mainImage.src = u.target.currentSrc;
+            // });
+            // div.appendChild(img);
+            // thumbnails.appendChild(div);
+
+
             // Get the rest
             let price = document.getElementById("price");
             price.innerHTML = obj.price + " €";
             let description = document.getElementById("description");
             description.innerHTML = (lang === 'en') ? obj.description : obj.opis;
             document.getElementById("commerce").style.display = "block";
-        });
+        
         }
 
 
