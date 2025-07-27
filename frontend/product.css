@@ -18,7 +18,6 @@
         display: flex;
         width: 400vw;
         flex-direction: row;
-        --background-color: green;
         flex-wrap: nowrap;
         gap: 1rem;
     }    

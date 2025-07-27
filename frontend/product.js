@@ -21,15 +21,10 @@ if (typeof ProductPage === "undefined") {
         }
 
         function buildProductInfo(obj, lang) {
-            // Document title
-            document.title = (lang === 'en') ? obj.title : obj.naslov;
-            // Main title
-            document.getElementsByTagName("h1")[0].innerHTML = (lang === 'en') ? obj.title : obj.naslov;
-            // Main image
-            let mainImage = document.getElementById("image-big");
-            // mainImage.src = '/product-images/' + obj.url[0];
 
-            // Build gallery
+            document.title = (lang === 'en') ? obj.title : obj.naslov;
+            document.getElementsByTagName("h1")[0].innerHTML = (lang === 'en') ? obj.title : obj.naslov;
+            let mainImage = document.getElementById("image-big");
             let gallery = document.getElementById('gallery');
             let slider = document.getElementById('slider');
 
@@ -37,7 +32,10 @@ if (typeof ProductPage === "undefined") {
             let dotContainer = document.getElementById("dot-indicators");
             let dots = [];
             let imageLinks = [];
+            let currentImageIndex = 0;
+            let animationFrameId = null;
 
+            // Fetch image urls and add div+img elements
             obj.url.forEach(u => {
                 let div = document.createElement('div');
                 let img = document.createElement('img');
@@ -49,60 +47,127 @@ if (typeof ProductPage === "undefined") {
                 // });
                 div.appendChild(img);
                 slider.appendChild(div);
+                // Also append add one div element (representing a dot) - per image
                 let dot = document.createElement("div");
                 dot.classList.add("dot");
                 dotContainer.appendChild(dot);
                 dots.push(dot);
             });
 
-            // Set gallery slider width to (n * screenWidth) + inner_gaps
-            slider.style.width = "0px";
-            slider.style.width = `calc(${imageLinks.length} * 100vw + ${imageLinks.length-1} * 10px)`;
-           
-            function updateActiveDot() {
-                const scrollLeft = gallery.scrollLeft;
-                const slideWidth = gallery.offsetWidth;
-                const index = Math.round(scrollLeft / slideWidth);
+            // Width of a single image
+            let quantaWidth = slider.querySelector("img").offsetWidth;
+            
+            // One rem, rounded to pixels
+            let rem = parseFloat(getComputedStyle(document.documentElement).fontSize);
 
+            // Width of a single image element, plus 1rem of flexbox gap defined in the CSS
+            let offset = quantaWidth + rem;
+
+            // Set gallery slider (div) width to "n times the single image width, plus the inner gaps"
+            slider.style.width = imageLinks.length * quantaWidth + (imageLinks.length-1) * rem + "px";
+
+            // === returns a bool
+            function updateActiveDot() {
                 dots.forEach((d, i) => {
-                    d.classList.toggle("active", i === index);
+                    d.classList.toggle("active", i === currentImageIndex);
                 });
             }
 
-            let singleImageWidth = document.querySelector("#app div div");
-            let title = document.getElementsByTagName("h1")[0];
             let isSwiping = false;
 
+            // Currently swiping
             gallery.addEventListener("pointerdown", (e) => {
                 isSwiping = true;
-                title.innerHTML = e.clientX;
                 slider.setPointerCapture(e.pointerId);
-                slider.onpointermove = swiping;
                 slider.initialX = e.clientX;
+                slider.onpointermove = swiping;
+                // Transition is not animated while swiping, user is the one that "animates"
+                slider.style.transition = 'none';
             });
 
+            // Swiping stopped
             gallery.addEventListener("pointerup", (e) => {
-                title.innerHTML = e.clientX;
                 slider.releasePointerCapture(e.pointerId);
                 slider.onpointermove = null;
                 isSwiping = false;
+
+                // Once the pointer is released, snapping to an image is animated
+                slider.style.transition = 'transform 0.3s ease-out';
+                
+                // Ignore possible pending animation frame leftovers from the swiping() function
+                cancelAnimationFrame(animationFrameId);
+                
+                // Will be 'false' on edge cases (prevent going lower than 0 and higher than array size)
+                let boundsAndSwipeDirectionCheck = !(e.clientX-slider.initialX < 0 && currentImageIndex == imageLinks.length-1) &&
+                                                   !(e.clientX-slider.initialX > 0 && currentImageIndex == 0);
+
+                // In order to snap to the next image, at least a 1/5th swipe is required (arbitrary)
+                if (Math.abs(e.clientX - slider.initialX) >= offset/5 && boundsAndSwipeDirectionCheck) {
+                    // Go one image forward or go backward - depending on the swipe direction
+                    (e.clientX-slider.initialX) < 0 ? snapToNextImage(1) : snapToNextImage(-1);
+                } else {
+                    // ... Or just snap back to the current image
+                    snapToNextImage(0);
+                }
             });
 
+            function snapToNextImage(n) {
+                currentImageIndex += n;
+                console.log("Current index: " + currentImageIndex);
+                slider.style.transform = `translateX(${-(currentImageIndex)*offset}px)`;
+                updateActiveDot();
+            }
             
-            // Prevent vertical pull-to-refresh during horizontal swiping
+            // Prevent vertical pull-to-refresh behavior while swiping
             document.addEventListener("touchmove", (e) => {
                 if (isSwiping) {
                     e.preventDefault();
                 }
             }, { passive: false });
 
+            // Debugging tool
+            gallery.addEventListener("click", (e) => {
+                //slider.style.transform = `translateX(${offset}px)`;
+            });
+
+            // Continuously runs while swiping
             function swiping(e) {
-                title.innerHTML = e.clientX;
-                requestAnimationFrame(() => {
-                    slider.style.transform = `translateX(${e.clientX - slider.initialX}px)`;
-                });
+
+                let boundsAndSwipeDirectionCheck = !(e.clientX-slider.initialX < 0 && currentImageIndex == imageLinks.length-1) &&
+                                                   !(e.clientX-slider.initialX > 0 && currentImageIndex == 0);
                 
+                if (boundsAndSwipeDirectionCheck) {
+
+                    // Allow advancing only 1-by-1 image
+                    if (Math.abs(e.clientX - slider.initialX) <= offset) {
+
+                        animationFrameId = requestAnimationFrame(() => {
+                            slider.style.transform = `translateX(${-currentImageIndex*offset + e.clientX-slider.initialX}px)`;
+                            updateActiveDot();
+                        });
+
+                    // If we swipe too far, we snap to the furthest point allowed
+                    } else if (Math.abs(e.clientX - slider.initialX) > offset) {
+                        // Either to the outmost right
+                        if (e.clientX-slider.initialX > 0) {
+                            slider.style.transform = `translateX(${-(currentImageIndex-1)*offset}px)`;
+                        // Or to the outmoust left
+                        } else {
+                            slider.style.transform = `translateX(${-(currentImageIndex+1)*offset}px)`;
+                        }
+                    }
+                } else {
+                    console.log(e.clientX-slider.initialX);
+                    if (e.clientX-slider.initialX < 100 && e.clientX-slider.initialX > -100) {
+                        animationFrameId = requestAnimationFrame(() => {
+                            slider.style.transform = `translateX(${-currentImageIndex*offset + 0.25*(e.clientX-slider.initialX)}px)`;
+                            updateActiveDot();
+                        });
+                    }
+                }
+                    
                 updateActiveDot();
+                
             }
 
             updateActiveDot();
