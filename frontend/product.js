@@ -24,11 +24,11 @@ if (typeof ProductPage === "undefined") {
 
             document.title = (lang === 'en') ? obj.title : obj.naslov;
             document.getElementsByTagName("h1")[0].innerHTML = (lang === 'en') ? obj.title : obj.naslov;
-            let mainImage = document.getElementById("image-big");
-            let gallery = document.getElementById('gallery');
+            let gallery = document.getElementById('gallery');           // Swipe-enabled gallery
+            let bigGallery = document.getElementById('big-gallery');    // Click-oriented gallery
             let slider = document.getElementById('slider');
 
-            // Add dots
+            // Add dots (only visible on small vertical screens)
             let dotContainer = document.getElementById("dot-indicators");
             let dots = [];
             let imageLinks = [];
@@ -36,7 +36,7 @@ if (typeof ProductPage === "undefined") {
             let animationFrameId = null;
 
             // Fetch image urls and add div+img elements
-            obj.url.forEach(u => {
+            obj.url.forEach( (u, i) => {
                 let div = document.createElement('div');
                 let img = document.createElement('img');
                 imageLinks.push(u);
@@ -50,8 +50,21 @@ if (typeof ProductPage === "undefined") {
                 // Also append add one div element (representing a dot) - per image
                 let dot = document.createElement("div");
                 dot.classList.add("dot");
+                dot.setAttribute("data-index", i);
                 dotContainer.appendChild(dot);
                 dots.push(dot);
+            });
+
+            let dotElements = document.querySelector("#dot-indicators");
+            
+            // Dots do the jump to their respective image
+            dotElements.addEventListener("click", (e) => {
+                slider.style.transition = 'transform 0.3s ease-out';
+                let oldImageIndex = currentImageIndex;
+                let targetImageIndex = e.target.getAttribute("data-index");
+                if (targetImageIndex !== null) {
+                    snapToNextImage(targetImageIndex - currentImageIndex);
+                }
             });
 
             // Width of a single image
@@ -66,7 +79,16 @@ if (typeof ProductPage === "undefined") {
             // Set gallery slider (div) width to "n times the single image width, plus the inner gaps"
             slider.style.width = imageLinks.length * quantaWidth + (imageLinks.length-1) * rem + "px";
 
-            // === returns a bool
+            // If a user resizes their window, it will mess up swipe-snapping without this
+            window.addEventListener("resize", () => {
+                quantaWidth = slider.querySelector("img").offsetWidth;
+                rem = parseFloat(getComputedStyle(document.documentElement).fontSize);
+                offset = quantaWidth + rem;
+                slider.style.transition = 'none';
+                slider.style.transform = `translateX(${-currentImageIndex*offset}px)`;
+            });
+
+            // (x === y) returns a bool
             function updateActiveDot() {
                 dots.forEach((d, i) => {
                     d.classList.toggle("active", i === currentImageIndex);
@@ -113,7 +135,7 @@ if (typeof ProductPage === "undefined") {
 
             function snapToNextImage(n) {
                 currentImageIndex += n;
-                console.log("Current index: " + currentImageIndex);
+                // console.log("Current index: " + currentImageIndex);
                 slider.style.transform = `translateX(${-(currentImageIndex)*offset}px)`;
                 updateActiveDot();
             }
@@ -157,7 +179,7 @@ if (typeof ProductPage === "undefined") {
                         }
                     }
                 } else {
-                    console.log(e.clientX-slider.initialX);
+                    // console.log(e.clientX-slider.initialX);
                     if (e.clientX-slider.initialX < 100 && e.clientX-slider.initialX > -100) {
                         animationFrameId = requestAnimationFrame(() => {
                             slider.style.transform = `translateX(${-currentImageIndex*offset + 0.25*(e.clientX-slider.initialX)}px)`;

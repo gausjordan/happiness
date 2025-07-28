@@ -151,7 +151,7 @@ CREATE TABLE `product_images` (
   PRIMARY KEY (`id`),
   KEY `fk_product_images` (`product_id`),
   CONSTRAINT `fk_product_images` FOREIGN KEY (`product_id`) REFERENCES `product` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=812 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=815 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -160,7 +160,7 @@ CREATE TABLE `product_images` (
 
 LOCK TABLES `product_images` WRITE;
 /*!40000 ALTER TABLE `product_images` DISABLE KEYS */;
-INSERT INTO `product_images` VALUES (1,1,'nanogica1.jpg'),(2,1,'nanogica2.jpg'),(3,1,'nanogica3.jpg'),(4,2,'nanogica-koza-staklo-1.jpg'),(5,2,'nanogica-koza-staklo-2.jpg'),(6,2,'nanogica-koza-staklo-3.jpg'),(7,3,'narukvica-celik-1.jpg'),(8,3,'narukvica-celik-2.jpg'),(9,3,'narukvica-celik-3.jpg'),(10,3,'narukvica-celik-4.jpg'),(11,4,'narukvica-kamen-1.jpg'),(12,4,'narukvica-kamen-2.jpg'),(13,4,'narukvica-kamen-3.jpg'),(14,5,'nausnica-b-1.jpg'),(15,5,'nausnica-b-2.jpg'),(16,5,'nausnica-b-3.jpg'),(17,5,'nausnica-b-4.jpg'),(18,6,'nausnica1.jpg'),(19,6,'nausnica2.jpg'),(20,6,'nausnica3.jpg'),(21,6,'nausnica4.jpg'),(22,6,'nausnica5.jpg'),(23,7,'nausnica-poludragi-kamen-2.jpg'),(24,7,'nausnica-poludragi-kamen-1.jpg'),(25,8,'ogrlica1.jpg'),(26,8,'ogrlica2.jpg'),(27,9,'ogrlica-kozna-1.jpg'),(28,9,'ogrlica-kozna-2.jpg'),(29,9,'ogrlica-kozna-3.jpg'),(30,10,'ogrlica-staklo-celik-1.jpg'),(31,10,'ogrlica-staklo-celik-2.jpg'),(32,10,'ogrlica-staklo-celik-3.jpg'),(33,11,'prsten1.jpg'),(34,11,'prsten2.jpg'),(35,11,'prsten3.jpg'),(36,11,'prsten4.jpg'),(37,12,'prsten-staklo-1.jpg'),(38,12,'prsten-staklo-2.jpg'),(39,12,'prsten-staklo-3.jpg'),(360,13,'ogrlica-apr-fools1.jpg'),(361,13,'ogrlica-apr-fools2.jpg'),(362,13,'ogrlica-apr-fools3.jpg'),(363,14,'kreativica1.jpg'),(364,14,'kreativica2.jpg'),(365,14,'kreativica3.jpg'),(366,14,'kreativica4.jpg'),(379,115,'pro2a.jpg'),(380,115,'pro2b.jpg'),(381,115,'pro2c.jpg'),(804,116,'pro3a.jpg'),(805,116,'pro3b.jpg'),(806,116,'pro3c.jpg'),(807,114,'myst-2_6826560f7cf07.jpg'),(808,114,'pro1a.jpg'),(809,114,'pro1b.jpg'),(810,114,'pro1c.jpg'),(811,114,'1000081292_6829cbfb89f4d.jpg');
+INSERT INTO `product_images` VALUES (1,1,'nanogica1.jpg'),(2,1,'nanogica2.jpg'),(3,1,'nanogica3.jpg'),(4,2,'nanogica-koza-staklo-1.jpg'),(5,2,'nanogica-koza-staklo-2.jpg'),(6,2,'nanogica-koza-staklo-3.jpg'),(7,3,'narukvica-celik-1.jpg'),(8,3,'narukvica-celik-2.jpg'),(9,3,'narukvica-celik-3.jpg'),(10,3,'narukvica-celik-4.jpg'),(11,4,'narukvica-kamen-1.jpg'),(12,4,'narukvica-kamen-2.jpg'),(13,4,'narukvica-kamen-3.jpg'),(14,5,'nausnica-b-1.jpg'),(15,5,'nausnica-b-2.jpg'),(16,5,'nausnica-b-3.jpg'),(17,5,'nausnica-b-4.jpg'),(18,6,'nausnica1.jpg'),(19,6,'nausnica2.jpg'),(20,6,'nausnica3.jpg'),(21,6,'nausnica4.jpg'),(22,6,'nausnica5.jpg'),(23,7,'nausnica-poludragi-kamen-2.jpg'),(24,7,'nausnica-poludragi-kamen-1.jpg'),(25,8,'ogrlica1.jpg'),(26,8,'ogrlica2.jpg'),(27,9,'ogrlica-kozna-1.jpg'),(28,9,'ogrlica-kozna-2.jpg'),(29,9,'ogrlica-kozna-3.jpg'),(30,10,'ogrlica-staklo-celik-1.jpg'),(31,10,'ogrlica-staklo-celik-2.jpg'),(32,10,'ogrlica-staklo-celik-3.jpg'),(33,11,'prsten1.jpg'),(34,11,'prsten2.jpg'),(35,11,'prsten3.jpg'),(36,11,'prsten4.jpg'),(37,12,'prsten-staklo-1.jpg'),(38,12,'prsten-staklo-2.jpg'),(39,12,'prsten-staklo-3.jpg'),(360,13,'ogrlica-apr-fools1.jpg'),(361,13,'ogrlica-apr-fools2.jpg'),(362,13,'ogrlica-apr-fools3.jpg'),(363,14,'kreativica1.jpg'),(364,14,'kreativica2.jpg'),(365,14,'kreativica3.jpg'),(366,14,'kreativica4.jpg'),(804,116,'pro3a.jpg'),(805,116,'pro3b.jpg'),(806,116,'pro3c.jpg'),(807,114,'myst-2_6826560f7cf07.jpg'),(808,114,'pro1a.jpg'),(809,114,'pro1b.jpg'),(810,114,'pro1c.jpg'),(811,114,'1000081292_6829cbfb89f4d.jpg'),(814,115,'pro2b.jpg');
 /*!40000 ALTER TABLE `product_images` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -345,4 +345,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-07-27  2:15:34
+-- Dump completed on 2025-07-28  1:36:37

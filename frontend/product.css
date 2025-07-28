@@ -3,8 +3,11 @@
     margin: 0.75em 0.75em 0em 0.75em;
 } */
 
-@media screen and (max-width: 440px) {
-       
+/* @media screen and (max-width: 440px) { */
+/* @media (pointer:coarse) and (max-width: 440px) { */
+
+@media (orientation: portrait) and (max-width: 499px) {
+
     div#gallery {
         width: 100vw;
         overflow: hidden;
@@ -67,8 +70,19 @@
 }
 
 
+@media (orientation: portrait) and (min-width: 500px) {
 
-@media screen and (min-width: 441px) {
+    * {
+        background-color: yellow;
+    }
+}
+
+
+/* @media screen and (min-width: 441px) { */
+/* @media (pointer:fine) and (min-width: 441px) { */
+
+@media (orientation: landscape) {
+
 
     * {
         background-color: red;
