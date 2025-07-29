@@ -8,6 +8,14 @@
 
 @media (orientation: portrait) and (max-width: 499px) {
 
+    * {
+        background-color: yellowgreen;
+    }
+
+    div#big-gallery {
+        display: none;
+    }
+
     div#gallery {
         width: 100vw;
         overflow: hidden;
@@ -70,36 +78,96 @@
 }
 
 
-@media (orientation: portrait) and (min-width: 500px) {
+@media (orientation: landscape) and (max-height: 450px) {
 
     * {
-        background-color: yellow;
-    }
-}
-
-
-/* @media screen and (min-width: 441px) { */
-/* @media (pointer:fine) and (min-width: 441px) { */
-
-@media (orientation: landscape) {
-
-
-    * {
-        background-color: red;
+        background-color: teal;
     }
 
-
-    div#commerce button#atc-button{
-        font-size: 1em;
-        padding: 0.3em;
+    div#gallery {
+        display: none;
     }
 
-    #app p#description {
-        line-height: 1.5;
+    div#big-gallery {
+        display: grid;
+        box-sizing: border-box;
+        grid-template-columns: repeat(auto-fit, minmax(65vh, 1fr));
+        justify-content: space-between;
+        gap: 0.5em;
+        width: 100%;
     }
     
+    div#big-gallery div {
+        min-height: 65vh;
+        max-height: 95vh;
+        aspect-ratio: 1 / 1;
+        overflow: hidden;
+    }
+
+    div#big-gallery div:first-of-type {
+        display: none;
+    }
+
+    div#big-gallery div img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+
+
 }
 
+@media ((orientation: landscape) and (min-height: 451px)) or ((orientation: portrait) and (min-width: 500px)) {
+    
+    * {
+        background-color: pink;
+    }
+
+    div#gallery {
+        display: none;
+    }
+
+    #big-gallery {
+        display: grid;
+        grid-template-columns: 4fr 1fr;
+    }
+    
+    div#big-gallery .big-image {
+        display: flex;
+        max-height: 80vh;
+        justify-content: right;
+    }
+    
+    div#big-gallery .big-image img {
+        max-height: 100%;
+        max-width: 100%;
+        height: auto;
+        width: auto;
+        object-fit: contain;
+    }
+    
+    div#big-gallery .thumbnails {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    div#big-gallery .thumbnails div {
+        aspect-ratio: 1;
+    }
+
+    
+
+    div#big-gallery div:not(:first-of-type) div {
+        
+    }
 
 
+    div#big-gallery div img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
 
+}

@@ -6,6 +6,8 @@ if (typeof ProductPage === "undefined") {
 
         let productId;
 
+        // let tit = document.getElementsByTagName("h1")[0];
+
         async function buildProductPage() {
             let obj;
             let params = new URLSearchParams(window.location.href);
@@ -35,25 +37,76 @@ if (typeof ProductPage === "undefined") {
             let currentImageIndex = 0;
             let animationFrameId = null;
 
+            // The very first image (big one) gets spawned twice
+            let bigDiv = document.createElement('div');
+            let bigImg = document.createElement('img');
+            bigImg.setAttribute('src', '/product-images/' + obj.url[0]);
+            bigImg.setAttribute('draggable', 'false');
+            bigDiv.appendChild(bigImg);
+            bigDiv.classList.add("big-image");
+            bigGallery.appendChild(bigDiv);
+
+            let wrap = document.createElement('div');
+            
             // Fetch image urls and add div+img elements
             obj.url.forEach( (u, i) => {
+                
+                // Swiping version
                 let div = document.createElement('div');
                 let img = document.createElement('img');
                 imageLinks.push(u);
                 img.setAttribute('src', '/product-images/' + u);
                 img.setAttribute('draggable', 'false');
-                // img.addEventListener("click", (u) => {
-                //     mainImage.src = u.target.currentSrc;
-                // });
                 div.appendChild(img);
                 slider.appendChild(div);
-                // Also append add one div element (representing a dot) - per image
+
+                // Append one div element (representing a dot) - per image
                 let dot = document.createElement("div");
                 dot.classList.add("dot");
                 dot.setAttribute("data-index", i);
                 dotContainer.appendChild(dot);
                 dots.push(dot);
+
+                // Clicking version
+                let bigDiv = document.createElement('div');
+                let bigImg = document.createElement('img');
+                bigImg.setAttribute('src', '/product-images/' + u);
+                bigDiv.appendChild(bigImg);
+                wrap.classList.add("thumbnails");
+                wrap.appendChild(bigDiv);
+
+                // TODO - edge cases. 0 images or 1 image
+
+                // On click, thumbnails gets shown as the big image
+                bigImg.addEventListener("click", (u) => {
+                    bigGallery.querySelector("img").src = u.target.currentSrc;
+                });
+
             });
+
+            bigGallery.appendChild(wrap);
+
+
+
+            // On small landscape screens, if there is more than one row of images, and if the last
+            // one is much shorter than the others, alternate (more dense) styling is applied
+            let imageCount = obj.url.length;
+            let galleryWidth = bigGallery.offsetWidth;
+            let itemWidth = bigGallery.querySelectorAll("div img")[1].getBoundingClientRect().width + (parseFloat(getComputedStyle(gallery).gap) || 0);
+            let imagesPerRow = Math.floor(galleryWidth / itemWidth);
+            let remainder = imageCount % imagesPerRow;
+            if (window.matchMedia('(orientation: landscape) and (max-height: 450px)').matches &&
+                imagesPerRow >= 3 && remainder === 1 || imagesPerRow >= 5 && remainder === 2)
+            {
+                gallery.classList.add('adjust-last-row');
+                bigGallery.style.gridTemplateColumns = "repeat(auto-fit, minmax(50vh, 1fr))";
+                bigDiv = bigGallery.querySelectorAll("div");
+                bigDiv.forEach(d => {
+                    d.style.minHeight = "50vh";
+                    d.style.maxHeight = "80vh";
+                });                
+            }
+
 
             let dotElements = document.querySelector("#dot-indicators");
             
@@ -68,22 +121,22 @@ if (typeof ProductPage === "undefined") {
             });
 
             // Width of a single image
-            let quantaWidth = slider.querySelector("img").offsetWidth;
+            let quantaWidth = slider.querySelector("img");
             
             // One rem, rounded to pixels
             let rem = parseFloat(getComputedStyle(document.documentElement).fontSize);
 
-            // Width of a single image element, plus 1rem of flexbox gap defined in the CSS
-            let offset = quantaWidth + rem;
+            // Width of a single image element, plus 1rem of flexbox gap defined in the CSS, not null
+            let offset = quantaWidth.getBoundingClientRect().width + parseFloat(getComputedStyle(slider).gap || 0);
 
             // Set gallery slider (div) width to "n times the single image width, plus the inner gaps"
             slider.style.width = imageLinks.length * quantaWidth + (imageLinks.length-1) * rem + "px";
 
             // If a user resizes their window, it will mess up swipe-snapping without this
             window.addEventListener("resize", () => {
-                quantaWidth = slider.querySelector("img").offsetWidth;
+                quantaWidth = slider.querySelector("img");
                 rem = parseFloat(getComputedStyle(document.documentElement).fontSize);
-                offset = quantaWidth + rem;
+                offset = quantaWidth.getBoundingClientRect().width + parseFloat(getComputedStyle(slider).gap || 0);
                 slider.style.transition = 'none';
                 slider.style.transform = `translateX(${-currentImageIndex*offset}px)`;
             });
@@ -135,7 +188,6 @@ if (typeof ProductPage === "undefined") {
 
             function snapToNextImage(n) {
                 currentImageIndex += n;
-                // console.log("Current index: " + currentImageIndex);
                 slider.style.transform = `translateX(${-(currentImageIndex)*offset}px)`;
                 updateActiveDot();
             }
@@ -195,16 +247,7 @@ if (typeof ProductPage === "undefined") {
             updateActiveDot();
 
             
-            // let thumbnails = document.getElementById('thumbnails');
-            // obj.url.forEach(u => {
-            //     let div = document.createElement('div');
-            //     let img = document.createElement('img');
-            //     img.setAttribute('src', '/product-images/' + u);
-            //     img.addEventListener("click", (u) => {
-            //     mainImage.src = u.target.currentSrc;
-            // });
-            // div.appendChild(img);
-            // thumbnails.appendChild(div);
+
 
 
             // Get the rest
