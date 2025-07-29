@@ -8,6 +8,14 @@
 
 @media (orientation: portrait) and (max-width: 499px) {
 
+    * {
+        background-color: yellowgreen;
+    }
+
+    div#big-gallery {
+        display: none;
+    }
+
     div#gallery {
         width: 100vw;
         overflow: hidden;
@@ -74,6 +82,10 @@
 
     * {
         background-color: yellow;
+    }
+
+    div#gallery {
+        display: none;
     }
 }
 
