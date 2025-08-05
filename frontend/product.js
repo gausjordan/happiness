@@ -86,6 +86,48 @@ if (typeof ProductPage === "undefined") {
 
             bigGallery.appendChild(wrap);
 
+            function thumbnailAesthetics() {
+
+                // Read CSS properties - get the size of a single thumbnail. Expected unit: vh
+                let singleThumbSize = getComputedStyle(wrap.querySelectorAll(".thumbnails div")[0]).getPropertyValue('--singlethumbsize');
+                    singleThumbSize = singleThumbSize.toString().replace('vh', '');
+                    singleThumbSize = parseFloat(singleThumbSize);
+
+                // Read CSS properties - get the height of a main (big) image. Expected unit: none (px assumed)
+                let maxHeight = bigGallery.querySelector(".big-image");
+                    maxHeight = maxHeight.getBoundingClientRect().height;
+                    maxHeight = parseInt(maxHeight);
+
+                // Read CSS properies - get the number of thumbnails per column of thumbnails. Expected: int
+                let thumbsPerCol = getComputedStyle(wrap).getPropertyValue('--thumbnails-per-column');
+                    thumbsPerCol = parseInt(thumbsPerCol);
+
+                // Read CSS properies - get the thumbnail grid's gap size. Expected unit: px
+                let gridGap = getComputedStyle(wrap).getPropertyValue('gap');
+                    gridGap = parseInt(gridGap);                
+                    console.log(gridGap);
+
+                // Calculate the new snug size of a thumbnail. Convert "vh" to "px" first
+                let correctedSingleThumbSize = maxHeight / thumbsPerCol;
+
+                // gridGap[px] tells how wide is each gap. There are "n-1" gaps per column. Calculate how many pixels less per thumbnail
+                let lessPerPx = (gridGap * (thumbsPerCol-1)) / thumbsPerCol;
+
+                // Set CSS variable - set all individual thumbnail size to fit it's parent container
+                let allThumbnails = wrap.querySelectorAll(".thumbnails div"); //.forEach(a => a.style.setProperty('--my-var', '5px'));
+                    allThumbnails.forEach(a => a.style.setProperty('--singlethumbsize', `${correctedSingleThumbSize-lessPerPx}px`));
+
+                // Set the true corrected width of a thumbnails column based on the number of thumbnails (set up wrapping)
+                let howManyColums = Math.ceil(imageLinks.length / thumbsPerCol);
+                let repeatAutos = "auto ".repeat(howManyColums);
+                wrap.style.setProperty('grid-template-columns', repeatAutos);
+                wrap.style.setProperty('width', `${howManyColums * correctedSingleThumbSize}px`);
+            
+            }
+
+            thumbnailAesthetics();
+
+
 
 
             // On small landscape screens, if there is more than one row of images, and if the last
@@ -106,7 +148,6 @@ if (typeof ProductPage === "undefined") {
                     d.style.maxHeight = "80vh";
                 });                
             }
-
 
             let dotElements = document.querySelector("#dot-indicators");
             
@@ -134,11 +175,15 @@ if (typeof ProductPage === "undefined") {
 
             // If a user resizes their window, it will mess up swipe-snapping without this
             window.addEventListener("resize", () => {
+                // Swiping version
                 quantaWidth = slider.querySelector("img");
                 rem = parseFloat(getComputedStyle(document.documentElement).fontSize);
                 offset = quantaWidth.getBoundingClientRect().width + parseFloat(getComputedStyle(slider).gap || 0);
                 slider.style.transition = 'none';
                 slider.style.transform = `translateX(${-currentImageIndex*offset}px)`;
+
+                // Click-oriented version
+                thumbnailAesthetics();
             });
 
             // (x === y) returns a bool
