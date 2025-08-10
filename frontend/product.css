@@ -118,12 +118,8 @@
 
 }
 
-@media ((orientation: landscape) and (min-height: 451px)) or ((orientation: portrait) and (min-width: 500px)) {
+@media ((orientation: landscape) and (min-height: 451px) and (max-width: 1200px)) or ((orientation: portrait) and (min-width: 500px) and (max-width: 1200px)) {
     
-    * {
-        background-color: pink;
-    }
-
     div#gallery {
         display: none;
     }
@@ -136,14 +132,13 @@
     #big-gallery {
         display: grid;
         grid-template-columns: auto 1fr;
-        background-color: yellow;
         height: 60vh;
         justify-content: left;
     }
     
     div#big-gallery div.big-image {
-        aspect-ratio: 1 / 1;
         height: 100%;
+        max-width: 80vh;
         max-height: 60vh;
         display: flex;
         justify-content: center;
@@ -161,6 +156,7 @@
     div#big-gallery div.thumbnails {
         --js-corrected-width: 0; /* JS modifies this */
         --thumbnails-per-column: 5; /* JS reads this */
+        margin-left: 1em;
         display: grid;
         height: 60vh;
         width: var(--js-corrected-width);
@@ -183,5 +179,72 @@
         user-select: none;
     }
 
+}
 
+@media (min-width: 1201px) {
+
+    div#gallery {
+        display: none;
+    }
+    
+    #primary-wrapper {    
+        display: flex;
+        flex-direction: row;
+        flex-shrink: 0;
+    }
+    
+    #big-gallery-container {
+        display: grid;
+        --justify-content: center;
+    }
+
+    #big-gallery {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        height: 60vh;
+        justify-content: left;
+    }
+    
+    div#big-gallery div.big-image {
+        height: 100%;
+        max-width: 80vh;
+        max-height: 60vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+    }
+    
+    div#big-gallery div.big-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        user-select: none;
+    }
+    
+    div#big-gallery div.thumbnails {
+        --js-corrected-width: 0; /* JS modifies this */
+        --thumbnails-per-column: 5; /* JS reads this */
+        margin-left: 1em;
+        display: grid;
+        height: 60vh;
+        width: var(--js-corrected-width);
+        gap: 0.5em; /* JS reads this */
+        align-content: space-around;
+        justify-content: space-between;
+        grid-auto-flow: row;
+    }
+  
+    div#big-gallery div.thumbnails div {
+        --singlethumbsize: 12vh; /* JS reads and modifies this */
+        aspect-ratio: 1 / 1;
+        height: var(--singlethumbsize);
+    }
+
+    div#big-gallery div.thumbnails img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        user-select: none;
+    }
 }
