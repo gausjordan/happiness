@@ -176,11 +176,13 @@ if (typeof ProductPage === "undefined") {
             // If a user resizes their window, it will mess up swipe-snapping without this
             window.addEventListener("resize", () => {
                 // Swiping version
-                quantaWidth = slider.querySelector("img");
-                rem = parseFloat(getComputedStyle(document.documentElement).fontSize);
-                offset = quantaWidth.getBoundingClientRect().width + parseFloat(getComputedStyle(slider).gap || 0);
-                slider.style.transition = 'none';
-                slider.style.transform = `translateX(${-currentImageIndex*offset}px)`;
+                //if (window.matchMedia('(orientation: landscape) and (max-height: 450px)').matches) {
+                    quantaWidth = slider.querySelector("img");
+                    rem = parseFloat(getComputedStyle(document.documentElement).fontSize);
+                    offset = quantaWidth.getBoundingClientRect().width + parseFloat(getComputedStyle(slider).gap || 0);
+                    slider.style.transition = 'none';
+                    slider.style.transform = `translateX(${-currentImageIndex*offset}px)`;
+                //}
 
                 // Click-oriented version
                 thumbnailAesthetics();

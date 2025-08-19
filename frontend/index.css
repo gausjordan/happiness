@@ -309,7 +309,7 @@ header.top-menu div.block a img {
 header.top-menu div.block.middle {
   position: absolute;
   left: 50%;
-  transform: translateX(-50%);
+  transform: translateX(-50%);  
 }
 
 /* Language selector flag */
@@ -542,5 +542,15 @@ footer {
   --margin-top: 3em;
 }
 
+@media (min-width: 640px) {
+  
+  header.top-menu div.block a img[src="/frontend/graphics/icon-static.svg"] {
+    display: none;
+  }
+}
 
-
+@media (max-width: 641px) {
+  header.top-menu div.block a img[src="/frontend/graphics/logo1.svg"] {
+    display: none;
+  }
+}

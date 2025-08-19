@@ -64,7 +64,7 @@ CREATE TABLE `orders` (
   `comment` text CHARACTER SET utf8mb4 COLLATE utf8mb4_croatian_ci,
   PRIMARY KEY (`id`),
   KEY `order_user_fk` (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=110 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_croatian_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=111 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_croatian_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -73,7 +73,7 @@ CREATE TABLE `orders` (
 
 LOCK TABLES `orders` WRITE;
 /*!40000 ALTER TABLE `orders` DISABLE KEYS */;
-INSERT INTO `orders` VALUES (1,10,'2013-02-07','2022-02-05',1,1,1,1,0,'Kompletna'),(7,11,'2014-02-01','2023-02-12',1,1,1,1,0,'Nekompletna'),(8,10,'2016-02-01','2024-02-27',0,0,0,0,0,'davna'),(9,34,'2019-02-01','2025-02-12',0,0,0,0,0,'Bozina prva narudžba.'),(10,34,'2018-02-01',NULL,0,0,0,0,0,'Bozina druga narudžba.'),(11,34,'2017-02-01',NULL,0,0,0,0,0,'Bozina nedovršena narudžba.'),(12,10,'2004-02-01','2016-02-27',0,0,0,0,1,'Buff fluff'),(13,10,'2015-02-01','2016-12-01',0,0,0,0,0,'Lala'),(89,34,'2020-03-20',NULL,0,0,0,0,0,NULL),(90,34,'2022-03-31',NULL,0,0,0,0,0,'Vamos muchachas! Ola.'),(97,10,'2021-03-28',NULL,0,0,0,0,0,'Ayayay'),(98,10,NULL,NULL,0,0,0,0,0,NULL),(99,34,NULL,NULL,0,0,0,0,0,NULL),(102,11,'2025-04-22',NULL,0,0,0,0,0,NULL),(109,9,'2025-05-18',NULL,0,0,0,0,0,NULL);
+INSERT INTO `orders` VALUES (1,10,'2013-02-07','2022-02-05',1,1,1,1,0,'Kompletna'),(7,11,'2014-02-01','2023-02-12',1,1,1,1,0,'Nekompletna'),(8,10,'2016-02-01','2024-02-27',0,0,0,0,0,'davna'),(9,34,'2019-02-01','2025-02-12',0,0,0,0,0,'Bozina prva narudžba.'),(10,34,'2018-02-01',NULL,0,0,0,0,0,'Bozina druga narudžba.'),(11,34,'2017-02-01',NULL,0,0,0,0,0,'Bozina nedovršena narudžba.'),(12,10,'2004-02-01','2016-02-27',0,0,0,0,1,'Buff fluff'),(13,10,'2015-02-01','2016-12-01',0,0,0,0,0,'Lala'),(89,34,'2020-03-20',NULL,0,0,0,0,0,NULL),(90,34,'2022-03-31',NULL,0,0,0,0,0,'Vamos muchachas! Ola.'),(97,10,'2021-03-28',NULL,0,0,0,0,0,'Ayayay'),(98,10,NULL,NULL,0,0,0,0,0,NULL),(99,34,NULL,NULL,0,0,0,0,0,NULL),(102,11,'2025-04-22',NULL,0,0,0,0,0,NULL),(109,9,'2025-05-18',NULL,0,0,0,0,0,NULL),(110,9,NULL,NULL,0,0,0,0,0,NULL);
 /*!40000 ALTER TABLE `orders` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -345,4 +345,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-08-10  2:16:20
+-- Dump completed on 2025-08-19  0:12:54

@@ -1,8 +1,8 @@
 main:has(> .homepage-background) {
-  background-image: url('/frontend/graphics/bg-wide.jpg');
-  background-size: cover;
-  background-position:top;
-  background-repeat: repeat-x;
+    background-image: url('/frontend/graphics/bg-wide.jpg');
+    background-size: cover;
+    background-position:top;
+    background-repeat: repeat-x;
 }
 
 main:has(> .homepage-background) h1 {
@@ -12,4 +12,8 @@ main:has(> .homepage-background) h1 {
 
 main:has(> .homepage-background) p {
   color: white;
+}
+
+main#app {
+    padding: 1em;
 }

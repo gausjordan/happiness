@@ -8,10 +8,6 @@
 
 @media (orientation: portrait) and (max-width: 499px) {
 
-    * {
-        background-color: yellowgreen;
-    }
-
     div#big-gallery {
         display: none;
     }
@@ -78,48 +74,72 @@
 }
 
 
-@media (orientation: landscape) and (max-height: 450px) {
-
-    * {
-        background-color: teal;
-    }
+@media (orientation: landscape) and (max-height: 450px) and (max-width: 1200px) {
 
     div#gallery {
         display: none;
     }
 
-    div#big-gallery {
+    #big-gallery-container {
         display: grid;
-        box-sizing: border-box;
-        grid-template-columns: repeat(auto-fit, minmax(65vh, 1fr));
-        justify-content: space-between;
-        gap: 0.5em;
-        width: 100%;
+        --justify-content: center;
+    }
+
+    #big-gallery {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        height: 90vh;
+        justify-content: left;
     }
     
-    div#big-gallery div {
-        min-height: 65vh;
-        max-height: 95vh;
-        aspect-ratio: 1 / 1;
+    div#big-gallery div.big-image {
+        height: 100%;
+        max-width: 80vh;
+        max-height: 90vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
         overflow: hidden;
     }
-
-    div#big-gallery div:first-of-type {
-        display: none;
-    }
-
-    div#big-gallery div img {
+    
+    div#big-gallery div.big-image img {
         width: 100%;
         height: 100%;
         object-fit: cover;
-        display: block;
+        user-select: none;
+    }
+    
+    div#big-gallery div.thumbnails {
+        --js-corrected-width: 0; /* JS modifies this */
+        --thumbnails-per-column: 5; /* JS reads this */
+        margin-left: 1em;
+        display: grid;
+        height: 60vh;
+        width: var(--js-corrected-width);
+        gap: 0.5em; /* JS reads this */
+        align-content:start;
+        justify-content: space-between;
+        grid-auto-flow: row;
+    }
+  
+    div#big-gallery div.thumbnails div {
+        --singlethumbsize: 12vh; /* JS reads and modifies this */
+        aspect-ratio: 1 / 1;
+        height: var(--singlethumbsize);
+    }
+
+    div#big-gallery div.thumbnails img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        user-select: none;
     }
 
 
 }
 
 @media ((orientation: landscape) and (min-height: 451px) and (max-width: 1200px)) or ((orientation: portrait) and (min-width: 500px) and (max-width: 1200px)) {
-    
+   
     div#gallery {
         display: none;
     }
@@ -161,7 +181,7 @@
         height: 60vh;
         width: var(--js-corrected-width);
         gap: 0.5em; /* JS reads this */
-        align-content: space-around;
+        align-content:start;
         justify-content: space-between;
         grid-auto-flow: row;
     }
@@ -230,7 +250,7 @@
         height: 60vh;
         width: var(--js-corrected-width);
         gap: 0.5em; /* JS reads this */
-        align-content: space-around;
+        align-content:start;
         justify-content: space-between;
         grid-auto-flow: row;
     }
@@ -246,5 +266,10 @@
         height: 100%;
         object-fit: cover;
         user-select: none;
+    }
+
+    div#commerce {
+        width: 50%;
+        padding-left: 2em;
     }
 }

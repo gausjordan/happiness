@@ -4,8 +4,8 @@
 function displaySplashScreen() {
     let splash = document.getElementById("splashscreen");
     splash.removeAttribute("hidden");
-    
 }
+
 
 // If there is a token stored locally, return an authorization header object
 function authRequestObject($method) {
@@ -19,6 +19,8 @@ function authRequestObject($method) {
     }
     return initObject;
 }
+
+// window.addEventListener("resize", () => { swapMainLogo(); console.log("Gay") });
 
 // If access token had expired, but there is a refresh token
 async function getRefreshToken() {
@@ -271,6 +273,8 @@ document.querySelector('#nav-links a[href="/shop"]').addEventListener("click", (
 // Navigation handling
 const navigateTo = async (path, doNotPushState = false) => {
 
+    //document.getElementsByTagName("main")[0].style.padding = 0;
+
     // Close the main menu if it fails to close itself due to some glitch
     document.getElementById('menu-toggle').checked = false;
 
@@ -376,10 +380,14 @@ function executeScripts(container) {
 
 // Load stylesheets from fetched HTML content
 function loadStylesheets(container, baseUrl) {
+
     const stylesheets = container.querySelectorAll('link[rel="stylesheet"]');
+    document.querySelectorAll('link[data-dynamic="true"]').forEach(link => link.remove());
+
     stylesheets.forEach(link => {
         const newLink = document.createElement('link');
         newLink.rel = 'stylesheet';
+        newLink.setAttribute('data-dynamic', 'true');
         const href = link.getAttribute('href');
         newLink.href = href.startsWith('/') ? href : new URL(href, baseUrl).href;
 
